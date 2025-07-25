@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function OTPVerify() {
   const [otp, setOTP] = useState("");
-  const [phone] = useState(localStorage.getItem("phone") || ""); // ✅ Auto-load phone
+  const [phone] = useState(localStorage.getItem("phone") || "");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
@@ -14,14 +14,23 @@ export default function OTPVerify() {
     setSuccess("");
 
     try {
-      const res = await verifyOTP(phone, otp); // phone is already formatted in auth.js
+      const res = await verifyOTP(phone, otp); // { access, refresh, hasShop }
+      console.log("OTP verify response:", res);
 
-      // Save token to localStorage
-      localStorage.setItem("token", res.data.access);
+      // ✅ Store JWT tokens
+      localStorage.setItem("token", res.access);
+      localStorage.setItem("refresh", res.refresh);
 
       setSuccess("OTP verified successfully!");
-      navigate("/dashboard");
+
+      // ✅ Navigate based on shop status
+      if (res.hasShop) {
+        navigate("/dashboard");
+      } else {
+        navigate("/create-shop");
+      }
     } catch (err) {
+      console.error("OTP verify error:", err);
       setError(err.response?.data?.error || "Invalid OTP or verification failed.");
     }
   };
@@ -39,8 +48,11 @@ export default function OTPVerify() {
       />
 
       <button
-        onClick={handleVerify}
-        className="bg-green-600 text-white w-full py-2 rounded-xl"
+        onClick={(e) => {
+          e.preventDefault();
+          handleVerify();
+        }}
+        className="bg-green-600 text-white w-full py-2 rounded-xl hover:bg-green-700"
       >
         Verify OTP
       </button>

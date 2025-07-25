@@ -5,13 +5,14 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
-from rest_framework_simplejwt.tokens import RefreshToken  # ✅ New import
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import OTP
 from .serializers import SendOTPSerializer, VerifyOTPSerializer
+from sellers.models import SellerProfile  # ✅ Make sure this import is correct
 
 
-# ✅ Helper to generate JWT tokens
+# ✅ JWT token generator
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
     return {
@@ -20,6 +21,7 @@ def get_tokens_for_user(user):
     }
 
 
+# ✅ Send OTP View
 class SendOTPView(APIView):
     def post(self, request):
         serializer = SendOTPSerializer(data=request.data)
@@ -33,7 +35,7 @@ class SendOTPView(APIView):
             # Generate new OTP
             code = OTP.generate_code()
 
-            # ✅ Update existing OTP or create new
+            # Update existing OTP or create new
             existing_otp = OTP.objects.filter(phone=phone).last()
             if existing_otp:
                 existing_otp.code = code
@@ -48,6 +50,7 @@ class SendOTPView(APIView):
         return Response(serializer.errors, status=400)
 
 
+# ✅ Verify OTP View (includes shop check)
 class VerifyOTPView(APIView):
     def post(self, request):
         serializer = VerifyOTPSerializer(data=request.data)
@@ -59,26 +62,28 @@ class VerifyOTPView(APIView):
             if not phone.startswith('+91'):
                 phone = '+91' + phone
 
-            # Only allow OTPs created in last 5 minutes
+            # Allow only recent OTPs (5 minutes)
             time_limit = timezone.now() - timedelta(minutes=5)
-
             otp_obj = OTP.objects.filter(phone=phone, code=code, created_at__gte=time_limit).last()
 
             if not otp_obj:
                 return Response({"error": "Invalid or expired OTP"}, status=400)
 
-            # ✅ Create or get user
+            # Create or get user
             user, _ = User.objects.get_or_create(username=phone)
 
-            # ✅ Return JWT tokens instead of Token model
+            # JWT tokens
             tokens = get_tokens_for_user(user)
+
+            # ✅ Check if this user already has a shop
+            has_shop = SellerProfile.objects.filter(user=user).exists()
 
             return Response({
                 "access": tokens["access"],
                 "refresh": tokens["refresh"],
                 "user_id": user.id,
-                "phone": user.username
+                "phone": user.username,
+                "has_shop": has_shop
             }, status=200)
 
         return Response(serializer.errors, status=400)
-     

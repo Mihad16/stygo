@@ -6,21 +6,31 @@ import OTPVerify from "./pages/OTPVerify";
 import Info from "./pages/Info";
 import Shops from "./pages/Shops";
 import Dashboard from "./pages/Dashboard";
-import "./App.css"; // global styles
-import { BottomNav } from "./components/BottomNav";
+import MainLayout from "./layouts/MainLayout";
+import SellerLayout from "./layouts/SellerLayout";
+import CreateShop from "./pages/CreateShop";
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/verify" element={<OTPVerify />} />
-        <Route path="/info" element={<Info />} />
-        <Route path="/shops" element={<Shops />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* Public layout with BottomNav */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/verify" element={<OTPVerify />} />
+          <Route path="/info" element={<Info />} />
+          <Route path="/shops" element={<Shops />} />
+        </Route>
+
+        {/* Seller layout without BottomNav */}
+        <Route element={<SellerLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/create-shop" element={<CreateShop />} />
+        </Route>
+
       </Routes>
-      <BottomNav/>
     </Router>
   );
 }
