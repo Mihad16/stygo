@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import SellerProfile
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_shop(request):
@@ -27,3 +28,17 @@ def create_shop(request):
     )
 
     return Response({'status': 'Shop created successfully'})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def dashboard(request):
+    user = request.user
+
+    try:
+        profile = SellerProfile.objects.get(user=user)
+        return Response({
+            'shop_name': profile.shop_name
+        })
+    except SellerProfile.DoesNotExist:
+        return Response({'error': 'Shop not found'}, status=404)

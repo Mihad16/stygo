@@ -11,16 +11,20 @@ const categories = [
 
 export function CategoryScroller() {
   return (
-    <div className="overflow-x-auto whitespace-nowrap mt-4 px-2">
-      {categories.map(({ name, icon: Icon }) => (
-        <button
-          key={name}
-          className="inline-flex items-center bg-gray-100 text-sm rounded-full px-4 py-2 mr-2 hover:bg-green-100"
-        >
-          <Icon className="w-4 h-4 mr-2 text-green-600" />
-          {name}
-        </button>
-      ))}
+    <div className="px-4 sm:px-6 md:px-8 mt-4">
+      <div className="flex gap-3 overflow-x-auto no-scrollbar">
+        {categories.map(({ name, icon: Icon }) => (
+          <div
+            key={name}
+            className="flex flex-col items-center justify-center min-w-[72px] sm:min-w-[80px] md:min-w-[96px] h-24 sm:h-28 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition"
+          >
+            <Icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-gray-700" />
+            <span className="text-xs sm:text-sm md:text-base mt-2 font-medium text-gray-800 text-center">
+              {name}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -4,18 +4,9 @@ import Hero from "../components/Hero";
 import TopNav from "../components/TopNav";
 import ProductCard from "../components/ProductCard";
 
-const sampleProduct = {
-  name: "Floral Kurti",
-  price: 799,
-  size: "M",
-  seller: "Priya Fashion",
-  location: "Delhi",
-  whatsapp: "9605111666"
-};
-
 export default function Home() {
   return (
-    <div className="max-w-md mx-auto pb-20 px-4">
+    <div className="w-full px-4 sm:px-6 md:px-8 pb-24 mx-auto max-w-md sm:max-w-lg md:max-w-2xl">
       {/* Top Navigation */}
       <TopNav />
 
@@ -27,9 +18,8 @@ export default function Home() {
 
       {/* Product List */}
       <div className="mt-4 space-y-4">
-        <ProductCard product={sampleProduct} />
-        <ProductCard product={sampleProduct} />
-        <ProductCard product={sampleProduct} />
+        <ProductCard />
+        
       </div>
     </div>
   );
