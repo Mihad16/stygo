@@ -2,8 +2,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import SellerProfile
+from .serializers import SellerProfileSerializer
 
 
+# ✅ 1. Create Shop (for seller)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_shop(request):
@@ -30,6 +32,7 @@ def create_shop(request):
     return Response({'status': 'Shop created successfully'})
 
 
+# ✅ 2. Seller Dashboard
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def dashboard(request):
@@ -38,7 +41,17 @@ def dashboard(request):
     try:
         profile = SellerProfile.objects.get(user=user)
         return Response({
-            'shop_name': profile.shop_name
+            'shop_name': profile.shop_name,
+            'location': profile.location,
+            'phone_number': profile.phone_number
         })
     except SellerProfile.DoesNotExist:
         return Response({'error': 'Shop not found'}, status=404)
+
+
+# ✅ 3. List All Shops (for buyers, public)
+@api_view(['GET'])
+def list_all_shops(request):
+    shops = SellerProfile.objects.all()
+    serializer = SellerProfileSerializer(shops, many=True)
+    return Response(serializer.data)

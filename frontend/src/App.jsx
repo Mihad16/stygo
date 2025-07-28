@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import MainLayout from "./layouts/MainLayout";
 import SellerLayout from "./layouts/SellerLayout";
 import CreateShop from "./pages/CreateShop";
+import ShopPage from "./pages/ShopPage";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/verify" element={<OTPVerify />} />
           <Route path="/info" element={<Info />} />
           <Route path="/shops" element={<Shops />} />
+          <Route path="/shop/:shop_name" element={<ShopPage />} />
         </Route>
 
         {/* Seller layout without BottomNav */}
