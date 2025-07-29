@@ -2,9 +2,18 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createShop } from "../services/shop";
 
+const categories = [
+  { value: "men", label: "Men" },
+  { value: "women", label: "Women" },
+  { value: "kids", label: "Kids" },
+  { value: "accessories", label: "Accessories" },
+  { value: "beauty", label: "Beauty" },
+];
+
 export default function CreateShop() {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
+  const [category, setCategory] = useState("men"); // ✅ Default category
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
@@ -14,7 +23,8 @@ export default function CreateShop() {
     setSuccess("");
 
     try {
-      const res = await createShop(name, location); // ✅ Fixed here
+      // ✅ Pass category in the payload
+      const res = await createShop(name, location, category);
       setSuccess("Shop created successfully!");
       navigate("/dashboard");
     } catch (err) {
@@ -40,6 +50,20 @@ export default function CreateShop() {
         onChange={(e) => setLocation(e.target.value)}
         className="border border-gray-300 p-3 w-full rounded-xl mb-4"
       />
+
+      {/* ✅ Category Dropdown */}
+      <select
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        className="border border-gray-300 p-3 w-full rounded-xl mb-4"
+      >
+        {categories.map((c) => (
+          <option key={c.value} value={c.value}>
+            {c.label}
+          </option>
+        ))}
+      </select>
+
       <button
         onClick={handleCreate}
         className="bg-green-600 text-white w-full py-2 rounded-xl"

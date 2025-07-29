@@ -37,10 +37,36 @@ export default function Info() {
       </section>
 
       {/* Meet the Team */}
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold text-gray-800 mb-2">Meet the Team</h2>
+        <div className="space-y-3">
+          {/* Mihad */}
+          <div className="flex items-center bg-white rounded-lg shadow p-3 space-x-3">
+            <img
+              src="/images/mihad.jpg"
+              alt="Mihad Bornio"
+              className="w-12 h-12 rounded-full object-cover"
+            />
+            <div>
+              <h3 className="text-sm font-semibold text-gray-800">Mihad Bornio</h3>
+              <p className="text-xs text-gray-600">Founder | Software Developer</p>
+            </div>
+          </div>
 
-
-    
-    
+          {/* Nafith */}
+          <div className="flex items-center bg-white rounded-lg shadow p-3 space-x-3">
+            <img
+              src="/images/nafith.jpg"
+              alt="Nafith"
+              className="w-12 h-12 rounded-full object-cover"
+            />
+            <div>
+              <h3 className="text-sm font-semibold text-gray-800">Nafith</h3>
+              <p className="text-xs text-gray-600">Marketing & Outreach</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <div className="text-center text-xs text-gray-400 mt-8">

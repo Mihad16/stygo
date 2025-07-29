@@ -10,6 +10,7 @@ import MainLayout from "./layouts/MainLayout";
 import SellerLayout from "./layouts/SellerLayout";
 import CreateShop from "./pages/CreateShop";
 import ShopPage from "./pages/ShopPage";
+import ProfileSeller from "./pages/ProfileSeller";
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
         <Route element={<SellerLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create-shop" element={<CreateShop />} />
+          <Route path="/profile" element={<ProfileSeller />} />
         </Route>
 
       </Routes>

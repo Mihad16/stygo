@@ -4,4 +4,4 @@ from .models import SellerProfile
 class SellerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = SellerProfile
-        fields = ['shop_name', 'location', 'phone_number']
+        fields = ['shop_name', 'location', 'phone_number', 'category']  # ✅ Include category

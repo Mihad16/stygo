@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const createShop = async (shopName, location) => {
+export const createShop = async (shopName, location, category) => {
   const token = localStorage.getItem("token");
   console.log("Token sent:", token); // ✅ Debug log
 
@@ -13,6 +13,7 @@ export const createShop = async (shopName, location) => {
     {
       shop_name: shopName,
       location: location,
+      category: category, // ✅ New field sent to backend
     },
     {
       headers: {
