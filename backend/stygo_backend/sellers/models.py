@@ -10,7 +10,7 @@ class SellerProfile(models.Model):
         ('beauty', 'Beauty'),
     ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE,  related_name="seller" )
     shop_name = models.CharField(max_length=100)
     location = models.CharField(max_length=100, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)

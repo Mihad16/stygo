@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, PackageSearch, User2 } from "lucide-react";
+import { LayoutDashboard, PackageSearch, User2, Boxes } from "lucide-react"; // ✅ Use Boxes icon for products
 
 export default function SellerBottomNav() {
   return (
@@ -9,10 +9,17 @@ export default function SellerBottomNav() {
         <LayoutDashboard size={20} />
         <span className="text-xs">Dashboard</span>
       </NavLink>
+
+      <NavLink to="/my-products" className="flex flex-col items-center text-sm">
+        <Boxes size={20} />
+        <span className="text-xs">My Products</span>
+      </NavLink>
+
       <NavLink to="/orders" className="flex flex-col items-center text-sm">
         <PackageSearch size={20} />
         <span className="text-xs">Orders</span>
       </NavLink>
+
       <NavLink to="/profile" className="flex flex-col items-center text-sm">
         <User2 size={20} />
         <span className="text-xs">Profile</span>

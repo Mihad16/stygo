@@ -17,7 +17,7 @@ export default function Home() {
       <CategoryScroller />
 
       {/* Product List */}
-      <div className="mt-4 space-y-4">
+      <div className="mt-4">
         <ProductCard />
         
       </div>
