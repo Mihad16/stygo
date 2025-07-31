@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Product
 from .serializers import ProductSerializer
-from sellers.models import SellerProfile  # Make sure this matches your actual app name
+from sellers.models import SellerProfile
 
 # ✅ Create a product
 @api_view(['POST'])
@@ -21,9 +21,9 @@ def create_product(request):
         return Response({'error': 'Product limit reached (max 9 products)'}, status=400)
 
     data = request.data.copy()
-    data['seller'] = shop.id  # ensure this matches your model field
+    data['seller'] = shop.id
 
-    serializer = ProductSerializer(data=data)
+    serializer = ProductSerializer(data=data, context={"request": request})
     if serializer.is_valid():
         serializer.save(seller=shop)
         return Response(serializer.data)
@@ -42,14 +42,14 @@ def my_products(request):
         return Response({'error': 'Shop not found'}, status=404)
 
     products = Product.objects.filter(seller=seller_profile)
-    serializer = ProductSerializer(products, many=True)
+    serializer = ProductSerializer(products, many=True, context={"request": request})
     return Response(serializer.data)
 
 # ✅ List all products (public)
 @api_view(['GET'])
 def all_products(request):
     products = Product.objects.all().order_by('-id')
-    serializer = ProductSerializer(products, many=True)
+    serializer = ProductSerializer(products, many=True, context={"request": request})
     return Response(serializer.data)
 
 # ✅ List products by shop name (public)
@@ -61,5 +61,8 @@ def products_by_shop(request, shop_name):
         return Response({"error": "Shop not found"}, status=404)
 
     products = Product.objects.filter(seller=seller_profile)
-    serializer = ProductSerializer(products, many=True)
+    serializer = ProductSerializer(products, many=True, context={"request": request})
     return Response(serializer.data)
+
+
+

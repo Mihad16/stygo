@@ -1,17 +1,16 @@
-// services/auth.js
 import axios from "axios";
 
-const baseURL = "http://localhost:8000/api/auth"; // change if needed
+const baseURL = "http://localhost:8000/api/auth"; // update if your backend base URL is different
 
-// 1. Send OTP function
+// 1. Send OTP
 export const sendOTP = async (phone) => {
   const res = await axios.post(`${baseURL}/send-otp/`, {
     phone,
   });
-  return res.data; // You can handle message or status in Login.jsx
+  return res.data; // Expected: { message: "OTP sent" }
 };
 
-// 2. Verify OTP function
+// 2. Verify OTP
 export const verifyOTP = async (phone, otp) => {
   const res = await axios.post(`${baseURL}/verify/`, {
     phone,
@@ -26,14 +25,18 @@ export const verifyOTP = async (phone, otp) => {
     phone: verifiedPhone,
   } = res.data;
 
-  // Save details
+  // Save values to localStorage
   localStorage.setItem("access", access);
   localStorage.setItem("refresh", refresh);
   localStorage.setItem("user_id", user_id);
   localStorage.setItem("phone", verifiedPhone);
 
+  // ✅ Return all required fields
   return {
     access,
+    refresh,
     hasShop: has_shop,
+    userId: user_id,
+    phone: verifiedPhone,
   };
 };

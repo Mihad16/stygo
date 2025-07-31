@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { getProductsByShop } from "../services/product"; // 👈 Make sure this function exists
-import ProductCard from "../components/ProductCard"; // 👈 Reuse your existing product card
+import { ArrowLeft, ShoppingBag, Loader2 } from "lucide-react";
+import { getProductsByShop } from "../services/product";
+import { motion } from "framer-motion";
 
 export default function ShopPage() {
   const { shop_name } = useParams();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchProducts() {
       try {
+        setLoading(true);
+        setError(null);
         const data = await getProductsByShop(shop_name);
         setProducts(data);
       } catch (err) {
         console.error("Error loading shop products:", err);
+        setError("Failed to load products. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -25,36 +29,128 @@ export default function ShopPage() {
     fetchProducts();
   }, [shop_name]);
 
+  const generateWhatsAppMessage = (product) => {
+    return `Hi ${shop_name}! I'm interested in your product:
+    
+*${product.name}*
+Price: ₹${product.price}
+Size: ${product.size.toUpperCase()}
+
+Is this available?`;
+  };
+
   return (
-    <div className="max-w-md mx-auto px-4 py-8">
-      {/* ✅ Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center text-sm text-gray-500 hover:text-black mb-4"
-      >
-        <ArrowLeft className="w-4 h-4 mr-1" />
-        Back
-      </button>
+    <div className="max-w-md mx-auto px-4 py-6 min-h-screen">
+      {/* Header with Back Button */}
+      <div className="flex items-center justify-between mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center text-gray-600 hover:text-black transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 mr-1" />
+          <span className="text-sm font-medium">Back</span>
+        </button>
+        <h1 className="text-xl font-bold text-gray-800 text-center flex-grow">
+          {shop_name}'s Store
+        </h1>
+        <div className="w-5"></div> {/* Spacer for balance */}
+      </div>
 
-      {/* ✅ Shop Title */}
-      <h1 className="text-2xl font-bold text-gray-800 mb-2">
-        Welcome to {shop_name}'s Store
-      </h1>
-      <p className="text-gray-500 mb-4">Thanks for visiting!</p>
+      {/* Shop Welcome */}
+      <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-4 mb-6">
+        <p className="text-gray-700 text-center">
+          Thanks for visiting our store! Browse our collection below.
+        </p>
+      </div>
 
-      {/* ✅ Product List */}
-      {loading ? (
-        <div className="text-sm text-gray-400">Loading products...</div>
-      ) : products.length > 0 ? (
-        <div className="grid gap-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+      {/* Loading State */}
+      {loading && (
+        <div className="flex flex-col items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-3" />
+          <p className="text-gray-500">Loading products...</p>
         </div>
-      ) : (
-        <div className="text-sm text-gray-400">
-          📦 No products found for this shop.
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg text-center mb-6">
+          {error}
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-2 text-red-700 font-medium text-sm"
+          >
+            Retry
+          </button>
         </div>
+      )}
+
+      {/* Products Grid */}
+      {!loading && !error && (
+        <>
+          {products.length > 0 ? (
+            <div className="grid grid-cols-2 gap-4">
+              {products.map((product) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-all"
+                >
+                  <div className="relative">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-40 object-cover"
+                      loading="lazy"
+                    />
+                    {product.isNew && (
+                      <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                        New
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <h3 className="font-medium text-gray-800 text-sm line-clamp-2 mb-1">
+                      {product.name}
+                    </h3>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-green-600 font-bold">
+                        ₹{product.price}
+                      </span>
+                      <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                        {product.size.toUpperCase()}
+                      </span>
+                    </div>
+                    <a
+                      href={`https://wa.me/${product.whatsapp}?text=${encodeURIComponent(
+                        generateWhatsAppMessage(product)
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full bg-green-600 hover:bg-green-700 text-white text-center text-sm font-medium py-2 rounded-lg transition-colors"
+                    >
+                      <ShoppingBag className="w-4 h-4 inline mr-1" />
+                      Buy Now
+                    </a>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ShoppingBag className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-gray-700 font-medium mb-1">
+                No Products Available
+              </h3>
+              <p className="text-gray-500 text-sm">
+                This shop hasn't added any products yet.
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import OTPVerify from "./pages/OTPVerify";
-import Info from "./pages/Info";
 import Shops from "./pages/Shops";
 import Dashboard from "./pages/Dashboard";
 import MainLayout from "./layouts/MainLayout";
@@ -13,7 +12,7 @@ import ShopPage from "./pages/ShopPage";
 import ProfileSeller from "./pages/ProfileSeller";
 import AddProduct from "./pages/AddProduct";
 import MyProducts from "./pages/MyProducts";
-
+import About from "./pages/about"; // Assuming you have an About page
 
 
 export default function App() {
@@ -26,7 +25,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/verify" element={<OTPVerify />} />
-          <Route path="/info" element={<Info />} />
+          <Route path="/about" element={<About />} />
           <Route path="/shops" element={<Shops />} />
           <Route path="/shop/:shop_name" element={<ShopPage />} />
         </Route>
