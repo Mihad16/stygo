@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from .models import Product
 from .serializers import ProductSerializer
 from sellers.models import SellerProfile
+from rest_framework.generics import RetrieveAPIView
+from .serializers import ProductSerializer
 
 # ✅ Create a product
 @api_view(['POST'])
@@ -65,4 +67,7 @@ def products_by_shop(request, shop_name):
     return Response(serializer.data)
 
 
-
+class ProductDetailAPIView(RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = "pk"  # or "id" if that's your field

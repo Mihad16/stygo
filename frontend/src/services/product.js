@@ -28,3 +28,10 @@ export const getProductsByShop = async (shopName) => {
   const res = await axios.get(`/api/products/shop/${shopName}/`);
   return res.data;
 };
+
+// ✅ Get single product by ID
+export const getProductById = async (id) => {
+  const res = await axios.get(`/api/products/${id}/`);
+  return res.data;
+};
+

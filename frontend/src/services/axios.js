@@ -1,50 +1,51 @@
 import axios from "axios";
 
-const instance = axios.create({
+const api = axios.create({
   baseURL: "http://127.0.0.1:8000",
 });
 
-// Attach access token to request
-instance.interceptors.request.use(
-  async (config) => {
-    const access = localStorage.getItem("access");
-    config.headers.Authorization = access ? `Bearer ${access}` : "";
+// ✅ Attach token to every request
+api.interceptors.request.use(
+  (config) => {
+    const access = localStorage.getItem("accessToken");
+    if (access) {
+      config.headers.Authorization = `Bearer ${access}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Handle 401 errors (access token expired)
-instance.interceptors.response.use(
+// ✅ Handle token expiration and refresh
+api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      localStorage.getItem("refresh")
-    ) {
+    // If token expired and it's not already a retry
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      const refresh = localStorage.getItem("refresh");
 
       try {
+        const refresh = localStorage.getItem("refreshToken");
+
+        // Try to get a new access token
         const res = await axios.post("http://127.0.0.1:8000/api/token/refresh/", {
           refresh,
         });
 
-        const newAccess = res.data.access;
-        localStorage.setItem("access", newAccess);
+        const newAccessToken = res.data.access;
+        localStorage.setItem("accessToken", newAccessToken);
 
-        // Retry with new token
-        originalRequest.headers.Authorization = `Bearer ${newAccess}`;
-        return instance(originalRequest);
-      } catch (refreshError) {
-        console.warn("⚠️ Token refresh failed. Seller still stays on site.");
-
-        // ✅ Do NOT logout or redirect
-        // Optionally: Show toast/snackbar message to seller here
-        return Promise.reject(refreshError);
+        // Update the header and retry original request
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return api(originalRequest);
+      } catch (err) {
+        console.warn("⚠️ Token refresh failed.");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        // Redirect to login page or show logout
+        window.location.href = "/login";
       }
     }
 
@@ -52,4 +53,4 @@ instance.interceptors.response.use(
   }
 );
 
-export default instance;
+export default api;

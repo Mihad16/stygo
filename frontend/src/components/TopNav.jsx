@@ -6,23 +6,23 @@ import { motion } from "framer-motion";
 export default function TopNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const isSellerLoggedIn = !!localStorage.getItem("access");
+  const isSellerLoggedIn = !!localStorage.getItem("accessToken");
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm w-full px-4 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo */}
+        {/* Logo Image Only */}
         <motion.div
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="flex items-center"
         >
-          <h1
-            className="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent cursor-pointer"
+          <img
+            src="images/my_logo.png" // Replace with your actual logo path
+            alt="Stygo"
             onClick={() => navigate("/")}
-          >
-            Stygo
-          </h1>
+            className="h-10 w-auto cursor-pointer"
+          />
         </motion.div>
 
         {/* Navigation Links - Visible on medium screens and up */}
@@ -48,8 +48,8 @@ export default function TopNav() {
         </nav>
 
         {/* Right Side Actions */}
-        <div className="flex items-center space-x-4 md:space-x-6"> {/* Reduced space on mobile */}
-          {/* Cart Icon - Hidden on mobile, visible on md and up */}
+        <div className="flex items-center space-x-4 md:space-x-6">
+          {/* Cart Icon (only visible on md+) */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -58,12 +58,9 @@ export default function TopNav() {
           >
             <ShoppingBag className="w-5 h-5" />
             {/* Optional cart badge */}
-            {/* <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              3
-            </span> */}
           </motion.button>
 
-          {/* Seller Action */}
+          {/* Seller Button */}
           {!isSellerLoggedIn ? (
             <motion.button
               whileHover={{ scale: 1.05 }}

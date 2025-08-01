@@ -13,7 +13,8 @@ const categories = [
 export default function CreateShop() {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
-  const [category, setCategory] = useState("men"); // ✅ Default category
+  const [category, setCategory] = useState("men");
+  const [logo, setLogo] = useState(null); // ✅ New state
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
@@ -23,8 +24,7 @@ export default function CreateShop() {
     setSuccess("");
 
     try {
-      // ✅ Pass category in the payload
-      const res = await createShop(name, location, category);
+      await createShop(name, location, category, logo); // ✅ Correct values
       setSuccess("Shop created successfully!");
       navigate("/dashboard");
     } catch (err) {
@@ -43,6 +43,7 @@ export default function CreateShop() {
         onChange={(e) => setName(e.target.value)}
         className="border border-gray-300 p-3 w-full rounded-xl mb-4"
       />
+
       <input
         type="text"
         placeholder="Shop Location"
@@ -51,7 +52,6 @@ export default function CreateShop() {
         className="border border-gray-300 p-3 w-full rounded-xl mb-4"
       />
 
-      {/* ✅ Category Dropdown */}
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
@@ -63,6 +63,14 @@ export default function CreateShop() {
           </option>
         ))}
       </select>
+
+      {/* ✅ File Input for Logo */}
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => setLogo(e.target.files[0])}
+        className="mb-4 w-full"
+      />
 
       <button
         onClick={handleCreate}

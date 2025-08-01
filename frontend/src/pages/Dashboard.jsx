@@ -38,11 +38,7 @@ export default function Dashboard() {
     fetchShop();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("access");
-    localStorage.removeItem("refresh");
-    navigate("/login");
-  };
+  
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -83,28 +79,14 @@ export default function Dashboard() {
           </nav>
         </div>
         <div className="px-4 py-4 border-t border-gray-200">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100"
-          >
-            <LogOut className="h-5 w-5" />
-            <span>Log Out</span>
-          </button>
+         
         </div>
       </div>
 
       {/* Main Content */}
       <div className="md:pl-64 flex flex-col">
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-800">Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            className="p-2 rounded-full text-gray-500 hover:bg-gray-100"
-          >
-            <LogOut className="h-5 w-5" />
-          </button>
-        </header>
+   
 
         {/* Content Area */}
         <main className="flex-1 p-6">

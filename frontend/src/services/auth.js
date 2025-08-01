@@ -1,16 +1,30 @@
 import axios from "axios";
 
-const baseURL = "http://localhost:8000/api/auth"; // update if your backend base URL is different
+// 🔗 Backend base URL
+const baseURL = "http://localhost:8000/api/auth"; // change if needed
 
-// 1. Send OTP
-export const sendOTP = async (phone) => {
-  const res = await axios.post(`${baseURL}/send-otp/`, {
-    phone,
-  });
-  return res.data; // Expected: { message: "OTP sent" }
+// ✅ Helper to save auth tokens
+const saveAuthTokens = (access, refresh, user_id, phone) => {
+  // 🧹 Clear old keys
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("token");
+  localStorage.removeItem("refresh");
+
+  // ✅ Store clean values
+  localStorage.setItem("accessToken", access);
+  localStorage.setItem("refreshToken", refresh);
+  localStorage.setItem("user_id", user_id);
+  localStorage.setItem("phone", phone);
 };
 
-// 2. Verify OTP
+// ✅ 1. Send OTP to phone
+export const sendOTP = async (phone) => {
+  const res = await axios.post(`${baseURL}/send-otp/`, { phone });
+  return res.data; // { message: "OTP sent" }
+};
+
+// ✅ 2. Verify OTP and login/register
 export const verifyOTP = async (phone, otp) => {
   const res = await axios.post(`${baseURL}/verify/`, {
     phone,
@@ -25,13 +39,9 @@ export const verifyOTP = async (phone, otp) => {
     phone: verifiedPhone,
   } = res.data;
 
-  // Save values to localStorage
-  localStorage.setItem("access", access);
-  localStorage.setItem("refresh", refresh);
-  localStorage.setItem("user_id", user_id);
-  localStorage.setItem("phone", verifiedPhone);
+  // ✅ Save tokens using helper
+  saveAuthTokens(access, refresh, user_id, verifiedPhone);
 
-  // ✅ Return all required fields
   return {
     access,
     refresh,
@@ -39,4 +49,12 @@ export const verifyOTP = async (phone, otp) => {
     userId: user_id,
     phone: verifiedPhone,
   };
+};
+
+// ✅ 3. Logout
+export const logout = () => {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("user_id");
+  localStorage.removeItem("phone");
 };

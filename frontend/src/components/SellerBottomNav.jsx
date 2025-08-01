@@ -1,28 +1,48 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, PackageSearch, User2, Boxes } from "lucide-react"; // ✅ Use Boxes icon for products
+import { LayoutDashboard, PackageSearch, User2, Boxes } from "lucide-react";
 
 export default function SellerBottomNav() {
   return (
-    <nav className="fixed bottom-0 w-full max-w-md mx-auto bg-white border-t border-gray-200 flex justify-around items-center h-14 z-50">
-      <NavLink to="/dashboard" className="flex flex-col items-center text-sm">
+    <nav className="fixed bottom-0 w-full max-w-md mx-auto bg-white border-t border-gray-200 flex justify-around items-center h-14 z-50 md:hidden">
+      <NavLink 
+        to="/dashboard" 
+        className={({ isActive }) => 
+          `flex flex-col items-center p-1 text-sm ${isActive ? 'text-blue-600' : 'text-gray-500'}`
+        }
+      >
         <LayoutDashboard size={20} />
-        <span className="text-xs">Dashboard</span>
+        <span className="text-xs mt-0.5">Dashboard</span>
       </NavLink>
 
-      <NavLink to="/my-products" className="flex flex-col items-center text-sm">
+      <NavLink 
+        to="/my-products" 
+        className={({ isActive }) => 
+          `flex flex-col items-center p-1 text-sm ${isActive ? 'text-blue-600' : 'text-gray-500'}`
+        }
+      >
         <Boxes size={20} />
-        <span className="text-xs">My Products</span>
+        <span className="text-xs mt-0.5">Products</span>
       </NavLink>
 
-      <NavLink to="/orders" className="flex flex-col items-center text-sm">
+      <NavLink 
+        to="/orders" 
+        className={({ isActive }) => 
+          `flex flex-col items-center p-1 text-sm ${isActive ? 'text-blue-600' : 'text-gray-500'}`
+        }
+      >
         <PackageSearch size={20} />
-        <span className="text-xs">Orders</span>
+        <span className="text-xs mt-0.5">Orders</span>
       </NavLink>
 
-      <NavLink to="/profile" className="flex flex-col items-center text-sm">
+      <NavLink 
+        to="/profile" 
+        className={({ isActive }) => 
+          `flex flex-col items-center p-1 text-sm ${isActive ? 'text-blue-600' : 'text-gray-500'}`
+        }
+      >
         <User2 size={20} />
-        <span className="text-xs">Profile</span>
+        <span className="text-xs mt-0.5">Profile</span>
       </NavLink>
     </nav>
   );

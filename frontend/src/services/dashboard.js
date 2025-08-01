@@ -1,7 +1,9 @@
+// src/services/seller.js
+
 import axios from "axios";
 
 export async function getDashboard() {
-  const token = localStorage.getItem("access"); // must be set after OTP login
+  const token = localStorage.getItem("accessToken"); // ✅ corrected key
 
   if (!token) {
     throw new Error("No access token found");

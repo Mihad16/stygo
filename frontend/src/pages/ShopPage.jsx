@@ -1,3 +1,4 @@
+// src/pages/ShopPage.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingBag, Loader2 } from "lucide-react";
@@ -29,19 +30,9 @@ export default function ShopPage() {
     fetchProducts();
   }, [shop_name]);
 
-  const generateWhatsAppMessage = (product) => {
-    return `Hi ${shop_name}! I'm interested in your product:
-    
-*${product.name}*
-Price: ₹${product.price}
-Size: ${product.size.toUpperCase()}
-
-Is this available?`;
-  };
-
   return (
     <div className="max-w-md mx-auto px-4 py-6 min-h-screen">
-      {/* Header with Back Button */}
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => navigate(-1)}
@@ -53,17 +44,17 @@ Is this available?`;
         <h1 className="text-xl font-bold text-gray-800 text-center flex-grow">
           {shop_name}'s Store
         </h1>
-        <div className="w-5"></div> {/* Spacer for balance */}
+        <div className="w-5"></div>
       </div>
 
-      {/* Shop Welcome */}
+      {/* Welcome Note */}
       <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-4 mb-6">
         <p className="text-gray-700 text-center">
           Thanks for visiting our store! Browse our collection below.
         </p>
       </div>
 
-      {/* Loading State */}
+      {/* Loading */}
       {loading && (
         <div className="flex flex-col items-center justify-center py-12">
           <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-3" />
@@ -71,11 +62,11 @@ Is this available?`;
         </div>
       )}
 
-      {/* Error State */}
+      {/* Error */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg text-center mb-6">
           {error}
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="mt-2 text-red-700 font-medium text-sm"
           >
@@ -84,7 +75,7 @@ Is this available?`;
         </div>
       )}
 
-      {/* Products Grid */}
+      {/* Products */}
       {!loading && !error && (
         <>
           {products.length > 0 ? (
@@ -95,7 +86,8 @@ Is this available?`;
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-all"
+                  className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-all cursor-pointer"
+                  onClick={() => navigate(`/product/${product.id}`)}
                 >
                   <div className="relative">
                     <img
@@ -114,7 +106,7 @@ Is this available?`;
                     <h3 className="font-medium text-gray-800 text-sm line-clamp-2 mb-1">
                       {product.name}
                     </h3>
-                    <div className="flex justify-between items-center mb-2">
+                    <div className="flex justify-between items-center">
                       <span className="text-green-600 font-bold">
                         ₹{product.price}
                       </span>
@@ -122,17 +114,6 @@ Is this available?`;
                         {product.size.toUpperCase()}
                       </span>
                     </div>
-                    <a
-                      href={`https://wa.me/${product.whatsapp}?text=${encodeURIComponent(
-                        generateWhatsAppMessage(product)
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block w-full bg-green-600 hover:bg-green-700 text-white text-center text-sm font-medium py-2 rounded-lg transition-colors"
-                    >
-                      <ShoppingBag className="w-4 h-4 inline mr-1" />
-                      Buy Now
-                    </a>
                   </div>
                 </motion.div>
               ))}

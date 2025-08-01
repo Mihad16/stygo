@@ -24,8 +24,13 @@ export default function Profile() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("token"); // In case you're using 'token' elsewhere
+  navigate("/login", { replace: true });
+
+
   };
 
   const handleSave = () => {

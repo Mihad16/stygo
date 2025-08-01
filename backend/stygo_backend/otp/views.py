@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
 from rest_framework_simplejwt.tokens import RefreshToken
-
 from .models import OTP
 from .serializers import SendOTPSerializer, VerifyOTPSerializer
 from sellers.models import SellerProfile  # ✅ Make sure this import is correct

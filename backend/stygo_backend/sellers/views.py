@@ -10,14 +10,14 @@ from .serializers import SellerProfileSerializer
 def create_shop(request):
     user = request.user
 
-    # Check if shop already exists
     if hasattr(user, 'sellerprofile'):
         return Response({'error': 'Shop already exists'}, status=400)
 
     data = request.data
     shop_name = data.get('shop_name')
     location = data.get('location')
-    category = data.get('category')  # ✅ New
+    category = data.get('category')
+    logo = request.FILES.get('logo')  # ✅ handle image upload
 
     if not shop_name:
         return Response({'error': 'Shop name is required'}, status=400)
@@ -28,8 +28,9 @@ def create_shop(request):
         user=user,
         shop_name=shop_name,
         location=location or "",
-        phone_number=user.username,  # Assuming username stores phone
-        category=category  # ✅ Save category
+        phone_number=user.username,
+        category=category,
+        logo=logo  # ✅ save image
     )
 
     return Response({'status': 'Shop created successfully'})
@@ -43,12 +44,8 @@ def dashboard(request):
 
     try:
         profile = SellerProfile.objects.get(user=user)
-        return Response({
-            'shop_name': profile.shop_name,
-            'location': profile.location,
-            'phone_number': profile.phone_number,
-            'category': profile.category  # ✅ Return category
-        })
+        serializer = SellerProfileSerializer(profile, context={'request': request})  # ✅ context added
+        return Response(serializer.data)
     except SellerProfile.DoesNotExist:
         return Response({'error': 'Shop not found'}, status=404)
 
@@ -57,5 +54,5 @@ def dashboard(request):
 @api_view(['GET'])
 def list_all_shops(request):
     shops = SellerProfile.objects.all()
-    serializer = SellerProfileSerializer(shops, many=True)
+    serializer = SellerProfileSerializer(shops, many=True, context={'request': request})  # ✅ context added
     return Response(serializer.data)

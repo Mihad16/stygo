@@ -1,115 +1,140 @@
 import React from "react";
+import { Bolt, MessageCircle, Zap, Users } from "lucide-react";
 
 export default function About() {
   return (
-    <div className="max-w-md mx-auto px-4 pb-24 pt-6 bg-gray-50 min-h-screen">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-cyan-500 to-blue-600 p-8 text-center text-white shadow-xl mb-8">
-        <div className="relative z-10">
-          <h1 className="text-4xl font-bold mb-2">Stygo</h1>
-          <p className="text-blue-100 text-lg">
-            Your shop, your style 
+      <section className="relative overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 text-center">
+          <div className="relative z-10">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+              Revolutionizing <span className="text-blue-600">Fashion</span> Commerce
+            </h1>
+            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+              Stygo bridges the gap between social selling and professional eCommerce
+            </p>
+          </div>
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-400 rounded-full opacity-10"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400 rounded-full opacity-10"></div>
+        </div>
+      </section>
+
+      {/* Value Proposition */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid md:grid-cols-2 gap-8">
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+          <div className="p-6 md:p-8">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+              <Bolt className="text-blue-500" size={24} />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">Instant Setup</h2>
+            <p className="text-gray-600">
+              Get your fashion store up and running in minutes, not days. No technical skills needed - just your products and passion.
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+          <div className="p-6 md:p-8">
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+              <MessageCircle className="text-purple-500" size={24} />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">Direct WhatsApp Integration</h2>
+            <p className="text-gray-600">
+              Your customers shop from your catalog and message you directly on WhatsApp - the platform they already know and trust.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">How Stygo Works</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            A seamless selling experience designed for fashion entrepreneurs
           </p>
         </div>
-        <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-blue-400 rounded-full opacity-20"></div>
-        <div className="absolute -top-20 -left-20 w-60 h-60 bg-cyan-400 rounded-full opacity-20"></div>
-      </div>
 
-      {/* Features Grid */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-          <div className="text-blue-500 text-2xl mb-2">🧵</div>
-          <h3 className="font-medium text-gray-800">Fashion Sellers</h3>
-        </div>
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-          <div className="text-blue-500 text-2xl mb-2">📦</div>
-          <h3 className="font-medium text-gray-800">Product Listing</h3>
-        </div>
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-          <div className="text-blue-500 text-2xl mb-2">📲</div>
-          <h3 className="font-medium text-gray-800">WhatsApp Orders</h3>
-        </div>
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-          <div className="text-blue-500 text-2xl mb-2">💸</div>
-          <h3 className="font-medium text-gray-800">100% Free</h3>
-        </div>
-      </div>
-
-      {/* What We Do */}
-      <section className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
-        <div className="flex items-start mb-4">
-          <div className="bg-blue-100 p-2 rounded-lg mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">What is Stygo?</h2>
-            <p className="text-gray-600 mt-1 text-sm">
-              Stygo helps you list your fashion products, share your shop link, and receive orders directly on WhatsApp. No coding. No fees.
-            </p>
-          </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            {
+              icon: <Zap className="text-emerald-500" size={32} />,
+              title: "List Products",
+              description: "Upload your fashion items with photos, prices, and sizes in seconds"
+            },
+            {
+              icon: <Users className="text-blue-500" size={32} />,
+              title: "Share Your Link",
+              description: "Customers browse your products on any device, anytime"
+            },
+            {
+              icon: <MessageCircle className="text-purple-500" size={32} />,
+              title: "Receive Orders",
+              description: "Get purchase inquiries directly in your WhatsApp inbox"
+            }
+          ].map((feature, index) => (
+            <div key={index} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-all">
+              <div className="flex justify-center mb-4">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-semibold text-center text-gray-900 mb-2">{feature.title}</h3>
+              <p className="text-gray-600 text-center">{feature.description}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Why It Matters */}
-      <section className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
-        <div className="flex items-start">
-          <div className="bg-cyan-100 p-2 rounded-lg mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-          </div>
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Why Stygo?</h2>
-            <p className="text-gray-600 mt-1 text-sm">
-              Instagram DMs are messy. WhatsApp is personal. Stygo bridges both with a simple shop experience made for online sellers.
-            </p>
-          </div>
+      {/* Team */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-3">Our Team</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            The passionate minds behind Stygo
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+          {[
+            {
+              name: "Mihad Bornio",
+              role: "Founder & Developer",
+              bio: "Built the platform to empower fashion entrepreneurs with simple technology",
+              image: "/images/mihad.jpg"
+            },
+            {
+              name: "Nafith",
+              role: "Marketing & Strategy",
+              bio: "Helps sellers maximize their business potential through digital channels",
+              image: "/images/nafith.jpg"
+            }
+          ].map((member, index) => (
+            <div key={index} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200">
+              <div className="p-6">
+                <div className="flex items-center space-x-4">
+                  <img 
+                    src={member.image} 
+                    alt={member.name} 
+                    className="w-16 h-16 rounded-full object-cover border-2 border-white shadow"
+                  />
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">{member.name}</h3>
+                    <p className="text-blue-600">{member.role}</p>
+                  </div>
+                </div>
+                <p className="mt-4 text-gray-600">{member.bio}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Meet Our Team</h2>
-        
-        <div className="space-y-4">
-          <div className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition">
-            <div className="relative">
-              <img
-                src="/images/mihad.jpg"
-                alt="Mihad"
-                className="w-14 h-14 rounded-full object-cover mr-4 border-2 border-white shadow"
-              />
-              <div className="absolute bottom-0 right-4 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
-            </div>
-            <div>
-              <p className="font-medium text-gray-800">Mihad Bornio</p>
-              <p className="text-sm text-gray-500">Founder & Developer</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition">
-            <div className="relative">
-              <img
-                src="/images/nafith.jpg"
-                alt="Nafith"
-                className="w-14 h-14 rounded-full object-cover mr-4 border-2 border-white shadow"
-              />
-              <div className="absolute bottom-0 right-4 w-4 h-4 bg-cyan-500 rounded-full border-2 border-white"></div>
-            </div>
-            <div>
-              <p className="font-medium text-gray-800">Nafith</p>
-              <p className="text-sm text-gray-500">Marketing & Strategy</p>
-            </div>
-          </div>
-        </div>
-      </section>
+  
 
-      {/* Footer */}
-      <footer className="text-center text-sm text-gray-400 mt-10">
-        <p>&copy; {new Date().getFullYear()} Stygo · Made with <span className="text-blue-500">❤️</span></p>
-        <p className="mt-1 text-xs">Simplifying mobile commerce</p>
+      <footer className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center border-t border-gray-200">
+        <p className="text-gray-500">
+          &copy; {new Date().getFullYear()} Stygo. All rights reserved.
+        </p>
       </footer>
     </div>
   );

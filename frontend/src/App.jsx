@@ -12,7 +12,8 @@ import ShopPage from "./pages/ShopPage";
 import ProfileSeller from "./pages/ProfileSeller";
 import AddProduct from "./pages/AddProduct";
 import MyProducts from "./pages/MyProducts";
-import About from "./pages/about"; // Assuming you have an About page
+import About from "./pages/about"; 
+import ProductDetail from "./pages/ProductDetail";
 
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/shops" element={<Shops />} />
           <Route path="/shop/:shop_name" element={<ShopPage />} />
+         <Route path="/product/:id" element={<ProductDetail />} />
         </Route>
 
         {/* Seller layout without BottomNav */}
