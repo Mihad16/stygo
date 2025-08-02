@@ -12,16 +12,15 @@ import ShopPage from "./pages/ShopPage";
 import ProfileSeller from "./pages/ProfileSeller";
 import AddProduct from "./pages/AddProduct";
 import MyProducts from "./pages/MyProducts";
-import About from "./pages/about"; 
+import About from "./pages/about";
 import ProductDetail from "./pages/ProductDetail";
-
-
+import PublicShop from "./pages/PublicShop";
+import PublicShopLayout from "./layouts/PublicShopLayout";
 
 export default function App() {
   return (
     <Router>
       <Routes>
-
         {/* Public layout with BottomNav */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
@@ -30,11 +29,15 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/shops" element={<Shops />} />
           <Route path="/shop/:shop_name" element={<ShopPage />} />
-         <Route path="/product/:id" element={<ProductDetail />} />
-     
+          <Route path="/product/:id" element={<ProductDetail />} />
         </Route>
 
-        {/* Seller layout without BottomNav */}
+        {/* Public Shop layout */}
+        <Route element={<PublicShopLayout />}>
+          <Route path="/:shopSlug" element={<PublicShop />} />
+        </Route>
+
+        {/* Seller layout */}
         <Route element={<SellerLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create-shop" element={<CreateShop />} />
@@ -42,7 +45,6 @@ export default function App() {
           <Route path="/add-product" element={<AddProduct />} />
           <Route path="/my-products" element={<MyProducts />} />
         </Route>
-
       </Routes>
     </Router>
   );

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.text import slugify
 
 class SellerProfile(models.Model):
     CATEGORY_CHOICES = [
@@ -12,13 +13,23 @@ class SellerProfile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="seller")
     shop_name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True)
     location = models.CharField(max_length=100, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='men')
-    
-    # ✅ New fields
     logo = models.ImageField(upload_to='shop_logos/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.shop_name)
+            counter = 1
+            slug = base_slug
+            while SellerProfile.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.shop_name

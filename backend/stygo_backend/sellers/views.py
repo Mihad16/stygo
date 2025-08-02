@@ -56,3 +56,14 @@ def list_all_shops(request):
     shops = SellerProfile.objects.all()
     serializer = SellerProfileSerializer(shops, many=True, context={'request': request})  # ✅ context added
     return Response(serializer.data)
+
+
+
+@api_view(['GET'])
+def public_shop_view(request, slug):
+    try:
+        profile = SellerProfile.objects.get(slug=slug)
+        serializer = SellerProfileSerializer(profile, context={'request': request})
+        return Response(serializer.data)
+    except SellerProfile.DoesNotExist:
+        return Response({'error': 'Shop not found'}, status=404)

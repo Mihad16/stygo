@@ -6,7 +6,7 @@ class SellerProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SellerProfile
-        fields = ['shop_name', 'location', 'phone_number', 'category', 'logo', 'created_at']
+        fields = ['shop_name', 'slug', 'location', 'phone_number', 'category', 'logo', 'created_at']
 
     def get_logo(self, obj):
         request = self.context.get('request')
