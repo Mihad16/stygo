@@ -1,7 +1,7 @@
 // src/pages/ShopPage.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ShoppingBag, Loader2 } from "lucide-react";
+import { ArrowLeft, Zap, ShoppingBag, Heart, Star, Loader2 } from "lucide-react";
 import { getProductsByShop } from "../services/product";
 import { motion } from "framer-motion";
 
@@ -11,6 +11,7 @@ export default function ShopPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -30,6 +31,12 @@ export default function ShopPage() {
     fetchProducts();
   }, [shop_name]);
 
+  const toggleFavorite = (id) => {
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
+    );
+  };
+
   return (
     <div className="max-w-md mx-auto px-4 py-6 min-h-screen">
       {/* Header */}
@@ -44,23 +51,13 @@ export default function ShopPage() {
         <h1 className="text-xl font-bold text-gray-800 text-center flex-grow">
           {shop_name}'s Store
         </h1>
-        <div className="w-5"></div>
+        <div className="w-5" />
       </div>
 
-      {/* Welcome Note */}
-      <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-4 mb-6">
-        <p className="text-gray-700 text-center">
-          Thanks for visiting our store! Browse our collection below.
-        </p>
+      {/* Info */}
+      <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-4 mb-6 text-center">
+        <p className="text-gray-700">Thanks for visiting our store! Browse our collection below.</p>
       </div>
-
-      {/* Loading */}
-      {loading && (
-        <div className="flex flex-col items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-3" />
-          <p className="text-gray-500">Loading products...</p>
-        </div>
-      )}
 
       {/* Error */}
       {error && (
@@ -75,63 +72,111 @@ export default function ShopPage() {
         </div>
       )}
 
-      {/* Products */}
-      {!loading && !error && (
-        <>
-          {products.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4">
-              {products.map((product) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-all cursor-pointer"
+      {/* Section Title */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold text-gray-900 flex items-center">
+          <Zap className="w-5 h-5 text-yellow-500 mr-2" fill="#f59e0b" />
+          New Arrivals
+        </h2>
+        {!loading && (
+          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+            {products.length} items
+          </span>
+        )}
+      </div>
+
+      {/* Product Grid */}
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+        </div>
+      ) : products.length > 0 ? (
+        <div className="grid grid-cols-2 gap-4">
+          {products.map((product) => (
+            <motion.div
+              key={product.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white rounded-xl shadow-sm p-3 relative transition-all duration-300 hover:shadow-md hover:-translate-y-1"
+            >
+              {/* Favorite Button */}
+              <button
+                onClick={() => toggleFavorite(product.id)}
+                className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm"
+                aria-label={favorites.includes(product.id) ? "Remove from favorites" : "Add to favorites"}
+              >
+                <Heart
+                  className={`w-4 h-4 transition-colors ${
+                    favorites.includes(product.id)
+                      ? "fill-red-500 text-red-500"
+                      : "text-gray-300"
+                  }`}
+                />
+              </button>
+
+              {/* New Badge */}
+              {product.isNew && (
+                <span className="absolute top-4 left-4 bg-green-500 text-white text-xs px-2 py-1 rounded-full z-10">
+                  New
+                </span>
+              )}
+
+              {/* Image */}
+              <div className="relative mb-3">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-40 object-cover rounded-lg aspect-square"
+                  loading="lazy"
                   onClick={() => navigate(`/product/${product.id}`)}
-                >
-                  <div className="relative">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-40 object-cover"
-                      loading="lazy"
-                    />
-                    {product.isNew && (
-                      <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                        New
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h3 className="font-medium text-gray-800 text-sm line-clamp-2 mb-1">
-                      {product.name}
-                    </h3>
-                    <div className="flex justify-between items-center">
-                      <span className="text-green-600 font-bold">
-                        ₹{product.price}
-                      </span>
-                      <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                        {product.size.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ShoppingBag className="w-8 h-8 text-gray-400" />
+                />
               </div>
-              <h3 className="text-gray-700 font-medium mb-1">
-                No Products Available
-              </h3>
-              <p className="text-gray-500 text-sm">
-                This shop hasn't added any products yet.
-              </p>
-            </div>
-          )}
-        </>
+
+              {/* Info */}
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">
+                    ₹{product.price.toLocaleString()}
+                  </p>
+                  {product.originalPrice && (
+                    <p className="text-xs text-gray-400 line-through">
+                      ₹{product.originalPrice.toLocaleString()}
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                    {product.name}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1 line-clamp-3">
+                    {product.description}
+                  </p>
+                </div>
+
+                {product.rating && (
+                  <div className="flex items-center bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+                    <Star className="w-3 h-3 text-yellow-500 mr-0.5" fill="#f59e0b" />
+                    {product.rating}
+                  </div>
+                )}
+              </div>
+
+              {/* Discount Badge */}
+              {product.discount && (
+                <div className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-tr-xl rounded-bl-xl">
+                  {product.discount}% OFF
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-10">
+          <div className="text-gray-400 mb-3 text-3xl">🛒</div>
+          <p className="text-gray-500 font-medium">No products available</p>
+          <p className="text-gray-400 text-sm mt-1">
+            Check back later for new arrivals
+          </p>
+        </div>
       )}
     </div>
   );

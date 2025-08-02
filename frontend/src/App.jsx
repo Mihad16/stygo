@@ -16,6 +16,7 @@ import About from "./pages/about";
 import ProductDetail from "./pages/ProductDetail";
 
 
+
 export default function App() {
   return (
     <Router>
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/shops" element={<Shops />} />
           <Route path="/shop/:shop_name" element={<ShopPage />} />
          <Route path="/product/:id" element={<ProductDetail />} />
+     
         </Route>
 
         {/* Seller layout without BottomNav */}

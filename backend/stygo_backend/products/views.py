@@ -19,8 +19,8 @@ def create_product(request):
         return Response({'error': 'Shop not found'}, status=404)
 
     # ✅ Limit: one shop can only have 9 products
-    if Product.objects.filter(seller=shop).count() >= 9:
-        return Response({'error': 'Product limit reached (max 9 products)'}, status=400)
+    if Product.objects.filter(seller=shop).count() >= 10:
+        return Response({'error': 'Product limit reached (max 10 products)'}, status=400)
 
     data = request.data.copy()
     data['seller'] = shop.id

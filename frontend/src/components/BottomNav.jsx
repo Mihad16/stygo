@@ -1,5 +1,5 @@
 import React from "react";
-import { Home, Store, ShoppingBag, Info } from "lucide-react";
+import { Home, Store,  Heart , Info } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import clsx from "clsx";
 
@@ -20,15 +20,16 @@ export function BottomNav() {
       path: "/shops",
       active: location.pathname === "/shops"
     },
-    { 
-      icon: <ShoppingBag className="w-5 h-5" />,
-      label: "Cart",
-      path: "/orders",
-      active: location.pathname === "/orders"
+ 
+    {
+      icon: <Heart className="w-5 h-5" />,
+      label: "Favorites",
+      path: "/favorites",
+      active: location.pathname === "/favorites"
     },
-    { 
+    {
       icon: <Info className="w-5 h-5" />,
-      label: "About",
+      label: "info",
       path: "/about",
       active: location.pathname === "/about"
     }

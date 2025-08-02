@@ -51,7 +51,12 @@ export default function AddProduct() {
       navigate("/dashboard", { state: { success: "Product added successfully!" } });
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || "Failed to add product");
+      const serverMsg = err.response?.data?.error || err.response?.data?.message;
+      if (serverMsg === "Product limit reached (max 9 products)") {
+        setError("🛑 You've reached the product limit (max 10). Please delete one to add a new product.");
+      } else {
+        setError(serverMsg || "Failed to add product.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -80,7 +85,13 @@ export default function AddProduct() {
           {/* Form Content */}
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
             {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 text-red-700">
+              <div
+                className={`p-4 rounded-md border-l-4 ${
+                  error.includes("product limit")
+                    ? "bg-yellow-50 border-yellow-400 text-yellow-800"
+                    : "bg-red-50 border-red-500 text-red-700"
+                }`}
+              >
                 <p>{error}</p>
               </div>
             )}

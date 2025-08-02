@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getAllProducts } from "../services/product";
 import { Heart, Star, Zap } from "lucide-react";
 
-export default function ProductGrid() {
+export default function ProductCard() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState([]);
@@ -11,7 +11,10 @@ export default function ProductGrid() {
     async function fetchProducts() {
       try {
         const data = await getAllProducts();
-        setProducts(data);
+        const latest = data
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 4); // ✅ Only latest 6
+        setProducts(latest);
       } catch (err) {
         console.error("Failed to load products", err);
       } finally {
@@ -22,14 +25,13 @@ export default function ProductGrid() {
   }, []);
 
   const toggleFavorite = (productId) => {
-    setFavorites(prev =>
+    setFavorites((prev) =>
       prev.includes(productId)
-        ? prev.filter(id => id !== productId)
+        ? prev.filter((id) => id !== productId)
         : [...prev, productId]
     );
   };
 
-  // Custom Skeleton Loader
   const SkeletonLoader = () => (
     <div className="bg-gray-100 rounded-xl p-3 animate-pulse">
       <div className="bg-gray-200 h-40 rounded-lg mb-2"></div>
@@ -54,7 +56,7 @@ export default function ProductGrid() {
 
       {loading ? (
         <div className="grid grid-cols-2 gap-4">
-          {[...Array(4)].map((_, i) => (
+          {[...Array(6)].map((_, i) => (
             <SkeletonLoader key={i} />
           ))}
         </div>
@@ -65,14 +67,17 @@ export default function ProductGrid() {
               key={product.id}
               className="bg-white rounded-xl shadow-sm p-3 relative transition-all duration-300 hover:shadow-md hover:-translate-y-1"
             >
-              {/* Rest of your product card JSX remains the same */}
               <button
                 onClick={() => toggleFavorite(product.id)}
                 className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm"
                 aria-label={favorites.includes(product.id) ? "Remove from favorites" : "Add to favorites"}
               >
                 <Heart
-                  className={`w-4 h-4 transition-colors ${favorites.includes(product.id) ? "fill-red-500 text-red-500" : "text-gray-300"}`}
+                  className={`w-4 h-4 transition-colors ${
+                    favorites.includes(product.id)
+                      ? "fill-red-500 text-red-500"
+                      : "text-gray-300"
+                  }`}
                 />
               </button>
 
@@ -104,6 +109,9 @@ export default function ProductGrid() {
                   <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                     {product.name}
                   </p>
+                  <p className="text-xs text-gray-400 mt-1 line-clamp-3">
+                    {product.description}
+                  </p>
                 </div>
 
                 {product.rating && (
@@ -124,7 +132,7 @@ export default function ProductGrid() {
         </div>
       ) : (
         <div className="text-center py-10">
-          <div className="text-gray-400 mb-3">🛒</div>
+          <div className="text-gray-400 mb-3 text-3xl">🛒</div>
           <p className="text-gray-500 font-medium">No products available</p>
           <p className="text-gray-400 text-sm mt-1">
             Check back later for new arrivals
