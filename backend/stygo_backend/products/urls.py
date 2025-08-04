@@ -16,7 +16,7 @@ urlpatterns = [
     path('all/', all_products),                  # GET: all products (public)
     path('shop/<str:shop_name>/', products_by_shop),  # GET: products by shop
     path('<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail'), 
-    path('shop/<slug:shop_slug>/to-top/', top_products_by_shop),
+    path('shop/<slug:shop_slug>/', top_products_by_shop),
 
     
     

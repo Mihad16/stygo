@@ -15,7 +15,7 @@ import MyProducts from "./pages/MyProducts";
 import About from "./pages/about";
 import ProductDetail from "./pages/ProductDetail";
 import PublicShopLayout from "./layouts/PublicShopLayout";
-import PublicShopHome from "./pages/PublicShopHome";
+import PublicShopHome   from  "./pages/PublicShopHome" 
 import FavoriteShops from "./pages/FavoritesPage";
 
 

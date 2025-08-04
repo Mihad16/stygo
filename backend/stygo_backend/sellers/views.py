@@ -60,10 +60,12 @@ def list_all_shops(request):
 
 
 @api_view(['GET'])
-def public_shop_view(request, slug):
+def get_shop_by_slug(request, shop_slug):
     try:
-        profile = SellerProfile.objects.get(slug=slug)
-        serializer = SellerProfileSerializer(profile, context={'request': request})
-        return Response(serializer.data)  # ✅ Flat JSON returned
+        shop = SellerProfile.objects.get(slug=shop_slug)
+        serializer = SellerProfileSerializer(shop, context={'request': request})
+        return Response(serializer.data)
     except SellerProfile.DoesNotExist:
-        return Response({'error': 'Shop not found'}, status=404)
+        return Response({'error': 'Shop not found'}, status=status.HTTP_404_NOT_FOUND)
+
+

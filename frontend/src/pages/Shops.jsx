@@ -159,7 +159,7 @@ export default function Shops() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredShops.map((shop, index) => (
               <Link
-                to={`/shop/${encodeURIComponent(shop.shop_name)}`}
+                 to={`/`}
                 key={index}
                 className="group bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-blue-100 overflow-hidden"
               >

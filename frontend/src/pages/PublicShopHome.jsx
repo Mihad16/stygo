@@ -1,24 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import {
   FiShoppingBag,
   FiStar,
   FiMapPin,
   FiPhone,
-  FiMail,
-  FiClock,
   FiHeart,
   FiShare2,
 } from "react-icons/fi";
-import ProductCard from "../components/ProductCard";
+import { fetchShop, fetchShopProducts } from "../services/public";
+
 
 export default function PublicShopHome() {
-  const { shopId } = useParams();
+  const { shopSlug } = useParams();
   const [shop, setShop] = useState(null);
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState(["All"]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -29,29 +25,19 @@ export default function PublicShopHome() {
       try {
         setLoading(true);
 
-        const [shopRes, productsRes, buyerShopRes] = await Promise.all([
-          axios.get(`/api/sellers/${shopId}`),
-          axios.get(`/api/shops/${shopId}/products`),
-          axios.get(`/api/buyer/shops/${shopId}`),
-        ]);
+        const shopRes = await fetchShop(shopSlug);
+        const productsRes = await fetchShopProducts(shopSlug);
 
         if (isMounted) {
           setShop(shopRes.data);
-
-          const productsData = Array.isArray(productsRes.data)
-            ? productsRes.data
-            : [];
-          setProducts(productsData);
-
-          const categoryList = buyerShopRes.data.categories || [];
-          setCategories(["All", ...categoryList]);
+          setProducts(Array.isArray(productsRes.data) ? productsRes.data : []);
         }
       } catch (err) {
         if (isMounted) {
           console.error("Error loading shop data:", err);
           setError("Failed to load shop data. Please try again later.");
+          setShop(null);
           setProducts([]);
-          setCategories(["All"]);
         }
       } finally {
         if (isMounted) setLoading(false);
@@ -62,12 +48,7 @@ export default function PublicShopHome() {
     return () => {
       isMounted = false;
     };
-  }, [shopId]);
-
-  const filteredProducts =
-    selectedCategory === "All"
-      ? products
-      : products.filter((p) => p.category === selectedCategory);
+  }, [shopSlug]);
 
   if (loading) {
     return (
@@ -104,144 +85,82 @@ export default function PublicShopHome() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      {/* Shop Header */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Shop Logo */}
-            <div className="w-32 h-32 rounded-full border border-gray-200 overflow-hidden bg-white flex-shrink-0">
+    <div className="bg-gradient-to-b from-gray-100 to-white min-h-screen">
+      {/* New Shop Header Design */}
+      <div className="relative bg-gray-800 text-white pb-16">
+        <div className="absolute inset-0 bg-black opacity-40"></div>
+        <div className="max-w-6xl mx-auto px-4 py-12 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            {/* Shop Logo - New Design */}
+            <div className="w-28 h-28 rounded-xl border-2 border-white shadow-lg overflow-hidden bg-white flex-shrink-0">
               <img
-                src={shop.logo || "/default-shop-logo.png"}
-                alt={shop.name}
-                className="w-full h-full object-cover"
+                src={
+                  shop.logo?.startsWith("http")
+                    ? shop.logo
+                    : `http://127.0.0.1:8000${shop.logo}`
+                }
+                alt={shop.shop_name}
                 onError={(e) => {
                   e.target.src = "/default-shop-logo.png";
                 }}
+                className="w-full h-full object-cover"
               />
             </div>
 
-            {/* Shop Info */}
-            <div className="flex-1">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    {shop.name}
-                  </h1>
-                  <div className="flex items-center mt-1">
-                    <div className="flex items-center">
-                      <FiStar className="text-yellow-400 fill-current" />
-                      <span className="ml-1 text-gray-700">
-                        {shop.rating?.toFixed(1) || "4.5"} (
-                        {shop.reviewCount || "120"} reviews)
-                      </span>
-                    </div>
-                    <span className="mx-2 text-gray-300">•</span>
-                    <div className="flex items-center">
-                      <FiShoppingBag className="text-gray-500" />
-                      <span className="ml-1 text-gray-700">
-                        {products.length}{" "}
-                        {products.length === 1 ? "product" : "products"}
-                      </span>
-                    </div>
-                  </div>
+            {/* Shop Info - New Layout */}
+            <div className="flex-1 text-center md:text-left">
+              <h1 className="text-3xl font-bold mb-2">{shop.shop_name}</h1>
+              
+              <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mb-4">
+                <div className="flex items-center bg-white/20 px-3 py-1 rounded-full">
+                  <FiStar className="text-yellow-400 fill-current mr-1" />
+                  <span>4.5 (120 reviews)</span>
                 </div>
-
-                <div className="flex space-x-2">
-                  <button
-                    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    aria-label="Add to favorites"
-                  >
-                    <FiHeart />
-                  </button>
-                  <button
-                    className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    aria-label="Share shop"
-                  >
-                    <FiShare2 />
-                  </button>
+                <div className="flex items-center bg-white/20 px-3 py-1 rounded-full">
+                  <FiShoppingBag className="mr-1" />
+                  <span>{products.length} {products.length === 1 ? "item" : "items"}</span>
                 </div>
               </div>
 
-              <p className="mt-3 text-gray-600">
-                {shop.description ||
-                  "This shop hasn't added a description yet."}
-              </p>
-
-              <div className="mt-4 flex flex-wrap gap-4">
+              <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm">
                 {shop.location && (
-                  <div className="flex items-center text-gray-600">
-                    <FiMapPin className="mr-2" />
+                  <div className="flex items-center">
+                    <FiMapPin className="mr-2 text-gray-300" />
                     <span>{shop.location}</span>
                   </div>
                 )}
-                {shop.phone && (
-                  <div className="flex items-center text-gray-600">
-                    <FiPhone className="mr-2" />
-                    <a href={`tel:${shop.phone}`}>{shop.phone}</a>
-                  </div>
-                )}
-                {shop.email && (
-                  <div className="flex items-center text-gray-600">
-                    <FiMail className="mr-2" />
-                    <a href={`mailto:${shop.email}`}>{shop.email}</a>
-                  </div>
-                )}
-                {shop.hours && (
-                  <div className="flex items-center text-gray-600">
-                    <FiClock className="mr-2" />
-                    <span>{shop.hours}</span>
+                {shop.phone_number && (
+                  <div className="flex items-center">
+                    <FiPhone className="mr-2 text-gray-300" />
+                    <a href={`tel:${shop.phone_number}`} className="hover:underline">
+                      {shop.phone_number}
+                    </a>
                   </div>
                 )}
               </div>
             </div>
+
+            {/* Action Buttons - New Position */}
+            <div className="flex space-x-3 mt-4 md:mt-0">
+              <button
+                className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="Add to favorites"
+              >
+                <FiHeart className="text-xl" />
+              </button>
+              <button
+                className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="Share shop"
+              >
+                <FiShare2 className="text-xl" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {/* Category Filters */}
-        {categories.length > 1 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Categories
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full border ${
-                    selectedCategory === category
-                      ? "bg-blue-500 text-white border-blue-500"
-                      : "bg-white border-gray-200 hover:bg-gray-100 text-gray-700"
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Products Section */}
-        <div>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Products</h2>
-          </div>
-
-          {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-gray-600">No products found.</div>
-          )}
-        </div>
-      </div>
+      {/* Products Section - New Layout */}
+    
     </div>
   );
 }
