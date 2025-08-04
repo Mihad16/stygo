@@ -14,8 +14,11 @@ import AddProduct from "./pages/AddProduct";
 import MyProducts from "./pages/MyProducts";
 import About from "./pages/about";
 import ProductDetail from "./pages/ProductDetail";
-import PublicShop from "./pages/PublicShop";
 import PublicShopLayout from "./layouts/PublicShopLayout";
+import PublicShopHome from "./pages/PublicShopHome";
+import FavoriteShops from "./pages/FavoritesPage";
+
+
 
 export default function App() {
   return (
@@ -29,12 +32,17 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/shops" element={<Shops />} />
           <Route path="/shop/:shop_name" element={<ShopPage />} />
+          <Route path="/favorites" element={<FavoriteShops />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          
         </Route>
 
         {/* Public Shop layout */}
         <Route element={<PublicShopLayout />}>
-          <Route path="/:shopSlug" element={<PublicShop />} />
+          <Route path="/:shopSlug" element={<PublicShopHome />} />
+         
+
+
         </Route>
 
         {/* Seller layout */}

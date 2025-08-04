@@ -25,15 +25,7 @@ export default function SellerBottomNav() {
         <span className="text-xs mt-0.5">Products</span>
       </NavLink>
 
-      <NavLink 
-        to="/orders" 
-        className={({ isActive }) => 
-          `flex flex-col items-center p-1 text-sm ${isActive ? 'text-blue-600' : 'text-gray-500'}`
-        }
-      >
-        <PackageSearch size={20} />
-        <span className="text-xs mt-0.5">Orders</span>
-      </NavLink>
+
 
       <NavLink 
         to="/profile" 

@@ -5,5 +5,5 @@ urlpatterns = [
     path('create-shop/', create_shop),
     path('dashboard/', dashboard, name='dashboard'),
     path('shops/', list_all_shops),
-    path('<slug:slug>/', public_shop_view, name='public-shop'),
+    path('<slug:slug>/', public_shop_view),
 ]

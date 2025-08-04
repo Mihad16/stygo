@@ -24,8 +24,9 @@ export const getAllProducts = async () => {
 };
 
 // ✅ Get products from specific shop
-export const getProductsByShop = async (shopName) => {
-  const res = await axios.get(`/api/products/shop/${shopName}/`);
+
+export const getProductsByShop = async (shopSlug) => {
+  const res = await axios.get(`/api/products/shop/${shopSlug}/`);
   return res.data;
 };
 
@@ -35,3 +36,7 @@ export const getProductById = async (id) => {
   return res.data;
 };
 
+export const getTopProductsByShop = async (shopSlug) => {
+  const res = await axios.get(`/api/products/shop/${shopSlug}/to-top/`)
+  return res.data;
+};

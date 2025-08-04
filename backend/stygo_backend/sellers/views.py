@@ -64,6 +64,6 @@ def public_shop_view(request, slug):
     try:
         profile = SellerProfile.objects.get(slug=slug)
         serializer = SellerProfileSerializer(profile, context={'request': request})
-        return Response(serializer.data)
+        return Response(serializer.data)  # ✅ Flat JSON returned
     except SellerProfile.DoesNotExist:
         return Response({'error': 'Shop not found'}, status=404)
