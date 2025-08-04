@@ -8,7 +8,7 @@ import {
   FiHeart,
   FiShare2,
 } from "react-icons/fi";
-import { fetchShop, fetchShopProducts } from "../services/public";
+import { fetchShop, } from "../services/public";
 
 
 export default function PublicShopHome() {
@@ -26,11 +26,10 @@ export default function PublicShopHome() {
         setLoading(true);
 
         const shopRes = await fetchShop(shopSlug);
-        const productsRes = await fetchShopProducts(shopSlug);
-
+       
         if (isMounted) {
           setShop(shopRes.data);
-          setProducts(Array.isArray(productsRes.data) ? productsRes.data : []);
+        
         }
       } catch (err) {
         if (isMounted) {

@@ -158,11 +158,14 @@ export default function Shops() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredShops.map((shop, index) => (
-              <Link
-                 to={`/`}
-                key={index}
-                className="group bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-blue-100 overflow-hidden"
-              >
+            <a
+  href={`/${shop.slug}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  key={index}
+  className="group bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-blue-100 overflow-hidden"
+>
+
                 <div className="flex items-start gap-4 mb-4">
                   {shop.logo ? (
                     <div className="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
@@ -206,7 +209,7 @@ export default function Shops() {
                     <ChevronRight className="h-4 w-4 ml-1" />
                   </span>
                 </div>
-              </Link>
+              </a>
             ))}
           </div>
         )}
