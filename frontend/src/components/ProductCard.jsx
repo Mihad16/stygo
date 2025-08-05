@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ Import navigate
 import { getAllProducts } from "../services/product";
 import { Heart, Star, Zap } from "lucide-react";
 
@@ -6,6 +7,7 @@ export default function ProductCard() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState([]);
+  const navigate = useNavigate(); // ✅ Initialize navigate
 
   useEffect(() => {
     async function fetchProducts() {
@@ -13,7 +15,7 @@ export default function ProductCard() {
         const data = await getAllProducts();
         const latest = data
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, 4); // ✅ Only latest 6
+          .slice(0, 4); // ✅ Only latest 4
         setProducts(latest);
       } catch (err) {
         console.error("Failed to load products", err);
@@ -56,7 +58,7 @@ export default function ProductCard() {
 
       {loading ? (
         <div className="grid grid-cols-2 gap-4">
-          {[...Array(6)].map((_, i) => (
+          {[...Array(4)].map((_, i) => (
             <SkeletonLoader key={i} />
           ))}
         </div>
@@ -65,10 +67,14 @@ export default function ProductCard() {
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-white rounded-xl shadow-sm p-3 relative transition-all duration-300 hover:shadow-md hover:-translate-y-1"
+              onClick={() => navigate(`/product/${product.id}`)} // ✅ Navigate to detail
+              className="bg-white rounded-xl shadow-sm p-3 relative transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
             >
               <button
-                onClick={() => toggleFavorite(product.id)}
+                onClick={(e) => {
+                  e.stopPropagation(); // ✅ Prevent triggering card click
+                  toggleFavorite(product.id);
+                }}
                 className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm"
                 aria-label={favorites.includes(product.id) ? "Remove from favorites" : "Add to favorites"}
               >

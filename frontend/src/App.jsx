@@ -8,7 +8,6 @@ import OTPVerify from "./pages/OTPVerify";
 import Shops from "./pages/Shops";
 import Dashboard from "./pages/Dashboard";
 import CreateShop from "./pages/CreateShop";
-import ShopPage from "./pages/ShopPage";
 import ProfileSeller from "./pages/ProfileSeller";
 import AddProduct from "./pages/AddProduct";
 import MyProducts from "./pages/MyProducts";
@@ -40,7 +39,6 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/shops" element={<Shops />} />
-          <Route path="/shop/:shop_name" element={<ShopPage />} />
           <Route path="/favorites" element={<FavoriteShops />} />
           <Route path="/product/:id" element={<ProductDetail />} />
         </Route>

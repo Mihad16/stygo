@@ -1,8 +1,7 @@
 import React from "react";
-import { CategoryScroller } from "../components/CategoryScroller";
 import Hero from "../components/Hero";
 import ProductCard from "../components/ProductCard";
-
+import TrendingShop from "../components/TrendingShop";
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
@@ -14,9 +13,10 @@ export default function Home() {
         <Hero />
 
         {/* Category Scroll */}
-        <CategoryScroller />
+    
 
         {/* Product List */}
+        <TrendingShop />
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* You can map multiple <ProductCard /> like below */}
           <ProductCard />
