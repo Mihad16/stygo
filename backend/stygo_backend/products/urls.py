@@ -5,7 +5,8 @@ from .views import (
     all_products,
     products_by_shop,
     ProductDetailAPIView,
-    top_products_by_shop
+    top_products_by_shop,
+    delete_product,
   
     
 )
@@ -17,7 +18,8 @@ urlpatterns = [
     path('shop/<str:shop_name>/', products_by_shop),  # GET: products by shop
     path('<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail'), 
     path('shop/<slug:shop_slug>/', top_products_by_shop),
-
+    
+     path('<int:product_id>/delete/', delete_product, name='delete-product'),
     
     
     ]

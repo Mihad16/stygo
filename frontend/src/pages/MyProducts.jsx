@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getMyProducts } from "../services/product";
-import { PlusCircle, Search, Edit3, Trash2, Eye } from "lucide-react";
+import { getMyProducts, deleteProduct } from "../services/product"; // ⬅️ added deleteProduct
+import { PlusCircle, Search, Trash2,  } from "lucide-react"; // ⬅️ removed Edit3
 import { useNavigate } from "react-router-dom";
 
 export default function MyProduct() {
@@ -26,7 +26,6 @@ export default function MyProduct() {
     };
 
     fetchProducts();
-
     return () => {
       isMounted = false;
     };
@@ -40,15 +39,13 @@ export default function MyProduct() {
   const handleDelete = async (productId) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        setProducts(products.filter(p => p.id !== productId));
+        await deleteProduct(productId); // ⬅️ call API
+        setProducts(products.filter(p => p.id !== productId)); // ⬅️ update UI
       } catch (error) {
         console.error("Error deleting product:", error);
+        alert("Failed to delete product");
       }
     }
-  };
-
-  const handleEdit = (productId) => {
-    navigate(`/add-product?edit=${productId}`); // Changed to navigate to add-product with edit param
   };
 
   return (
@@ -68,7 +65,13 @@ export default function MyProduct() {
       </div>
 
       {/* Search Bar */}
-    
+      <input
+        type="text"
+        placeholder="Search products..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="mb-4 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
 
       {/* Product Grid */}
       {loading ? (
@@ -122,26 +125,15 @@ export default function MyProduct() {
               </div>
 
               {/* Action Buttons */}
-              <div className="border-t border-gray-100 p-2 flex justify-between">
-                <button
-                  onClick={() => navigate(`/product/${product.id}`)}
-                  className="text-gray-500 hover:text-blue-600 p-1"
-                >
-                  <Eye className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => handleEdit(product.id)} // Updated to use handleEdit
-                  className="text-gray-500 hover:text-green-600 p-1"
-                >
-                  <Edit3 className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => handleDelete(product.id)}
-                  className="text-gray-500 hover:text-red-600 p-1"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
+              <div className="border-t border-gray-100 p-2 flex justify-end">
+  <button
+    onClick={() => handleDelete(product.id)}
+    className="text-gray-500 hover:text-red-600 p-1"
+  >
+    <Trash2 className="h-4 w-4" />
+  </button>
+</div>
+
             </div>
           ))}
         </div>

@@ -40,3 +40,9 @@ export const getTopProductsByShop = async (shopSlug) => {
   const res = await axios.get(`/api/products/shop/${shopSlug}/to-top/`)
   return res.data;
 };
+
+
+export const deleteProduct = async (productId) => {
+  const res = await axios.delete(`/api/products/${productId}/delete/`);
+  return res.data;
+};

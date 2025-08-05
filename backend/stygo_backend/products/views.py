@@ -83,3 +83,20 @@ def top_products_by_shop(request, shop_slug):
     top_products = Product.objects.filter(seller=shop).order_by('-views')[:10]  # or use any metric
     serializer = ProductSerializer(top_products, many=True, context={"request": request})
     return Response(serializer.data)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_product(request, product_id):
+    user = request.user
+
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return Response({'error': 'Product not found'}, status=404)
+
+    # Check if the logged-in user is the owner of the product
+    if product.seller.user != user:
+        return Response({'error': 'Not authorized to delete this product'}, status=403)
+
+    product.delete()
+    return Response({'message': 'Product deleted successfully'}, status=200)
