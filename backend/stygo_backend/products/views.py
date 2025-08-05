@@ -6,6 +6,7 @@ from .serializers import ProductSerializer
 from sellers.models import SellerProfile
 from rest_framework.generics import RetrieveAPIView
 from .serializers import ProductSerializer
+from rest_framework.generics import get_object_or_404
 
 # ✅ Create a product
 @api_view(['POST'])
@@ -100,3 +101,22 @@ def delete_product(request, product_id):
 
     product.delete()
     return Response({'message': 'Product deleted successfully'}, status=200)
+
+
+
+
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def update_product(request, product_id):
+    user = request.user
+    product = get_object_or_404(Product, id=product_id)
+
+    if product.seller.user != user:
+        return Response({'error': 'Not authorized to update this product'}, status=403)
+
+    serializer = ProductSerializer(product, data=request.data, partial=True)  # ✅ partial=True for PATCH
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)

@@ -46,3 +46,13 @@ export const deleteProduct = async (productId) => {
   const res = await axios.delete(`/api/products/${productId}/delete/`);
   return res.data;
 };
+
+
+export const updateProduct = async (productId, formData) => {
+  const res = await axios.patch(`/api/products/${productId}/update/`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res.data;
+};

@@ -7,6 +7,7 @@ from .views import (
     ProductDetailAPIView,
     top_products_by_shop,
     delete_product,
+    update_product
   
     
 )
@@ -20,6 +21,6 @@ urlpatterns = [
     path('shop/<slug:shop_slug>/', top_products_by_shop),
     
      path('<int:product_id>/delete/', delete_product, name='delete-product'),
-    
-    
+    path('<int:product_id>/update/', update_product, name='update-product'),
+
     ]

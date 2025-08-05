@@ -52,6 +52,7 @@ export default function App() {
           <Route path="/profile" element={<ProfileSeller />} />
           <Route path="/add-product" element={<AddProduct />} />
           <Route path="/my-products" element={<MyProducts />} />
+          <Route path="/edit-product/:id" element={<AddProduct />} />
         </Route>
       </Routes>
     </Router>
