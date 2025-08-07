@@ -49,17 +49,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar (only on desktop) */}
-      <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-white border-r border-gray-200">
-        <div className="flex flex-col pt-5 pb-4 px-4">
-          <h1 className="text-2xl font-bold text-gray-800 mb-8 text-center">Seller Hub</h1>
-          <nav className="space-y-2">
-            <SidebarButton icon={<Store />} label="Dashboard" active />
-            <SidebarButton icon={<Box />} label="Products" onClick={() => navigate("/products")} />
-            <SidebarButton icon={<Users />} label="Customers" onClick={() => navigate("/customers")} />
-            <SidebarButton icon={<Settings />} label="Settings" onClick={() => navigate("/settings")} />
-          </nav>
-        </div>
-      </aside>
+      
 
       {/* Main content */}
       <main className="md:pl-64 flex-1 p-6">
@@ -110,37 +100,12 @@ export default function Dashboard() {
             title="Manage Products"
             description="Edit or remove existing items"
             bg="bg-green-100"
-            onClick={() => navigate("/products")}
+            onClick={() => navigate("/my-products")}
           />
         </div>
 
         {/* Recent Activity */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">Recent Activity</h2>
-            <button className="text-sm text-blue-600 hover:text-blue-800">View All</button>
-          </div>
-          <div className="space-y-4">
-            <ActivityItem
-              icon={<Users className="h-4 w-4 text-blue-600" />}
-              bg="bg-blue-100"
-              title="New customer inquiry"
-              time="2 hours ago"
-            />
-            <ActivityItem
-              icon={<Box className="h-4 w-4 text-green-600" />}
-              bg="bg-green-100"
-              title='Product "Summer Dress" was viewed'
-              time="5 hours ago"
-            />
-            <ActivityItem
-              icon={<Store className="h-4 w-4 text-purple-600" />}
-              bg="bg-purple-100"
-              title="New order received"
-              time="1 day ago"
-            />
-          </div>
-        </section>
+     
       </main>
     </div>
   );

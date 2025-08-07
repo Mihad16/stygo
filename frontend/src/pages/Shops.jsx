@@ -2,16 +2,43 @@ import React, { useEffect, useState } from "react";
 import { fetchBuyerShops } from "../services/buyerShops";
 import { Link } from "react-router-dom";
 import Search from "../components/Search";
-import { MapPin, ChevronRight, Frown } from "lucide-react";
+import { MapPin, ChevronRight, Frown, ArrowRight } from "lucide-react";
 
-const categories = [
-  { label: "All", value: "", icon: "🛍️" },
-  { label: "Men", value: "men", icon: "👔" },
-  { label: "Women", value: "women", icon: "👗" },
-  { label: "Kids", value: "kids", icon: "👶" },
-  { label: "Accessories", value: "accessories", icon: "🕶️" },
-  { label: "Beauty", value: "beauty", icon: "💄" },
+
+
+const fashionCategories = [
+  {
+    name: 'Men',
+    
+    color: 'from-blue-100 to-blue-300 text-blue-900',
+    image: '/images/men.png',
+  },
+  {
+    name: 'Women',
+    
+    color: 'from-pink-100 to-pink-300 text-pink-900',
+    image: '/images/women.png',
+  },
+  {
+    name: 'Kids',
+   
+    color: 'from-yellow-100 to-yellow-300 text-yellow-900',
+    image: '/images/kids.png',
+  },
+  {
+    name: 'Beauty',
+    
+    color: 'from-purple-100 to-purple-300 text-purple-900',
+    image: '/images/beauty.png',
+  },
+  {
+    name: 'Accessories',
+  
+    color: 'from-green-100 to-green-300 text-green-900',
+    image: '/images/accessories.png',
+  },
 ];
+
 
 export default function Shops() {
   const [shops, setShops] = useState([]);
@@ -73,9 +100,7 @@ export default function Shops() {
           Explore unique products from sellers in your community
         </p>
       </div>
-
-      {/* Search and Categories */}
-      <div className="mb-10 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+  <div className="mb-10  p-6  border border-gray-100">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="w-full lg:w-1/2">
             <Search
@@ -85,28 +110,44 @@ export default function Shops() {
             />
           </div>
           <div className="w-full lg:w-1/2">
-            <h2 className="text-sm font-medium text-gray-700 mb-3">
-              SHOP BY CATEGORY
-            </h2>
-            <div className="flex overflow-x-auto space-x-3 pb-2 scrollbar-hide">
-              {categories.map((cat) => (
-                <button
-                  key={cat.value}
-                  onClick={() => setSelectedCategory(cat.value)}
-                  className={`flex flex-col items-center justify-center min-w-[70px] sm:min-w-[80px] px-3 py-2 rounded-xl transition-colors ${
-                    selectedCategory === cat.value
-                      ? "bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-md"
-                      : "bg-white text-gray-700 border border-gray-200 hover:border-blue-200"
-                  }`}
-                >
-                  <span className="text-lg sm:text-xl mb-1">{cat.icon}</span>
-                  <span className="text-xs sm:text-sm font-medium">{cat.label}</span>
-                </button>
-              ))}
-            </div>
+       
+       
           </div>
         </div>
       </div>
+      {/* Fashion Section */}
+      <div className="space-y-10 mb-10">
+        {/* Categories Grid */}
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">Shop By Category</h2>
+            <button className="text-orange-500 font-medium flex items-center">
+              View All <ArrowRight className="ml-1 h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {fashionCategories.map((cat, index) => (
+              <div
+                key={index}
+                className={`rounded-xl bg-gradient-to-br ${cat.color} p-4 flex flex-col justify-between  h-15 shadow-sm hover:shadow-md transition`}
+              >
+                
+                <div className=" text-center text-white ">
+                  <h3 className="text-lg   font-bold ">{cat.name}</h3>
+                  
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Brands Grid */}
+      
+      </div>
+
+      {/* Search and Categories */}
+      
 
       {/* Shop Grid */}
       <div className="mb-12">
@@ -158,14 +199,13 @@ export default function Shops() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredShops.map((shop, index) => (
-            <a
-  href={`/${shop.slug}`}
-  target="_blank"
-  rel="noopener noreferrer"
-  key={index}
-  className="group bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-blue-100 overflow-hidden"
->
-
+              <a
+                href={`/${shop.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                key={index}
+                className="group bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-blue-100 overflow-hidden"
+              >
                 <div className="flex items-start gap-4 mb-4">
                   {shop.logo ? (
                     <div className="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border border-gray-200 shadow-sm">

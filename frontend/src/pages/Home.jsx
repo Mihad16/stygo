@@ -2,6 +2,7 @@ import React from "react";
 import Hero from "../components/Hero";
 import ProductCard from "../components/ProductCard";
 import TrendingShop from "../components/TrendingShop";
+import CategoryScrolling from "../components/CategoryScrolling";
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
@@ -13,7 +14,7 @@ export default function Home() {
         <Hero />
 
         {/* Category Scroll */}
-    
+      <CategoryScrolling/>
 
         {/* Product List */}
         <TrendingShop />

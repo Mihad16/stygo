@@ -1,29 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ Import navigate
+import { useNavigate } from "react-router-dom";
 import { getAllProducts } from "../services/product";
+import { fetchBuyerShops } from "../services/buyerShops";
 import { Heart, Star, Zap } from "lucide-react";
 
 export default function ProductCard() {
   const [products, setProducts] = useState([]);
+  const [shops, setShops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState([]);
-  const navigate = useNavigate(); // ✅ Initialize navigate
+  const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchData() {
       try {
-        const data = await getAllProducts();
-        const latest = data
+        const [productData, shopData] = await Promise.all([
+          getAllProducts(),
+          fetchBuyerShops(),
+        ]);
+        const latest = productData
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, 4); // ✅ Only latest 4
+          .slice(0, 4);
         setProducts(latest);
+        setShops(shopData);
       } catch (err) {
-        console.error("Failed to load products", err);
+        console.error("Failed to load data", err);
       } finally {
         setLoading(false);
       }
     }
-    fetchProducts();
+
+    fetchData();
   }, []);
 
   const toggleFavorite = (productId) => {
@@ -33,6 +40,19 @@ export default function ProductCard() {
         : [...prev, productId]
     );
   };
+
+const getShopName = (slug, shopData) => {
+  console.log("Looking for:", slug);
+  console.log("In shops:", shopData);
+  
+  if (!slug || !Array.isArray(shops)) return "Unknown Shop";
+  
+  const shop = shops.find((s) => s.slug === slug);
+  
+  return shop?.shopData || "Unknown Shop";
+};
+
+
 
   const SkeletonLoader = () => (
     <div className="bg-gray-100 rounded-xl p-3 animate-pulse">
@@ -67,16 +87,20 @@ export default function ProductCard() {
           {products.map((product) => (
             <div
               key={product.id}
-              onClick={() => navigate(`/product/${product.id}`)} // ✅ Navigate to detail
+              onClick={() => navigate(`/product/${product.id}`)}
               className="bg-white rounded-xl shadow-sm p-3 relative transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
             >
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // ✅ Prevent triggering card click
+                  e.stopPropagation();
                   toggleFavorite(product.id);
                 }}
                 className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm"
-                aria-label={favorites.includes(product.id) ? "Remove from favorites" : "Add to favorites"}
+                aria-label={
+                  favorites.includes(product.id)
+                    ? "Remove from favorites"
+                    : "Add to favorites"
+                }
               >
                 <Heart
                   className={`w-4 h-4 transition-colors ${
@@ -105,7 +129,7 @@ export default function ProductCard() {
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-sm font-semibold text-gray-800">
-                    ₹{product.price.toLocaleString()}
+                    ₹{product.price?.toLocaleString()}
                   </p>
                   {product.originalPrice && (
                     <p className="text-xs text-gray-400 line-through">
@@ -118,6 +142,9 @@ export default function ProductCard() {
                   <p className="text-xs text-gray-400 mt-1 line-clamp-3">
                     {product.description}
                   </p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    🏪 {getShopName(product)}
+                  </p>
                 </div>
 
                 {product.rating && (
@@ -128,11 +155,7 @@ export default function ProductCard() {
                 )}
               </div>
 
-              {product.discount && (
-                <div className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded-tr-xl rounded-bl-xl">
-                  {product.discount}% OFF
-                </div>
-              )}
+           
             </div>
           ))}
         </div>

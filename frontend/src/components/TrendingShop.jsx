@@ -49,21 +49,22 @@ export default function TrendingShop() {
         </div>
       ) : shops.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {shops.map((shop) => (
+          {shops.map((shop,index) => (
             <Link
               to={`${shop.slug}`} // ✅ uses slug for public shop page
-              key={shop.id}
+              key={shop.id || index}
+
               className="bg-white shadow-sm p-4 rounded-lg hover:shadow-md transition cursor-pointer block"
             >
               <div className="flex items-center space-x-4">
                 <img
                   src={shop.logo || "/placeholder-shop.png"}
-                  alt={shop.name}
+                  alt={shop.shop_name}
                   className="w-16 h-16 rounded-full object-cover"
                 />
                 <div>
                   <h3 className="text-sm font-semibold text-gray-800">
-                    {shop.name}
+                    {shop.shop_name}
                   </h3>
                   <div className="flex items-center text-xs text-gray-500 mt-1">
                     <Star className="w-3 h-3 mr-1 text-yellow-500" fill="#f59e0b" />
