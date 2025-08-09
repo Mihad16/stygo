@@ -16,6 +16,7 @@ import ProductDetail from "./pages/ProductDetail";
 import PublicShopHome from "./pages/PublicShopHome";
 import FavoriteShops from "./pages/FavoritesPage";
 import AboutSelling from "./pages/AboutSelling.JSX";
+import PublicShopProducts from "./pages/PublicShopProducts";
 
 // Layouts
 import MainLayout from "./layouts/MainLayout";
@@ -45,8 +46,13 @@ export default function App() {
 
         {/* Public shop layout (like storefront) */}
         <Route element={<PublicShopLayout />}>
-          <Route path="/:shopSlug" element={<PublicShopHome />} />
-        </Route>
+  {/* Shop home page */}
+  <Route path="/:shopSlug" element={<PublicShopHome />} />
+  
+  {/* Shop category page */}
+  <Route path="/:shopSlug/Products" element={<PublicShopProducts />} />
+</Route>
+
 
         {/* 🔒 Secured seller layout (requires login) */}
         <Route

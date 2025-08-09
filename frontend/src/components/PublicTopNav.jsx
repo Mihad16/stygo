@@ -6,21 +6,10 @@ const PublicTopNav = () => {
 
 
   return (
-    <div className="relative">
-
-
-
-
-
+    <div className="">
       <div className="">
-
         <nav className="bg-white shadow-sm py-3 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-10">
-          {/* Left side - Logo and Hamburger */}
-
-          <div className="flex items-center space-x-3 sm:space-x-4">
-
-
-
+             <div className="flex items-center space-x-3 sm:space-x-4">
           </div>
 
 

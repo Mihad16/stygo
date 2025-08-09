@@ -1,80 +1,115 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+// src/components/PublicShopHome.jsx
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom"; // ✅ to get slug from URL
+import { getProductsByShop } from "../services/product";
 
-import { ChevronRight } from "lucide-react";
+const categories = ["Hoodi", "Mens", "Womens"];
+   
+export default function PublicShopHome() {
+  const { shopSlug } = useParams(); // ✅ "my-shop-name" from /shop/:shopSlug
+  const [activeTab, setActiveTab] = useState(categories[0]);
+  const [query, setQuery] = useState("");
+  const [popular, setPopular] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // ✅ Fetch products from this shop
+  useEffect(() => {
+    if (!shopSlug) return; // prevent undefined fetch
 
-const PublicShopHome = () => {
-  const navigate = useNavigate();
-  
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        const data = await getProductsByShop(shopSlug);
+        setPopular(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
+    fetchProducts();
+  }, [shopSlug]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="min-h-screen bg-white text-gray-900 flex flex-col">
+      {/* Header */}
+      <header className="px-5 pt-6 pb-4">
+        <h1 className="mt-6 text-3xl font-extrabold tracking-tight">
+          Discover our new items
+        </h1>
 
- 
-      {/* Hero Banner with responsive height */}
-      <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 overflow-hidden">
-      
-        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-          <div className="text-center px-4">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
-              New Season Collection
-            </h1>
-            <button 
-              onClick={() => navigate("/shop")}
-              className="mt-4 px-6 py-2 bg-white text-gray-900 rounded-full font-medium flex items-center mx-auto hover:bg-gray-100 transition-colors"
-            >
-              Shop Now <ChevronRight className="ml-1 h-4 w-4" />
-            </button>
+        {/* Search */}
+        <div className="mt-5">
+          <label htmlFor="search" className="sr-only">Search</label>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
+              </svg>
+            </span>
+            <input
+              id="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search"
+              className="w-full pl-11 pr-4 py-3 bg-gray-100 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            />
           </div>
         </div>
-      </div>
 
-      {/* Main Content Container */}
-      <main className="flex-1 container mx-auto px-4 sm:px-6 py-6 md:py-8">
-        {/* Featured Products Section */}
-        
-        {/* Shop Info Section */}
-        <section className="p-6 md:p-8 my-6 bg-gray-50 rounded-xl">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-lg md:text-xl font-bold mb-4 text-gray-900">About Our Shop</h2>
-            <p className="text-sm md:text-base text-gray-600 mb-4">
-              We offer high-quality fashion items at affordable prices. 
-              Our collections are carefully curated to bring you the latest trends
-              while maintaining exceptional quality standards.
-            </p>
+        {/* Tabs */}
+        <nav className="mt-5">
+          <ul className="flex gap-6 border-b">
+            {categories.map((cat) => {
+              const active = activeTab === cat;
+              return (
+                <li key={cat} className="pb-3">
+                  <button
+                    onClick={() => setActiveTab(cat)}
+                    className={`text-sm font-medium ${active ? "text-gray-900" : "text-gray-500"} focus:outline-none`}
+                  >
+                    {cat}
+                  </button>
+                  {active && <div className="h-0.5 bg-black mt-3 rounded-full w-10" />}
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </header>
 
-          </div>
+      {/* Main content */}
+      <main className="px-5 pb-6 flex-1">
+        {/* Popular products */}
+        <section className="mt-8">
+          <h2 className="text-2xl font-bold">Popular Products</h2>
+
+          {loading ? (
+            <p className="mt-4 text-gray-500">Loading...</p>
+          ) : popular.length === 0 ? (
+            <p className="mt-4 text-gray-500">No products found.</p>
+          ) : (
+            <div className="mt-4 flex gap-4 overflow-x-auto py-3 -mx-1">
+              {popular.map((p) => (
+                <div key={p.id} className="min-w-[160px] max-w-[220px] bg-white rounded-2xl shadow-sm p-3 flex-shrink-0">
+                  <div className="w-full h-[160px] rounded-lg overflow-hidden bg-gray-100 mb-3">
+                    <img
+                      src={p.image || "https://via.placeholder.com/220x220?text=No+Image"}
+                      alt={p.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">₹{p.price}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200 py-6">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <img 
-                src="/images/my_logo.png" 
-                alt="Logo" 
-                className="h-8 w-auto"
-              />
-            </div>
-            <div className="flex space-x-6">
-              <a href="#" className="text-gray-500 hover:text-gray-700 text-sm">Terms</a>
-              <a href="#" className="text-gray-500 hover:text-gray-700 text-sm">Privacy</a>
-              <a href="#" className="text-gray-500 hover:text-gray-700 text-sm">Contact</a>
-            </div>
-          </div>
-          <div className="mt-4 text-center md:text-left">
-            <p className="text-xs text-gray-500">
-              © {new Date().getFullYear()} Fashion Haven. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+    
+
     </div>
   );
-};
-
-export default PublicShopHome;
+}
