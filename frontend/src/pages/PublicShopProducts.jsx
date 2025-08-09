@@ -14,7 +14,14 @@ function PublicShopProducts() {
       try {
         setLoading(true);
         const data = await getProductsByShop(shopSlug);
-        setProducts(data);
+
+        // Sort descending by created_at, get latest 5
+        const latestFive = data
+          .slice() // shallow copy
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 5);
+
+        setProducts(latestFive);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
@@ -31,7 +38,7 @@ function PublicShopProducts() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-20">
-      <h1 className="text-3xl font-extrabold mb-8 text-gray-900">Products</h1>
+      <h1 className="text-3xl font-extrabold mb-8 text-gray-900">Latest Products</h1>
 
       {products.length === 0 ? (
         <p className="text-center text-gray-500">No products found.</p>

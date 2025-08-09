@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { fetchBuyerShops } from "../services/buyerShops";
-import { Link } from "react-router-dom";
 import Search from "../components/Search";
 import { MapPin, ChevronRight, Frown, ArrowRight } from "lucide-react";
 
