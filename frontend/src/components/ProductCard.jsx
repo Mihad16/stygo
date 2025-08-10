@@ -42,7 +42,7 @@ export default function ProductCard() {
   };
 
 const getShopName = (slug, shopData) => {
-  console.log("Looking for:", slug);
+
   console.log("In shops:", shopData);
   
   if (!slug || !Array.isArray(shops)) return "Unknown Shop";

@@ -11,12 +11,12 @@ export default function TrendingShop() {
     async function fetchShops() {
       try {
         const data = await fetchBuyerShops();
-        console.log("Fetched Shops:", data); // ✅ Check slug here
+       
 
         const latestShops = data
           // .filter((shop) => shop.is_active) // optional if needed
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, 6); // Show latest 6 shops
+          .slice(0, 3); // Show latest 6 shops
 
         setShops(latestShops);
       } catch (error) {
@@ -66,10 +66,7 @@ export default function TrendingShop() {
                   <h3 className="text-sm font-semibold text-gray-800">
                     {shop.shop_name}
                   </h3>
-                  <div className="flex items-center text-xs text-gray-500 mt-1">
-                    <Star className="w-3 h-3 mr-1 text-yellow-500" fill="#f59e0b" />
-                    {shop.rating || "No rating"}
-                  </div>
+                 
                   <p className="text-xs text-gray-400 mt-1">
                     {shop.total_products || 0} products
                   </p>

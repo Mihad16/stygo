@@ -102,12 +102,7 @@ export default function About() {
               bio: "Built the platform to empower fashion entrepreneurs with simple technology",
               image: "/images/mihad.jpg"
             },
-            {
-              name: "Nafith",
-              role: "Marketing & Strategy",
-              bio: "Helps sellers maximize their business potential through digital channels",
-              image: "/images/nafith.jpg"
-            }
+      
           ].map((member, index) => (
             <div key={index} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200">
               <div className="p-6">
