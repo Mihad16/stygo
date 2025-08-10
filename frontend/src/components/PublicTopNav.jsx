@@ -1,48 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Menu, X, Phone } from "lucide-react"; // ✅ icons
 
 const PublicTopNav = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const { shopSlug } = useParams(); // ✅ get shop slug from URL
 
+  const sellerNumber = "+919876543210"; // ✅ seller's phone number
 
+  const menuItems = [
+    { label: "Home", path: `/${shopSlug || ""}` },
+    { label: "Products", path: `/${shopSlug || ""}/products` },
+    { label: "About", path: `/${shopSlug || ""}/about` },
+  ];
 
   return (
-    <div className="">
-      <div className="">
-        <nav className="bg-white shadow-sm py-3 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-10">
-             <div className="flex items-center space-x-3 sm:space-x-4">
-          </div>
+    <header className="bg-white shadow-sm sticky top-0 z-50">
+      <div className="container mx-auto flex justify-between items-center px-4 py-3">
+        
+        {/* Logo / Shop Name */}
+        <h1
+          className="text-xl font-bold cursor-pointer text-gray-800"
+          onClick={() => navigate(`/${shopSlug || ""}`)}
+        >
+          Elcom MG
+        </h1>
 
-
-
-          <div className="flex items-center space-x-3 sm:space-x-6">
-
-
-
+        {/* Desktop Menu */}
+        <nav className="hidden md:flex space-x-6">
+          {menuItems.map((item) => (
             <button
-              className="p-1 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none"
-              aria-label="User profile"
+              key={item.label}
+              onClick={() => navigate(item.path)}
+              className="text-gray-700 hover:text-blue-600 transition"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-gray-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
+              {item.label}
             </button>
+          ))}
 
-
-          </div>
+          {/* Call Seller Button */}
+        
         </nav>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden text-gray-700"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </div>
-    </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-white border-t shadow-sm">
+          {menuItems.map((item) => (
+            <button
+              key={item.label}
+              onClick={() => {
+                navigate(item.path);
+                setIsMenuOpen(false);
+              }}
+              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+            >
+              {item.label}
+            </button>
+          ))}
+
+          {/* Mobile Call Seller */}
+          <a
+            href={`tel:${sellerNumber}`}
+            className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <Phone size={18} className="mr-2" />
+            Call Seller
+          </a>
+        </div>
+      )}
+    </header>
   );
 };
 

@@ -1,31 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProductsByShop } from "../services/product";
-import { fetchBuyerShops } from "../services/buyerShops"; // import fetchBuyerShops
-
-const categories = ["Hoodi", "Mens", "Womens"];
+import { fetchBuyerShops } from "../services/buyerShops";
 
 export default function PublicShopHome() {
   const { shopSlug } = useParams();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(categories[0]);
   const [query, setQuery] = useState("");
   const [popular, setPopular] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [shops, setShops] = useState([]); // all shops
-  const [currentShop, setCurrentShop] = useState(null); // current shop details
+  const [shops, setShops] = useState([]);
+  const [currentShop, setCurrentShop] = useState(null);
 
   useEffect(() => {
     if (!shopSlug) return;
 
-    // Fetch shop details
     async function fetchShops() {
       try {
         const shopsData = await fetchBuyerShops();
         setShops(shopsData);
 
-        // Find shop by slug
         const foundShop = shopsData.find((shop) => shop.slug === shopSlug);
         setCurrentShop(foundShop || null);
       } catch (error) {
@@ -54,11 +49,13 @@ export default function PublicShopHome() {
     fetchProducts();
   }, [shopSlug]);
 
-  const displayedProducts = popular.slice(0, 5);
+  const displayedProducts = popular.slice(0, 5); // Only 5 latest products
 
   const handleMoreShopClick = () => {
     navigate(`/${shopSlug}/products`);
   };
+
+
 
   return (
     <div className="min-h-screen bg-white text-gray-900 flex flex-col">
@@ -84,9 +81,12 @@ export default function PublicShopHome() {
             <p className="text-sm text-gray-500">{currentShop.location}</p>
           )}
         </div>
+
+        {/* WhatsApp Button */}
+       
       </header>
 
-      {/* Search and tabs */}
+      {/* Search */}
       <header className="px-5 pt-0 pb-4">
         <h2 className="mt-6 text-3xl font-extrabold tracking-tight">
           Discover our new items
@@ -121,35 +121,12 @@ export default function PublicShopHome() {
             />
           </div>
         </div>
-
-        <nav className="mt-5">
-          <ul className="flex gap-6 border-b">
-            {categories.map((cat) => {
-              const active = activeTab === cat;
-              return (
-                <li key={cat} className="pb-3">
-                  <button
-                    onClick={() => setActiveTab(cat)}
-                    className={`text-sm font-medium ${
-                      active ? "text-gray-900" : "text-gray-500"
-                    } focus:outline-none`}
-                  >
-                    {cat}
-                  </button>
-                  {active && (
-                    <div className="h-0.5 bg-black mt-3 rounded-full w-10" />
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
       </header>
 
-      {/* Main content */}
+      {/* Latest Products */}
       <main className="px-5 pb-6 flex-1">
         <section className="mt-8">
-          <h2 className="text-2xl font-bold">Popular Products</h2>
+          <h2 className="text-2xl font-bold">Latest Products</h2>
 
           {loading ? (
             <p className="mt-4 text-gray-500">Loading...</p>
@@ -172,6 +149,7 @@ export default function PublicShopHome() {
                         className="w-full h-full object-cover"
                       />
                     </div>
+                    <p className="text-sm font-medium text-gray-900">{p.name}</p>
                     <p className="text-sm text-gray-500 mt-1">₹{p.price}</p>
                   </div>
                 ))}
@@ -189,7 +167,9 @@ export default function PublicShopHome() {
           )}
         </section>
       </main>
-       <footer className="bg-gray-100 py-6 mt-auto text-center text-gray-700">
+
+      {/* Footer */}
+      <footer className="bg-gray-100 py-6 mt-auto text-center text-gray-700">
         <p>
           © {new Date().getFullYear()} {currentShop?.name || "Our Shop"}. All
           rights reserved.

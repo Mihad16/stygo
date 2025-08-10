@@ -17,7 +17,8 @@ import PublicShopHome from "./pages/PublicShopHome";
 import FavoriteShops from "./pages/FavoritesPage";
 import AboutSelling from "./pages/AboutSelling.JSX";
 import PublicShopProducts from "./pages/PublicShopProducts";
-
+import SellerAbout from "./pages/SellerAbout";
+import PublicProductDetail from "./pages/PublicProductDetail";
 // Layouts
 import MainLayout from "./layouts/MainLayout";
 import SellerLayout from "./layouts/SellerLayout";
@@ -51,7 +52,12 @@ export default function App() {
   
   {/* Shop category page */}
   <Route path="/:shopSlug/Products" element={<PublicShopProducts />} />
+<Route path="/:shopSlug/about" element={<SellerAbout />} />
+<Route path="/:shopSlug/product/:productId" element={<PublicProductDetail />} />
+
+
 </Route>
+
 
 
         {/* 🔒 Secured seller layout (requires login) */}
