@@ -65,20 +65,20 @@ export default function PublicShopHome() {
           {currentShop?.logo ? (
             <img
               src={currentShop.logo}
-              alt={`${currentShop.name} logo`}
+              alt={`${currentShop.Shop_name} logo`}
               className="w-12 h-12 rounded-full object-cover border border-gray-200"
               loading="lazy"
             />
           ) : (
             <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-xl">
-              {currentShop?.name?.[0]?.toUpperCase() || "S"}
+              {currentShop?.Shop_name?.[0]?.toUpperCase() || "S"}
             </div>
           )}
         </div>
 
         <div className="min-w-0">
           <h1 className="text-2xl font-bold truncate">
-            {currentShop?.name || "Shop"}
+            {currentShop?.Shop_name || "Shop"}
           </h1>
           {currentShop?.location && (
             <p className="text-sm text-gray-500 truncate">{currentShop.location}</p>
