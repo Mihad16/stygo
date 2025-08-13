@@ -1,12 +1,11 @@
+// src/components/ProductCard.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllProducts } from "../services/product";
-import { fetchBuyerShops } from "../services/buyerShops";
-import { Heart, Star, Zap } from "lucide-react";
+import { Heart, Zap } from "lucide-react";
 
 export default function ProductCard() {
   const [products, setProducts] = useState([]);
-  const [shops, setShops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState([]);
   const navigate = useNavigate();
@@ -14,17 +13,16 @@ export default function ProductCard() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [productData, shopData] = await Promise.all([
-          getAllProducts(),
-          fetchBuyerShops(),
-        ]);
-        const latest = productData
+        const productData = await getAllProducts();
+
+        // Latest 4 products
+        const latestProducts = productData
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
           .slice(0, 4);
-        setProducts(latest);
-        setShops(shopData);
-      } catch (err) {
-        console.error("Failed to load data", err);
+
+        setProducts(latestProducts);
+      } catch (error) {
+        console.error("❌ Failed to load products:", error);
       } finally {
         setLoading(false);
       }
@@ -41,26 +39,7 @@ export default function ProductCard() {
     );
   };
 
-const getShopName = (slug, shopData) => {
-
-  console.log("In shops:", shopData);
-  
-  if (!slug || !Array.isArray(shops)) return "Unknown Shop";
-  
-  const shop = shops.find((s) => s.slug === slug);
-  
-  return shop?.shopData || "Unknown Shop";
-};
-
-
-
-  const SkeletonLoader = () => (
-    <div className="bg-gray-100 rounded-xl p-3 animate-pulse">
-      <div className="bg-gray-200 h-40 rounded-lg mb-2"></div>
-      <div className="bg-gray-200 h-4 w-3/4 mb-2 rounded"></div>
-      <div className="bg-gray-200 h-3 w-1/2 rounded"></div>
-    </div>
-  );
+  if (loading) return <p>Loading products...</p>;
 
   return (
     <div className="px-4 mt-6">
@@ -69,27 +48,25 @@ const getShopName = (slug, shopData) => {
           <Zap className="w-5 h-5 text-yellow-500 mr-2" fill="#f59e0b" />
           New Arrivals
         </h2>
-        {!loading && (
-          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-            {products.length} items
-          </span>
-        )}
+        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+          {products.length} items
+        </span>
       </div>
 
-      {loading ? (
-        <div className="grid grid-cols-2 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <SkeletonLoader key={i} />
-          ))}
+      {products.length === 0 ? (
+        <div className="text-center py-10">
+          <div className="text-gray-400 mb-3 text-3xl">🛒</div>
+          <p className="text-gray-500 font-medium">No products available</p>
         </div>
-      ) : products.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4">
+      ) : (
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {products.map((product) => (
             <div
               key={product.id}
               onClick={() => navigate(`/product/${product.id}`)}
               className="bg-white rounded-xl shadow-sm p-3 relative transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
             >
+              {/* Favorite button */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -111,61 +88,35 @@ const getShopName = (slug, shopData) => {
                 />
               </button>
 
-              {product.isNew && (
-                <span className="absolute top-4 left-4 bg-green-500 text-white text-xs px-2 py-1 rounded-full z-10">
-                  New
-                </span>
-              )}
-
+              {/* Product image */}
               <div className="relative mb-3">
                 <img
-                  src={product.image}
+                  src={product.image || "/placeholder.png"}
                   alt={product.name}
                   className="w-full h-40 object-cover rounded-lg aspect-square"
                   loading="lazy"
                 />
               </div>
 
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-sm font-semibold text-gray-800">
-                    ₹{product.price?.toLocaleString()}
+              {/* Product info */}
+              <div>
+                <p className="text-sm font-semibold text-gray-800">
+                  ₹{product.price?.toLocaleString()}
+                </p>
+                {product.originalPrice && (
+                  <p className="text-xs text-gray-400 line-through">
+                    ₹{product.originalPrice.toLocaleString()}
                   </p>
-                  {product.originalPrice && (
-                    <p className="text-xs text-gray-400 line-through">
-                      ₹{product.originalPrice.toLocaleString()}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                    {product.name}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1 line-clamp-3">
-                    {product.description}
-                  </p>
-                  <p className="text-xs text-gray-600 mt-1">
-                    🏪 {getShopName(product)}
-                  </p>
-                </div>
-
-                {product.rating && (
-                  <div className="flex items-center bg-gray-100 px-1.5 py-0.5 rounded text-xs">
-                    <Star className="w-3 h-3 text-yellow-500 mr-0.5" fill="#f59e0b" />
-                    {product.rating}
-                  </div>
                 )}
+                <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                  {product.name}
+                </p>
+                <p className="text-xs text-gray-400 mt-1 line-clamp-3">
+                  {product.description}
+                </p>
               </div>
-
-           
             </div>
           ))}
-        </div>
-      ) : (
-        <div className="text-center py-10">
-          <div className="text-gray-400 mb-3 text-3xl">🛒</div>
-          <p className="text-gray-500 font-medium">No products available</p>
-          <p className="text-gray-400 text-sm mt-1">
-            Check back later for new arrivals
-          </p>
         </div>
       )}
     </div>
