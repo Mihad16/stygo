@@ -1,7 +1,9 @@
+// src/components/TrendingShop.jsx
 import React, { useEffect, useState } from "react";
-import { Star, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
-import { fetchBuyerShops } from "../services/buyerShops"; // ✅ Correct API
+import { fetchBuyerShops } from "../services/buyerShops";
+import { getProductsByShop } from "../services/product"; // fetch products by shop slug
 
 export default function TrendingShop() {
   const [shops, setShops] = useState([]);
@@ -10,21 +12,44 @@ export default function TrendingShop() {
   useEffect(() => {
     async function fetchShops() {
       try {
-        const data = await fetchBuyerShops();
-       
+        const shopData = await fetchBuyerShops();
 
-        const latestShops = data
-          // .filter((shop) => shop.is_active) // optional if needed
+        // Take latest 3 shops
+        const latestShops = shopData
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, 3); // Show latest 6 shops
+          .slice(0, 3);
 
-        setShops(latestShops);
+        // Fetch latest 3 products for each shop
+        const shopsWithProducts = await Promise.all(
+          latestShops.map(async (shop) => {
+            if (!shop.slug) {
+              console.warn("Shop slug missing for", shop);
+              return { ...shop, latestProducts: [] };
+            }
+
+            let products = [];
+            try {
+              products = await getProductsByShop(shop.slug);
+            } catch (err) {
+              console.error(`Failed to fetch products for shop ${shop.slug}`, err);
+            }
+
+            const latestProducts = (products || [])
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+              .slice(0, 3);
+
+            return { ...shop, latestProducts };
+          })
+        );
+
+        setShops(shopsWithProducts);
       } catch (error) {
         console.error("Failed to fetch trending shops", error);
       } finally {
         setLoading(false);
       }
     }
+
     fetchShops();
   }, []);
 
@@ -43,36 +68,57 @@ export default function TrendingShop() {
 
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
+          {[...Array(3)].map((_, i) => (
             <SkeletonLoader key={i} />
           ))}
         </div>
       ) : shops.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {shops.map((shop,index) => (
-            <Link
-              to={`${shop.slug}`} // ✅ uses slug for public shop page
-              key={shop.id || index}
-
-              className="bg-white shadow-sm p-4 rounded-lg hover:shadow-md transition cursor-pointer block"
+          {shops.map((shop, index) => (
+            <div
+              key={shop.slug || `shop-index-${index}`}
+              className="bg-white shadow-sm p-4 rounded-lg hover:shadow-md transition"
             >
-              <div className="flex items-center space-x-4">
+              <Link
+                to={`/${shop.slug || "#"}`}
+                className="flex items-center space-x-4 mb-4"
+              >
                 <img
                   src={shop.logo || "/placeholder-shop.png"}
-                  alt={shop.shop_name}
+                  alt={shop.shop_name || "Shop"}
                   className="w-16 h-16 rounded-full object-cover"
                 />
                 <div>
                   <h3 className="text-sm font-semibold text-gray-800">
-                    {shop.shop_name}
+                    {shop.shop_name || "Unknown Shop"}
                   </h3>
-                 
                   <p className="text-xs text-gray-400 mt-1">
                     {shop.total_products || 0} products
                   </p>
                 </div>
+              </Link>
+
+              {/* Latest Products */}
+              <div className="grid grid-cols-3 gap-2">
+                {shop.latestProducts && shop.latestProducts.length > 0 ? (
+                  shop.latestProducts.map((product, i) => (
+                    <Link
+                      key={product.id || `product-${index}-${i}`}
+                      to={`/product/${product.slug || product.id || ""}`}
+                      className="block"
+                    >
+                      <img
+                        src={product.image || "/placeholder.png"}
+                        alt={product.name || "Product"}
+                        className="w-full h-20 object-cover rounded"
+                      />
+                    </Link>
+                  ))
+                ) : (
+                  <p className="text-xs text-gray-400 col-span-3">No products</p>
+                )}
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       ) : (

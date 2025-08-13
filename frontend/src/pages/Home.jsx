@@ -1,6 +1,6 @@
 import React from "react";
 import Hero from "../components/Hero";
-import ProductCard from "../components/ProductCard";
+
 import TrendingShop from "../components/TrendingShop";
 import CategoryScrolling from "../components/CategoryScrolling";
 export default function Home() {
@@ -20,7 +20,7 @@ export default function Home() {
         <TrendingShop />
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* You can map multiple <ProductCard /> like below */}
-          <ProductCard />
+       
     
         </div>
       </main>

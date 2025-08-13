@@ -12,7 +12,7 @@ import ProfileSeller from "./pages/ProfileSeller";
 import AddProduct from "./pages/AddProduct";
 import MyProducts from "./pages/MyProducts";
 import About from "./pages/about";
-import ProductDetail from "./pages/ProductDetail";
+
 import PublicShopHome from "./pages/PublicShopHome";
 import FavoriteShops from "./pages/FavoritesPage";
 import AboutSelling from "./pages/AboutSelling.JSX";
@@ -42,7 +42,7 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/shops" element={<Shops />} />
           <Route path="/favorites" element={<FavoriteShops />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
+         
         </Route>
 
         {/* Public shop layout (like storefront) */}
