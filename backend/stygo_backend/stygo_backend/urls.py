@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/auth/', include('otp.urls')), 
     path('api/sellers/', include('sellers.urls')),
     path("api/products/", include("products.urls")),
+    path('api/', include('subscribers.urls')),
 ]
 
 if settings.DEBUG:
