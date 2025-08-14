@@ -2,9 +2,9 @@ export default function FeaturedCollections() {
   const collections = [
     {
       id: 1,
-      name: "Summer Essentials",
+      name: "Under ₹599 Products",
       image: "https://images.unsplash.com/photo-1490114538077-0a7f8cb49891",
-      buttonText: "Shop Summer"
+      buttonText: "Shop Deals"
     },
     {
       id: 2,
