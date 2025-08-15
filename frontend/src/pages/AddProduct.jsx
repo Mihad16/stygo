@@ -9,6 +9,7 @@ import {
 export default function AddProduct() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const [originalPrice, setOriginalPrice] = useState("");
   const [size, setSize] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
@@ -27,6 +28,7 @@ export default function AddProduct() {
           const data = await getProductById(editId);
           setName(data.name);
           setPrice(data.price);
+          setPrice(data.originalPrice);
           setSize(data.size);
           setDescription(data.description);
           setPreviewImage(data.image);
@@ -44,32 +46,37 @@ export default function AddProduct() {
     setPreviewImage(URL.createObjectURL(file));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("price", price);
-    formData.append("size", size);
-    formData.append("description", description);
-    if (image) {
-      formData.append("image", image);
-    }
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append(
+    "original_price",
+    originalPrice || price // fallback if empty
+  );
+  formData.append("price", price);
+  formData.append("size", size);
+  formData.append("description", description);
+  if (image) {
+    formData.append("image", image);
+  }
 
-    try {
-      if (editId) {
-        await updateProduct(editId, formData);
-      } else {
-        await addProduct(formData);
-      }
-      navigate("/my-products");
-    } catch (err) {
-      console.error("Error saving product:", err);
-    } finally {
-      setLoading(false);
+  try {
+    if (editId) {
+      await updateProduct(editId, formData);
+    } else {
+      await addProduct(formData);
     }
-  };
+    navigate("/my-products");
+  } catch (err) {
+    console.error("Error saving product:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -91,6 +98,18 @@ export default function AddProduct() {
               required
             />
           </div>
+            <div className="space-y-2">
+    <label className="block text-sm font-medium text-gray-700">
+      Original Price
+    </label>
+    <input
+      type="number"
+      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      value={originalPrice}
+      onChange={(e) => setOriginalPrice(e.target.value)}
+      required
+    />
+  </div>
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
@@ -104,6 +123,7 @@ export default function AddProduct() {
               required
             />
           </div>
+          
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">

@@ -26,7 +26,7 @@ import NewArrivalsPage from "./pages/NewArrivalsPage.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
 import OurStory from "./pages/OurStory.jsx";
 import Suggestions from "./pages/Suggestions.jsx";
-
+import BestSellers from "./pages/BestSellers.jsx";
 
 
 // Layouts
@@ -71,6 +71,7 @@ export default function App() {
           <Route path="/favorites" element={<FavoriteShops />} />
           <Route path="/Under599Page" element={<Under599Page />} />
           <Route path="/new-arrivals" element={<NewArrivalsPage />} />
+          <Route path="/best-sellers" element={<BestSellers />} />
           <Route path="/product/:productId" element={<ProductDetail />} />
            <Route path="/our-story" element={<OurStory />} />
            <Route path="/suggestions" element={<Suggestions />} />

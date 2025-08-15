@@ -127,6 +127,23 @@ def update_product(request, product_id):
 
 @api_view(['GET'])
 def products_under_599(request):
-    products = Product.objects.filter(price__lte=599)
+    products = Product.objects.filter(price__lte=599).order_by('-created_at')
     serializer = ProductSerializer(products, many=True, context={'request': request})
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def latest_products(request, limit=30):  # default limit 30
+    """
+    Returns the latest N products (default 30).
+    """
+    try:
+        limit = int(limit)
+        if limit > 100:  # optional safety limit
+            limit = 100
+    except:
+        limit = 30
+
+    products = Product.objects.all().order_by('-created_at')[:limit]
+    serializer = ProductSerializer(products, many=True, context={"request": request})
     return Response(serializer.data)

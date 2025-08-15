@@ -63,3 +63,8 @@ export const getProductsUnder599 = async () => {
   const res = await axios.get("/api/products/products/under-599/");
   return res.data;
 };
+
+export const latest_products = async () => {
+  const res = await axios.get("/api/products/products/latest/");
+  return res.data;
+};

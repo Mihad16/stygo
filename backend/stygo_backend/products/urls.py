@@ -8,7 +8,8 @@ from .views import (
     top_products_by_shop,
     delete_product,
     update_product,
-    products_under_599
+    products_under_599,
+    latest_products,
   
     
 )
@@ -23,5 +24,5 @@ urlpatterns = [
      path('products/under-599/', products_under_599, name='products_under_599'),
      path('<int:product_id>/delete/', delete_product, name='delete-product'),
     path('<int:product_id>/update/', update_product, name='update-product'),
-    
+    path('products/latest/', latest_products, name='latest_products'),
     ]

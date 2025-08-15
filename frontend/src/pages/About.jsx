@@ -1,6 +1,6 @@
 import React from "react";
 import { Bolt, MessageCircle, Zap, Users } from "lucide-react";
-
+import Footer from "../components/Footer";
 export default function About() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -131,6 +131,7 @@ export default function About() {
           &copy; {new Date().getFullYear()} Stygo. All rights reserved.
         </p>
       </footer>
+       <Footer />
     </div>
   );
 }
