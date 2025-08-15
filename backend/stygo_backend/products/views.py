@@ -74,16 +74,19 @@ class ProductDetailAPIView(RetrieveAPIView):
     lookup_field = "pk"  # or "id" if that's your field
 
 
+
 @api_view(['GET'])
 def top_products_by_shop(request, shop_slug):
     try:
-        shop = SellerProfile.objects.get(shop_slug=shop_slug)
+        shop = SellerProfile.objects.get(slug=shop_slug)  # ✅ changed shop_slug -> slug
     except SellerProfile.DoesNotExist:
         return Response({'error': 'Shop not found'}, status=404)
 
-    top_products = Product.objects.filter(seller=shop).order_by('-views')[:10]  # or use any metric
-    serializer = ProductSerializer(top_products, many=True, context={"request": request})
+    latest_products = Product.objects.filter(seller=shop).order_by('-created_at')[:3]
+    serializer = ProductSerializer(latest_products, many=True, context={"request": request})
     return Response(serializer.data)
+
+
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])

@@ -35,7 +35,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate API or asset loading (you can replace with Django API call)
+  
     const timer = setTimeout(() => {
       setLoading(false);
     }, 1500);

@@ -20,20 +20,4 @@ export async function getDashboard() {
   return res.data;
 }
 
-// ✅ Update seller profile
-export async function updateShop(data) {
-  const token = localStorage.getItem("accessToken");
 
-  if (!token) {
-    throw new Error("No access token found");
-  }
-
-  const res = await axios.patch(`${API_BASE}/shop/update/`, data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  return res.data;
-}

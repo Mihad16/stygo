@@ -17,16 +17,19 @@ export const getMyProducts = async () => {
   return res.data;
 };
 
-// ✅ Get All Products (public homepage)
-export const getAllProducts = async () => {
-  const res = await axios.get("/api/products/all/");
-  return res.data;
-};
+
+
 
 // ✅ Get products from specific shop
 
 export const getProductsByShop = async (shop_Slug) => {
   const res = await axios.get(`/api/products/shop/${shop_Slug}/`);
+  return res.data;
+};
+
+//latet top 3 product
+export const top_products_by_shop = async (shop_Slug) => {
+  const res = await axios.get(`/api/products/shop/${shop_Slug}/latest-products/`);
   return res.data;
 };
 

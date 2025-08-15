@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "react-phone-input-2/lib/style.css";
+import PhoneInput from "react-phone-input-2"; // npm install react-phone-input-2
 
 export default function WhatsAppSubscribe() {
   const [formData, setFormData] = useState({
@@ -12,11 +14,24 @@ export default function WhatsAppSubscribe() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (value) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      phone_number: `+${value}`, // Always store with +
+    }));
+  };
+
+  const handleNameChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      name: e.target.value,
+    }));
+  };
+
+  const handleConsentChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      consent: e.target.checked,
     }));
   };
 
@@ -24,9 +39,9 @@ export default function WhatsAppSubscribe() {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setSuccess(false);
 
     try {
-      // Basic validation
       if (!formData.phone_number) {
         throw new Error("Phone number is required");
       }
@@ -40,97 +55,104 @@ export default function WhatsAppSubscribe() {
         { withCredentials: true }
       );
 
-      if (res.data.success) {
-        setSuccess(true);
-        setFormData({ phone_number: "", name: "", consent: false });
-        setMessage(res.data.message || "Subscribed successfully!");
-      } else {
-        setMessage(res.data.message || "Subscription failed");
-      }
+      setSuccess(true);
+      setFormData({ phone_number: "", name: "", consent: false });
+      setMessage(res.data.message || "Subscribed successfully!");
     } catch (err) {
-      setMessage(err.response?.data?.message || err.message || "Something went wrong");
+      let errorMsg = err.response?.data?.message || err.message || "Something went wrong";
+      setSuccess(false);
+      setMessage(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ minHeight: "150vh", padding: "50px 20px", background: "#f0f0f0" }}>
-      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Subscribe to WhatsApp Updates</h2>
-
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          maxWidth: "400px",
-          margin: "auto",
-          background: "#fff",
-          padding: "20px",
-          borderRadius: "8px",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-        }}
-      >
-        {message && (
-          <p
-            style={{
-              background: success ? "#d4edda" : "#f8d7da",
-              color: success ? "#155724" : "#721c24",
-              padding: "10px",
-              borderRadius: "5px",
-              textAlign: "center",
-            }}
-          >
-            {message}
+    <section className="bg-gray-50 py-10 px-4">
+      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-green-700 mb-1">
+            📲 WhatsApp Updates
+          </h2>
+          <p className="text-gray-600 text-sm">
+            Get exclusive offers and updates directly on WhatsApp
           </p>
-        )}
+        </div>
 
-        <input
-          type="text"
-          name="phone_number"
-          placeholder="Phone number (+CountryCode)"
-          value={formData.phone_number}
-          onChange={handleChange}
-          required
-          style={{ display: "block", width: "100%", padding: "10px", marginBottom: "10px" }}
-        />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {message && (
+            <div
+              className={`p-3 rounded-lg border-l-4 ${
+                success
+                  ? "bg-green-50 border-green-500 text-green-700"
+                  : "bg-red-50 border-red-500 text-red-700"
+              }`}
+            >
+              {message}
+            </div>
+          )}
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Your name (optional)"
-          value={formData.name}
-          onChange={handleChange}
-          style={{ display: "block", width: "100%", padding: "10px", marginBottom: "10px" }}
-        />
+          {/* Phone Number Input with Country Flags */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Phone Number*
+            </label>
+            <PhoneInput
+              country={"in"}
+              value={formData.phone_number}
+              onChange={handleChange}
+              inputStyle={{
+                width: "100%",
+                height: "48px",
+                borderRadius: "8px",
+                border: "1px solid #ccc",
+              }}
+            />
+          </div>
 
-        <label style={{ display: "block", marginBottom: "15px" }}>
-          <input
-            type="checkbox"
-            name="consent"
-            checked={formData.consent}
-            onChange={handleChange}
-            style={{ marginRight: "8px" }}
-            required
-          />
-          I agree to receive WhatsApp updates
-        </label>
+          {/* Name Input */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Your Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Optional"
+              value={formData.name}
+              onChange={handleNameChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            display: "block",
-            width: "100%",
-            padding: "10px",
-            background: "#25D366",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "Processing..." : "Subscribe"}
-        </button>
-      </form>
-    </div>
+          {/* Consent Checkbox */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              name="consent"
+              id="consent"
+              checked={formData.consent}
+              onChange={handleConsentChange}
+              required
+              className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+            />
+            <label htmlFor="consent" className="ml-2 block text-sm text-gray-700">
+              I agree to receive WhatsApp updates
+            </label>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+          >
+            {loading ? "Processing..." : "Subscribe Now"}
+          </button>
+        </form>
+      </div>
+    </section>
   );
 }

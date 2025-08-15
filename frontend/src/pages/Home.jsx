@@ -1,7 +1,7 @@
 import React from "react";
 import Hero from "../components/Hero";
 import TrendingShop from "../components/TrendingShop";
-import CategoryScrolling from '../components/CategoryScrolling'
+
 import FeaturedCollections from "../components/FeaturedCollections";
 import WhatsAppSubscribe from "../components/WhatsAppSubscribe";
 export default function Home() {

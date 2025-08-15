@@ -16,9 +16,9 @@ urlpatterns = [
     path('create/', create_product),             # POST: create product
     path('my/', my_products),                    # GET: seller's own products
     path('all/', all_products),                  # GET: all products (public)
-    path('shop/<str:shop_name>/', products_by_shop),  # GET: products by shop
+    path('shop/<str:shop_name>/', products_by_shop),  # GET: products by shop///////////
     path('<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail'), 
-    path('shop/<slug:shop_slug>/', top_products_by_shop),
+     path("shop/<str:shop_slug>/latest-products/", top_products_by_shop, name="top_products_by_shop"),
     
      path('<int:product_id>/delete/', delete_product, name='delete-product'),
     path('<int:product_id>/update/', update_product, name='update-product'),
