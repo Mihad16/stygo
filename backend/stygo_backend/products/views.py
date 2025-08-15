@@ -123,3 +123,10 @@ def update_product(request, product_id):
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=400)
+
+
+@api_view(['GET'])
+def products_under_599(request):
+    products = Product.objects.filter(price__lte=599)
+    serializer = ProductSerializer(products, many=True, context={'request': request})
+    return Response(serializer.data)

@@ -19,12 +19,12 @@ export default function Hero() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
-            href="/selling"
+            href="/Become-a-patner"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white hover:bg-gray-50 text-gray-800 font-medium py-3 px-6 rounded-lg transition-all shadow-sm hover:shadow-md border border-gray-200 active:scale-[0.98] text-sm sm:text-base text-center"
           >
-            Start Selling Free
+            Create a Store
           </a>
 
           <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-6 rounded-lg transition-all shadow-sm hover:shadow-md active:scale-[0.98] text-sm sm:text-base">

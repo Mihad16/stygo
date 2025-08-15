@@ -56,3 +56,10 @@ export const updateProduct = async (productId, formData) => {
   });
   return res.data;
 };
+
+
+
+export const getProductsUnder599 = async () => {
+  const res = await axios.get("/api/products/products/under-599/");
+  return res.data;
+};

@@ -9,33 +9,45 @@ export default function TrendingShop() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchShopsAndProducts() {
-      try {
-        const shopData = await fetchBuyerShops();
-        const latestShops = shopData
-          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, 3);
+  async function fetchShopsAndProducts() {
+    try {
+      const shopData = await fetchBuyerShops();
 
-        const shopsWithProducts = await Promise.all(
-          latestShops.map(async (shop) => {
-            const products = await top_products_by_shop(shop.slug);
-            return { 
-              ...shop, 
-              products: products.slice(0, 3) 
-            };
-          })
-        );
+      // Fetch products for all shops
+      const shopsWithProducts = await Promise.all(
+        shopData.map(async (shop) => {
+          const products = await top_products_by_shop(shop.slug);
+          return { 
+            ...shop, 
+            products: products.slice(0, 3) 
+          };
+        })
+      );
 
-        setShops(shopsWithProducts);
-      } catch (error) {
-        console.error("Failed to fetch trending shops or products:", error);
-      } finally {
-        setLoading(false);
-      }
+      // Keep only shops with at least one product
+      const shopsWithRecentProducts = shopsWithProducts.filter(
+        (shop) => shop.products && shop.products.length > 0
+      );
+
+      // Sort by latest product date instead of shop creation date
+      const sortedByLatestProduct = shopsWithRecentProducts.sort((a, b) => {
+        const latestA = new Date(a.products[0]?.created_at || a.created_at);
+        const latestB = new Date(b.products[0]?.created_at || b.created_at);
+        return latestB - latestA;
+      });
+
+      // Take top 3
+      setShops(sortedByLatestProduct.slice(0, 3));
+
+    } catch (error) {
+      console.error("Failed to fetch trending shops or products:", error);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    fetchShopsAndProducts();
-  }, []);
+  fetchShopsAndProducts();
+}, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

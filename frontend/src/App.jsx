@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // Components
 import Preloader from "./components/Preloader.jsx";
 
-
 // Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -22,6 +21,13 @@ import AboutSelling from "./pages/AboutSelling.JSX";
 import PublicShopProducts from "./pages/PublicShopProducts";
 import SellerAbout from "./pages/SellerAbout";
 import PublicProductDetail from "./pages/PublicProductDetail";
+import Under599Page from "./pages/Under599Page.jsx";
+import NewArrivalsPage from "./pages/NewArrivalsPage.jsx";
+import ProductDetail from "./pages/ProductDetail.jsx";
+import OurStory from "./pages/OurStory.jsx";
+import Suggestions from "./pages/Suggestions.jsx";
+
+
 
 // Layouts
 import MainLayout from "./layouts/MainLayout";
@@ -35,32 +41,39 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  
     const timer = setTimeout(() => {
       setLoading(false);
     }, 1500);
-
     return () => clearTimeout(timer);
   }, []);
-
-  if (loading) {
-    return <Preloader />;
-  }
 
   return (
     <Router>
       <Routes>
-        {/* No layout */}
-        <Route path="/selling" element={<AboutSelling />} />
+        {/* No layout pages */}
+        <Route path="/Become-a-patner" element={<AboutSelling />} />
         <Route path="/login" element={<Login />} />
         <Route path="/verify" element={<OTPVerify />} />
 
-        {/* Public layout */}
-        <Route element={<MainLayout />}>
+        {/* Public layout with loader */}
+        <Route
+          element={
+            loading ? (
+              <Preloader />
+            ) : (
+              <MainLayout />
+            )
+          }
+        >
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/shops" element={<Shops />} />
           <Route path="/favorites" element={<FavoriteShops />} />
+          <Route path="/Under599Page" element={<Under599Page />} />
+          <Route path="/new-arrivals" element={<NewArrivalsPage />} />
+          <Route path="/product/:productId" element={<ProductDetail />} />
+           <Route path="/our-story" element={<OurStory />} />
+           <Route path="/suggestions" element={<Suggestions />} />
         </Route>
 
         {/* Public shop layout */}
@@ -68,7 +81,8 @@ export default function App() {
           <Route path="/:shopSlug" element={<PublicShopHome />} />
           <Route path="/:shopSlug/products" element={<PublicShopProducts />} />
           <Route path="/:shopSlug/about" element={<SellerAbout />} />
-          <Route path="/:shopSlug/product/:productId" element={<PublicProductDetail />} />
+          <Route path="/:shopSlug/product/:productId" element={<PublicProductDetail />}
+          />
         </Route>
 
         {/* Seller layout */}

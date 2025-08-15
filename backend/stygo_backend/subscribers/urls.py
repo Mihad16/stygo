@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import subscribe
+from .views import WhatsAppSubscribeView
 
 urlpatterns = [
-    path('subscribe/', subscribe, name='whatsapp_subscribe'),
+    path('subscribe/', WhatsAppSubscribeView.as_view(), name='whatsapp_subscribe'),
 ]

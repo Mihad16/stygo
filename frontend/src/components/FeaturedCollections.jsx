@@ -1,28 +1,40 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
 export default function FeaturedCollections() {
+  const navigate = useNavigate();
+
   const collections = [
     {
       id: 1,
       name: "Under ₹599 Products",
       image: "https://images.unsplash.com/photo-1490114538077-0a7f8cb49891",
-      buttonText: "Shop Deals"
+      buttonText: "Shop Deals",
+      link: "/Under599Page", // page to navigate
     },
     {
       id: 2,
       name: "New Arrivals",
       image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8",
-      buttonText: "View New"
+      buttonText: "View New",
+      link: "/new-arrivals",
     },
     {
       id: 3,
       name: "Best Sellers",
       image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e",
-      buttonText: "Shop Popular"
-    }
+      buttonText: "Shop Popular",
+      link: "/best-sellers",
+    },
   ];
+
+  const handleNavigate = (link) => {
+    navigate(link);
+  };
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4 px-4">Featured Collections</h2>
+     
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-4">
         {collections.map((collection) => {
           const optimizedUrl = `${collection.image}?w=800&q=70&auto=format`;
@@ -46,7 +58,10 @@ export default function FeaturedCollections() {
               />
               <div className="absolute bottom-0 left-0 p-4 bg-black/50 w-full text-white">
                 <h3 className="text-lg font-semibold">{collection.name}</h3>
-                <button className="mt-2 bg-white text-gray-800 px-3 py-1 text-sm rounded hover:bg-gray-100 transition">
+                <button
+                  onClick={() => handleNavigate(collection.link)}
+                  className="mt-2 bg-white text-gray-800 px-3 py-1 text-sm rounded hover:bg-gray-100 transition"
+                >
                   {collection.buttonText}
                 </button>
               </div>
