@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function FeaturedCollections() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = "Featured Collections - Stygo Fashion Marketplace";
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.name = "description";
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content =
+      "Discover Stygo's featured collections: Budget Finds, New Arrivals, and Best Sellers. Shop quality fashion products directly via WhatsApp.";
+  }, []);
 
   const collections = [
     {
@@ -31,22 +43,24 @@ export default function FeaturedCollections() {
     },
   ];
 
-  const handleNavigate = (link) => {
-    navigate(link);
-  };
+  const handleNavigate = (link) => navigate(link);
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
- 
-      
+    <section className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <header className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-900">Featured Collections</h2>
+        <p className="text-gray-500 mt-2">
+          Browse our top picks and most popular fashion items.
+        </p>
+      </header>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {collections.map((collection) => {
           const optimizedUrl = `${collection.image}?w=800&q=70&auto=format`;
-
           return (
-            <div
+            <article
               key={collection.id}
-              className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 relative group"
+              className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 relative group focus:outline-none"
             >
               <div className="aspect-w-4 aspect-h-3">
                 <img
@@ -62,6 +76,7 @@ export default function FeaturedCollections() {
                   className="w-full h-64 md:h-80 object-cover"
                 />
               </div>
+
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-6">
                 <div className="text-white">
                   <h3 className="text-xl font-bold">{collection.name}</h3>
@@ -74,10 +89,10 @@ export default function FeaturedCollections() {
                   </button>
                 </div>
               </div>
-            </div>
+            </article>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }

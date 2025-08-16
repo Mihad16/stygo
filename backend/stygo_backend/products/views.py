@@ -125,9 +125,7 @@ def products_under_599(request):
 
 @api_view(['GET'])
 def latest_products(request, limit=30):  # default limit 30
-    """
-    Returns the latest N products (default 30).
-    """
+
     try:
         limit = int(limit)
         if limit > 100:  # optional safety limit
@@ -137,4 +135,21 @@ def latest_products(request, limit=30):  # default limit 30
 
     products = Product.objects.all().order_by('-created_at')[:limit]
     serializer = ProductSerializer(products, many=True, context={"request": request})
+    return Response(serializer.data)
+
+
+
+@api_view(['GET'])
+def products_by_seller(request, seller_slug):
+    """
+    Fetch all products for a seller using seller slug.
+    """
+    try:
+        seller = SellerProfile.objects.get(slug=seller_slug)
+    except SellerProfile.DoesNotExist:
+        return Response({"detail": "Seller not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    products = Product.objects.filter(seller=seller).order_by('-created_at')
+    serializer = ProductSerializer(products, many=True, context={'request': request})
+
     return Response(serializer.data)

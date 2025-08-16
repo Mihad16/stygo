@@ -54,14 +54,7 @@ export default function Shops() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="mb-8 text-center md:text-left">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
-          Discover <span className="text-blue-600">Local Shops</span>
-        </h1>
-        <p className="text-gray-600 max-w-2xl mx-auto md:mx-0">
-          Explore unique products from sellers in your community
-        </p>
-      </div>
+      
 
       {/* Search */}
       <div className="mb-10 p-6 border border-gray-100">

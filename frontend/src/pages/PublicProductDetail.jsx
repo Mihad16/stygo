@@ -47,15 +47,16 @@ export default function PublicProductDetail() {
       : ["https://via.placeholder.com/500?text=No+Image"];
 
   // WhatsApp link generator
-  const whatsappLink = shop?.phone_number
-    ? `https://wa.me/${shop.phone_number.replace("+", "")}?text=${encodeURIComponent(
-        `Hi! I'm interested in your product:\n\n` +
-        `✨ *${product?.name || "Product"}*\n` +
-        `💰 Price: ₹${product?.price || ""}\n` +
-        (product?.size ? `📏 Size: ${product.size}\n` : "") +
-        `\nView product: ${window.location.href}`
-      )}`
-    : null;
+ const whatsappLink = shop?.phone_number
+  ? `https://wa.me/${shop.phone_number.replace("+", "")}?text=${encodeURIComponent(
+      `Hi! I'm interested in your product:\n\n` +
+      `✨ *${product?.name || "Product"}*\n` +
+      `💰 Price: ₹${product?.price || ""}\n` +
+      `🖼 Image: ${product?.image_url || ""}\n` +
+      `\nView product: ${window.location.href}`
+    )}`
+  : null;
+
 
   // Calculate discount percentage if original price exists
   const discountPercentage = product?.original_price && product?.price
@@ -124,11 +125,11 @@ export default function PublicProductDetail() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 🔙 Back Button */}
         <button
-          onClick={() => navigate(`/${shopSlug}/products`)}
+          onClick={() => navigate(`/${shopSlug}`)}
           className="flex items-center text-blue-600 hover:text-blue-800 mb-6 transition group"
         >
           <ArrowLeft className="w-5 h-5 mr-1 group-hover:-translate-x-1 transition-transform" />
-          <span className="font-medium">Back to products</span>
+          <span className="font-medium">Back to Home</span>
         </button>
 
         <div className="bg-white rounded-xl shadow-md overflow-hidden">

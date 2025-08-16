@@ -37,7 +37,7 @@ export default function TrendingShop() {
       });
 
       // Take top 3
-      setShops(sortedByLatestProduct.slice(0, 3));
+      setShops(sortedByLatestProduct.slice(0, 4));
 
     } catch (error) {
       console.error("Failed to fetch trending shops or products:", error);
@@ -53,10 +53,10 @@ export default function TrendingShop() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex justify-between items-end mb-8">
         <div>
-          <h2 className="text-2xl font-medium text-gray-500 mb-1">Discover</h2>
+
           <h3 className="text-3xl font-bold text-gray-900 flex items-center">
             <TrendingUp className="w-6 h-6 mr-2 text-pink-500" />
-            Newest Shops
+            Popular Shops
           </h3>
         </div>
         <Link 

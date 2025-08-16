@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ArrowRight,
   CheckCircle,
@@ -15,6 +15,19 @@ import { useNavigate } from "react-router-dom";
 export default function AboutSelling() {
   const [hoveredFeature, setHoveredFeature] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = "Sell on Stygo - Grow Your Business via WhatsApp";
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement("meta");
+      metaDesc.name = "description";
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content =
+      "Start selling on Stygo and grow your business using WhatsApp. Zero commissions, quick setup, and reach thousands of buyers locally.";
+  }, []);
+
 
   const features = [
     {
@@ -69,65 +82,41 @@ export default function AboutSelling() {
     },
   ];
 
-  return (
-    <div className="min-h-screen bg-white">
+   return (
+    <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-white">
+      <section className="relative overflow-hidden bg-gradient-to-br from-green-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 text-center">
-          <div className="relative z-10">
+          <header className="relative z-10">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
               Grow Your Business with <span className="text-green-600">Stygo</span>
             </h1>
-            
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              Join <span className="font-semibold text-green-600">10,000+</span> sellers who use Stygo to 
-              sell directly to customers on WhatsApp — <span className="underline">no fees, no hassle</span>.
+              Join <span className="font-semibold text-green-600">10,000+</span> sellers who use Stygo to sell directly to customers on WhatsApp — <span className="underline">no fees, no hassle</span>.
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-              <button
-                onClick={() => navigate("/login")}
-                className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-3 rounded-lg transition-all transform hover:scale-105 shadow-md hover:shadow-lg flex items-center gap-2"
-              >
-                Start Selling for Free
-                <ArrowRight className="w-5 h-5" />
-              </button>
-              <p className="text-sm text-gray-500">
-                No credit card required • Setup in 5 minutes
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-              {[
-                { value: "10K+", label: "Active Sellers" },
-                { value: "₹50L+", label: "Sales Generated" },
-                { value: "0%", label: "Commission" },
-                { value: "4.9★", label: "User Rating" }
-              ].map((stat, index) => (
-                <div key={index} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                  <div className="text-2xl font-bold text-green-600">{stat.value}</div>
-                  <div className="text-gray-500 text-sm">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Why Sellers Love Stygo
-          </h2>
-          <p className="text-gray-500 max-w-2xl mx-auto">
-            Everything you need to start and grow your online business
-          </p>
+            {/* Buttons and stats */}
+          </header>
+             <button
+            onClick={() => navigate("/login")}
+            className="bg-white text-green-600 hover:bg-gray-100 font-semibold px-8 py-3 rounded-lg transition-all transform hover:scale-105 shadow-md flex items-center gap-2 mx-auto"
+          >
+            Create Your Free Shop Now
+            <ArrowRight className="w-5 h-5" />
+          </button>
         </div>
         
+      </section>
+       
+
+      {/* Features Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <header className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Sellers Love Stygo</h2>
+          <p className="text-gray-500 max-w-2xl mx-auto">Everything you need to start and grow your online business</p>
+        </header>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
-            <div
+            <article
               key={index}
               className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 cursor-pointer"
               onMouseEnter={() => setHoveredFeature(index)}
@@ -142,61 +131,40 @@ export default function AboutSelling() {
               >
                 {feature.icon}
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                {feature.title}
-              </h3>
-              <p className="text-gray-500 text-sm">
-                {feature.description}
-              </p>
-            </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
+              <p className="text-gray-500 text-sm">{feature.description}</p>
+            </article>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* How It Works Section */}
-      <div className="bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Start Selling in 5 Simple Steps
-            </h2>
-            <p className="text-gray-500 max-w-2xl mx-auto">
-              Get your online store up and running in minutes
-            </p>
-          </div>
-          
-          <div className="relative">
-            <div className="hidden lg:flex absolute top-1/2 left-0 right-0 h-1 bg-gray-200 -translate-y-1/2">
-              <div className="h-full bg-green-500" style={{ width: "100%" }}></div>
-            </div>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6 relative">
-              {steps.map((step, index) => (
-                <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                  <div className="flex items-center justify-center w-12 h-12 bg-green-100 text-green-600 rounded-lg mb-4 mx-auto">
-                    {step.icon}
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xs font-semibold text-green-600 mb-1">STEP {index + 1}</div>
-                    <h3 className="font-semibold text-gray-900 mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="text-gray-500 text-sm">{step.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+      {/* Steps Section */}
+      <section className="bg-gray-50 py-16">
+        <header className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Start Selling in 5 Simple Steps</h2>
+          <p className="text-gray-500 max-w-2xl mx-auto">Get your online store up and running in minutes</p>
+        </header>
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6 relative">
+          {steps.map((step, index) => (
+            <article key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
+              <div className="flex items-center justify-center w-12 h-12 bg-green-100 text-green-600 rounded-lg mb-4 mx-auto">
+                {step.icon}
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-green-600 mb-1">STEP {index + 1}</div>
+                <h3 className="font-semibold text-gray-900 mb-2">{step.title}</h3>
+                <p className="text-gray-500 text-sm">{step.description}</p>
+              </div>
+            </article>
+          ))}
         </div>
-      </div>
+      </section>
 
       {/* CTA Section */}
-      <div className="bg-green-600 text-white py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="bg-green-600 text-white py-16">
+        <header className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Start Selling?</h2>
-          <p className="text-green-100 mb-8 text-lg">
-            Join thousands of entrepreneurs who are growing their business with Stygo
-          </p>
+          <p className="text-green-100 mb-8 text-lg">Join thousands of entrepreneurs who are growing their business with Stygo</p>
           <button
             onClick={() => navigate("/login")}
             className="bg-white text-green-600 hover:bg-gray-100 font-semibold px-8 py-3 rounded-lg transition-all transform hover:scale-105 shadow-md flex items-center gap-2 mx-auto"
@@ -204,8 +172,8 @@ export default function AboutSelling() {
             Create Your Free Shop Now
             <ArrowRight className="w-5 h-5" />
           </button>
-        </div>
-      </div>
-    </div>
+        </header>
+      </section>
+    </main>
   );
 }

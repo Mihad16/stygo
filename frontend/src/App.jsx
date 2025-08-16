@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-// Components
-import Preloader from "./components/Preloader.jsx";
+
+
 
 // Pages
 import Home from "./pages/Home";
@@ -14,7 +14,7 @@ import CreateShop from "./pages/CreateShop";
 import ProfileSeller from "./pages/ProfileSeller";
 import AddProduct from "./pages/AddProduct";
 import MyProducts from "./pages/MyProducts";
-import About from "./pages/about";
+import Info from "./pages/info.jsx";
 import PublicShopHome from "./pages/PublicShopHome";
 import FavoriteShops from "./pages/FavoritesPage";
 import AboutSelling from "./pages/AboutSelling.JSX";
@@ -38,14 +38,9 @@ import PublicShopLayout from "./layouts/PublicShopLayout";
 import PrivateRoute from "./components/PrivateRoute";
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
+
+ 
 
   return (
     <Router>
@@ -56,17 +51,16 @@ export default function App() {
         <Route path="/verify" element={<OTPVerify />} />
 
         {/* Public layout with loader */}
-        <Route
-          element={
-            loading ? (
-              <Preloader />
-            ) : (
-              <MainLayout />
-            )
-          }
-        >
+        <Route element={<MainLayout />}>
+        
+            
+              
+              
+            
+        
+        
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/info" element={<Info/>} />
           <Route path="/shops" element={<Shops />} />
           <Route path="/favorites" element={<FavoriteShops />} />
           <Route path="/Under599Page" element={<Under599Page />} />

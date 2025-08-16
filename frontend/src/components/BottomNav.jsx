@@ -1,44 +1,47 @@
-import React from "react";
-import { Home, Store,  Heart , Info } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Home, Store, Heart, Info } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import clsx from "clsx";
 
 export function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [showNav, setShowNav] = useState(true);
+  const lastScrollY = useRef(0);
+
+  // Hide on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+        setShowNav(false);
+      } else {
+        setShowNav(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navItems = [
-    { 
-      icon: <Home className="w-5 h-5" />,
-      label: "Home",
-      path: "/",
-      active: location.pathname === "/"
-    },
-    { 
-      icon: <Store className="w-5 h-5" />,
-      label: "Shops",
-      path: "/shops",
-      active: location.pathname === "/shops"
-    },
- 
-    {
-      icon: <Heart className="w-5 h-5" />,
-      label: "Favorites",
-      path: "/favorites",
-      active: location.pathname === "/favorites"
-    },
-    {
-      icon: <Info className="w-5 h-5" />,
-      label: "info",
-      path: "/about",
-      active: location.pathname === "/about"
-    }
+    { icon: <Home />, label: "Home", path: "/", active: location.pathname === "/" },
+    { icon: <Store />, label: "Shops", path: "/shops", active: location.pathname === "/shops" },
+    { icon: <Info />, label: "Info", path: "/info", active: location.pathname === "/info" }
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-lg p-2 flex justify-around max-w-md mx-auto border-t border-gray-100 z-50 md:hidden">
+    <div
+      className={clsx(
+        " md:hidden fixed bottom-1 left-1/2 transform -translate-x-1/2 bg-white/90  backdrop-blur-md shadow-2xl px-3  flex justify-center gap-4 items-center rounded-3xl max-w-md w-full  border border-gray-200 z-50 transition-transform duration-300",
+        showNav ? "translate-y-0" : "translate-y-full"
+      )}
+    >
       {navItems.map((item) => (
-        <NavItem 
+        <NavItem
           key={item.path}
           icon={item.icon}
           label={item.label}
@@ -54,26 +57,20 @@ function NavItem({ icon, label, active, onClick }) {
   return (
     <button
       className={clsx(
-        "flex flex-col items-center w-full py-1 text-xs transition-all duration-200",
+        "flex flex-col items-center justify-center px-3 py-2 rounded-2xl transition-all duration-200",
         active ? "text-green-600" : "text-gray-500 hover:text-gray-700"
       )}
       onClick={onClick}
     >
-      <div className={clsx(
-        "p-2 rounded-full transition-colors",
-        active ? "bg-green-50" : "hover:bg-gray-100"
-      )}>
-        {React.cloneElement(icon, {
-          className: clsx(
-            "w-5 h-5 transition-transform",
-            active && "scale-110"
-          )
-        })}
+      <div
+        className={clsx(
+          "p-2 rounded-full transition-all duration-200",
+          active ? "bg-green-50 scale-110" : "hover:bg-gray-100"
+        )}
+      >
+        {React.cloneElement(icon, { className: "w-5 h-5" })}
       </div>
-      <span className="mt-1 font-medium">{label}</span>
-      {active && (
-        <div className="w-1 h-1 bg-green-500 rounded-full mt-1"></div>
-      )}
+      <span className="mt-1 text-xs font-semibold">{label}</span>
     </button>
   );
 }
