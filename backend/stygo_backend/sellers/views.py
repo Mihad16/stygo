@@ -67,5 +67,24 @@ def get_shop_by_slug(request, shop_slug):
         return Response(serializer.data)
     except SellerProfile.DoesNotExist:
         return Response({'error': 'Shop not found'}, status=status.HTTP_404_NOT_FOUND)
+@api_view(['PUT'])
+def update_shop(request):
+    user = request.user
+    try:
+        profile = SellerProfile.objects.get(user=user)
+    except SellerProfile.DoesNotExist:
+        return Response({'error': 'Shop not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    data = request.data
+    profile.shop_name = data.get('shop_name', profile.shop_name)
+    profile.slug = data.get('slug', profile.slug)
+    profile.location = data.get('location', profile.location)
+    profile.category = data.get('category', profile.category)
 
+    # Handle logo upload
+    if 'logo' in request.FILES:
+        profile.logo = request.FILES['logo']
+
+    profile.save()
+    serializer = SellerProfileSerializer(profile, context={'request': request})
+    return Response(serializer.data)

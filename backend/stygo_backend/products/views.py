@@ -55,17 +55,8 @@ def all_products(request):
     serializer = ProductSerializer(products, many=True, context={"request": request})
     return Response(serializer.data)
 
-# ✅ List products by shop name (public)
-@api_view(['GET'])
-def products_by_shop(request, shop_name):
-    try:
-        seller_profile = SellerProfile.objects.get(shop_name=shop_name)
-    except SellerProfile.DoesNotExist:
-        return Response({"error": "Shop not found"}, status=404)
 
-    products = Product.objects.filter(seller=seller_profile)
-    serializer = ProductSerializer(products, many=True, context={"request": request})
-    return Response(serializer.data)
+
 
 
 class ProductDetailAPIView(RetrieveAPIView):

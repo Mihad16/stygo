@@ -13,7 +13,7 @@ class SellerProfile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="seller")
     shop_name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=True, editable=True, blank=True)
     location = models.CharField(max_length=100, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='men')
@@ -21,10 +21,12 @@ class SellerProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
+        # Auto-generate slug only if it's empty
         if not self.slug:
             base_slug = slugify(self.shop_name)
-            counter = 1
             slug = base_slug
+            counter = 1
+            # Ensure slug uniqueness
             while SellerProfile.objects.filter(slug=slug).exists():
                 slug = f"{base_slug}-{counter}"
                 counter += 1

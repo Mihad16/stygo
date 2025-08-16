@@ -22,10 +22,7 @@ export const getMyProducts = async () => {
 
 // ✅ Get products from specific shop
 
-export const getProductsByShop = async (shop_Slug) => {
-  const res = await axios.get(`/api/products/shop/${shop_Slug}/`);
-  return res.data;
-};
+
 
 //latet top 3 product
 export const top_products_by_shop = async (shop_Slug) => {

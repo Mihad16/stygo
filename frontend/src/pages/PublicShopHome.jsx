@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getProductsByShop } from "../services/product";
 import { fetchBuyerShops } from "../services/buyerShops";
 
 export default function PublicShopHome() {
-  const { shopSlug } = useParams();
+  const { shopSlug, shopName } = useParams();
   const navigate = useNavigate();
+
   const [query, setQuery] = useState("");
   const [popular, setPopular] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,9 +15,10 @@ export default function PublicShopHome() {
   // Memoize displayed products to avoid recalculating on every render
   const displayedProducts = useMemo(() => {
     return popular
-      .filter(product => 
-        product.name.toLowerCase().includes(query.toLowerCase()) ||
-        product.description.toLowerCase().includes(query.toLowerCase())
+      .filter(
+        (product) =>
+          product.name.toLowerCase().includes(query.toLowerCase()) ||
+          product.description.toLowerCase().includes(query.toLowerCase())
       )
       .slice(0, 5);
   }, [popular, query]);
@@ -30,11 +31,11 @@ export default function PublicShopHome() {
       try {
         const shopsData = await fetchBuyerShops();
         setShops(shopsData);
-        const foundShop = shopsData.find(shop => shop.slug === shopSlug);
+        const foundShop = shopsData.find((shop) => shop.slug === shopSlug);
         setCurrentShop(foundShop || null);
-        
+
         if (!foundShop) {
-          navigate('/not-found', { replace: true });
+          navigate("/not-found", { replace: true });
         }
       } catch (error) {
         console.error("Error fetching shops:", error);
@@ -44,14 +45,14 @@ export default function PublicShopHome() {
     fetchShops();
   }, [shopSlug, navigate]);
 
-  // Fetch products data
+  // Fetch products data using shopName
   useEffect(() => {
-    if (!shopSlug) return;
+    if (!shopName) return;
 
     async function fetchProducts() {
+      setLoading(true);
       try {
-        setLoading(true);
-        const data = await getProductsByShop(shopSlug);
+        const data = await getProductsByShop(encodeURIComponent(shopName));
         setPopular(data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -61,7 +62,7 @@ export default function PublicShopHome() {
     }
 
     fetchProducts();
-  }, [shopSlug]);
+  }, [shopName]);
 
   const handleMoreShopClick = () => {
     navigate(`/${shopSlug}/products`);
@@ -73,7 +74,7 @@ export default function PublicShopHome() {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-amber-10 to-amber-100 text-gray-900 flex flex-col">
-      {/* Header Section */}
+      {/* Header */}
       <header className="px-5 pt-6 pb-4 flex items-center gap-4 border-b border-gray-100">
         <div className="flex-shrink-0">
           {currentShop?.logo ? (
@@ -89,7 +90,6 @@ export default function PublicShopHome() {
             </div>
           )}
         </div>
-
         <div className="min-w-0">
           <h1 className="text-2xl font-bold truncate">
             {currentShop?.shop_name || "Shop"}
@@ -122,18 +122,19 @@ export default function PublicShopHome() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="px-5 pt-6 pb-4 ">
+      {/* Hero */}
+      <section className="px-5 pt-6 pb-4">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
             Welcome to {currentShop?.shop_name || "our shop"}
           </h2>
           <p className="mt-3 text-lg text-gray-600">
-            {currentShop?.description || "Discover our latest products and offers"}
+            {currentShop?.description ||
+              "Discover our latest products and offers"}
           </p>
         </div>
 
-        {/* Search with better accessibility */}
+        {/* Search */}
         <div className="mt-6 max-w-md mx-auto">
           <label htmlFor="search" className="sr-only">
             Search products
@@ -167,146 +168,8 @@ export default function PublicShopHome() {
         </div>
       </section>
 
-      {/* Products Section */}
-      <main className="px-5 pb-6 flex-1">
-        <section className="mt-8 max-w-7xl mx-auto">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
-            {displayedProducts.length > 0 && (
-              <button
-                onClick={handleMoreShopClick}
-                className="text-sm font-medium text-amber-600 hover:text-amber-700 flex items-center"
-              >
-                View all
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 ml-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            )}
-          </div>
-
-          {loading ? (
-            <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="h-40 bg-gray-200 rounded-lg"></div>
-                  <div className="mt-3 h-4 bg-gray-200 rounded"></div>
-                  <div className="mt-2 h-3 bg-gray-200 rounded w-3/4"></div>
-                </div>
-              ))}
-            </div>
-          ) : popular.length === 0 ? (
-            <div className="mt-8 text-center py-12 bg-gray-50 rounded-xl">
-              <svg
-                className="mx-auto h-12 w-12 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1}
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No products available
-              </h3>
-              <p className="mt-1 text-sm text-gray-500">
-                Check back later for new items
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-                {displayedProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    onClick={() => handleProductClick(product.slug || product.id)}
-                    className="group bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200 cursor-pointer border border-gray-100 hover:border-amber-200"
-                  >
-                    <div className="aspect-square bg-gray-100 overflow-hidden relative">
-                      <img
-                        src={product.image || "https://via.placeholder.com/300?text=No+Image"}
-                        alt={product.title || product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                        loading="lazy"
-                      />
-                      {product.original_price && product.original_price > product.price && (
-                        <span className="absolute top-2 right-2 bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                          {Math.round((1 - product.price / product.original_price) * 100)}% OFF
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-sm font-medium text-gray-900 truncate mb-1">
-                        {product.name}
-                      </h3>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          {product.original_price && product.original_price > product.price ? (
-                            <div className="flex items-baseline">
-                              <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
-                              <span className="ml-2 text-xs text-gray-500 line-through">₹{product.original_price}</span>
-                            </div>
-                          ) : (
-                            <span className="text-lg font-bold text-gray-900">₹{product.price}</span> 
-                          )}<br/>
-
-                               <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                            {product.size}
-                          </span>
-                           <p className="text-xs text-gray-400 mt-1 line-clamp-3">
-                  {product.description}
-                </p>
-                        </div>
-                            
-                        
-                      
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {displayedProducts.length > 0 && (
-                <div className="mt-8 text-center">
-                  <button
-                    onClick={handleMoreShopClick}
-                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-400 transition-colors duration-200"
-                  >
-                    Browse All Products
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 ml-2"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </section>
-      </main>
+      {/* Products */}
+      
 
       {/* Footer */}
       <footer className="bg-gray-50 py-6 mt-auto border-t border-gray-200">
