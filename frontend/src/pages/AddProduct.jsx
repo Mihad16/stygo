@@ -5,21 +5,87 @@ import {
   updateProduct,
   getProductById,
 } from "../services/product";
+import { getDashboard } from "../services/dashboard";
 
 export default function AddProduct() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [originalPrice, setOriginalPrice] = useState("");
   const [size, setSize] = useState("");
+  const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [shopCategory, setShopCategory] = useState("");
+  const [availableSubcategories, setAvailableSubcategories] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const editId = queryParams.get("edit");
+
+  // Subcategory mapping based on shop's main category
+  const subcategoryMapping = {
+    men: [
+      { value: 'men_shirts', label: 'Shirts' },
+      { value: 'men_tshirts', label: 'T-Shirts' },
+      { value: 'men_pants', label: 'Pants' },
+      { value: 'men_jeans', label: 'Jeans' },
+      { value: 'men_shorts', label: 'Shorts' },
+      { value: 'men_jackets', label: 'Jackets' },
+      { value: 'men_shoes', label: 'Shoes' },
+      { value: 'men_accessories', label: 'Accessories' },
+    ],
+    women: [
+      { value: 'women_tops', label: 'Tops' },
+      { value: 'women_dresses', label: 'Dresses' },
+      { value: 'women_pants', label: 'Pants' },
+      { value: 'women_jeans', label: 'Jeans' },
+      { value: 'women_skirts', label: 'Skirts' },
+      { value: 'women_jackets', label: 'Jackets' },
+      { value: 'women_shoes', label: 'Shoes' },
+      { value: 'women_bags', label: 'Bags' },
+      { value: 'women_jewelry', label: 'Jewelry' },
+    ],
+    kids: [
+      { value: 'kids_boys_clothing', label: 'Boys Clothing' },
+      { value: 'kids_girls_clothing', label: 'Girls Clothing' },
+      { value: 'kids_shoes', label: 'Kids Shoes' },
+      { value: 'kids_toys', label: 'Toys' },
+      { value: 'kids_accessories', label: 'Kids Accessories' },
+    ],
+    accessories: [
+      { value: 'accessories_bags', label: 'Bags' },
+      { value: 'accessories_jewelry', label: 'Jewelry' },
+      { value: 'accessories_watches', label: 'Watches' },
+      { value: 'accessories_sunglasses', label: 'Sunglasses' },
+      { value: 'accessories_belts', label: 'Belts' },
+      { value: 'accessories_hats', label: 'Hats' },
+    ],
+    beauty: [
+      { value: 'beauty_skincare', label: 'Skincare' },
+      { value: 'beauty_makeup', label: 'Makeup' },
+      { value: 'beauty_haircare', label: 'Hair Care' },
+      { value: 'beauty_fragrances', label: 'Fragrances' },
+      { value: 'beauty_tools', label: 'Beauty Tools' },
+    ],
+  };
+
+  // Fetch shop category and set available subcategories
+  useEffect(() => {
+    const fetchShopData = async () => {
+      try {
+        const dashboardData = await getDashboard();
+        const category = dashboardData.category;
+        setShopCategory(category);
+        setAvailableSubcategories(subcategoryMapping[category] || []);
+      } catch (error) {
+        console.error("Failed to fetch shop data:", error);
+      }
+    };
+    fetchShopData();
+  }, []);
 
   useEffect(() => {
     if (editId) {
@@ -28,8 +94,9 @@ export default function AddProduct() {
           const data = await getProductById(editId);
           setName(data.name);
           setPrice(data.price);
-          setPrice(data.originalPrice);
+          setOriginalPrice(data.original_price);
           setSize(data.size);
+          setCategory(data.category);
           setDescription(data.description);
           setPreviewImage(data.image);
         } catch (error) {
@@ -58,6 +125,7 @@ export default function AddProduct() {
   );
   formData.append("price", price);
   formData.append("size", size);
+  formData.append("category", category);
   formData.append("description", description);
   if (image) {
     formData.append("image", image);
@@ -137,6 +205,36 @@ export default function AddProduct() {
               required
             />
           </div>
+        </div>
+
+        {/* Category Selection */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Product Category
+            {shopCategory && (
+              <span className="text-sm text-gray-500 ml-2">
+                (Available for {shopCategory.charAt(0).toUpperCase() + shopCategory.slice(1)} shops)
+              </span>
+            )}
+          </label>
+          <select
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+          >
+            <option value="">Select a category</option>
+            {availableSubcategories.map((subcat) => (
+              <option key={subcat.value} value={subcat.value}>
+                {subcat.label}
+              </option>
+            ))}
+          </select>
+          {availableSubcategories.length === 0 && shopCategory && (
+            <p className="text-sm text-gray-500">
+              Loading categories for {shopCategory} shops...
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">

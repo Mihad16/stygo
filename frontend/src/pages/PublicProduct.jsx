@@ -15,10 +15,25 @@ export default function PublicProduct() {
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("newest");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const [selectedShop, setSelectedShop] = useState("");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
 
   const categories = ["men", "women", "kids", "accessories", "beauty"];
+
+  // Get available subcategories based on selected main category
+  const availableSubcategories = useMemo(() => {
+    if (!selectedCategory) return [];
+    
+    const subcategoriesSet = new Set();
+    allProducts.forEach(product => {
+      if (product.category?.toLowerCase().startsWith(selectedCategory.toLowerCase() + '_')) {
+        subcategoriesSet.add(product.category);
+      }
+    });
+    
+    return Array.from(subcategoriesSet).sort();
+  }, [allProducts, selectedCategory]);
 
   // Get shops that have products in the selected category
   const availableShops = useMemo(() => {
@@ -26,12 +41,19 @@ export default function PublicProduct() {
     
     const shopsWithCategoryProducts = new Set();
     allProducts.forEach(product => {
-      if (product.category?.toLowerCase() === selectedCategory.toLowerCase()) {
+      // Check if product category starts with the selected main category
+      if (product.category?.toLowerCase().startsWith(selectedCategory.toLowerCase() + '_')) {
         shopsWithCategoryProducts.add(product.shopSlug);
       }
     });
     
-    return shops.filter(shop => shopsWithCategoryProducts.has(shop.slug));
+    // Also include shops whose main category matches the selected category
+    const matchingShops = shops.filter(shop => 
+      shop.category?.toLowerCase() === selectedCategory.toLowerCase() ||
+      shopsWithCategoryProducts.has(shop.slug)
+    );
+    
+    return matchingShops;
   }, [shops, allProducts, selectedCategory]);
 
   const filteredAndSortedProducts = useMemo(() => {
@@ -42,7 +64,10 @@ export default function PublicProduct() {
           product.description.toLowerCase().includes(query.toLowerCase()));
       
       const matchesCategory = selectedCategory ? 
-        product.category?.toLowerCase() === selectedCategory.toLowerCase() : true;
+        product.category?.toLowerCase().startsWith(selectedCategory.toLowerCase() + '_') : true;
+      
+      const matchesSubcategory = selectedSubcategory ? 
+        product.category?.toLowerCase() === selectedSubcategory.toLowerCase() : true;
       
       const matchesShop = selectedShop ? 
         product.shopSlug === selectedShop : true;
@@ -51,7 +76,7 @@ export default function PublicProduct() {
         (!priceRange.min || parseFloat(product.price) >= parseFloat(priceRange.min)) &&
         (!priceRange.max || parseFloat(product.price) <= parseFloat(priceRange.max));
 
-      return matchesSearch && matchesCategory && matchesShop && matchesPriceRange;
+      return matchesSearch && matchesCategory && matchesSubcategory && matchesShop && matchesPriceRange;
     });
 
     // Sort products
@@ -122,19 +147,31 @@ export default function PublicProduct() {
   const clearFilters = () => {
     setQuery("");
     setSelectedCategory("");
+    setSelectedSubcategory("");
     setSelectedShop("");
     setPriceRange({ min: "", max: "" });
   };
 
-  // Reset shop selection when category changes
+  // Reset subcategory and shop selection when category changes
   useEffect(() => {
-    if (selectedCategory && selectedShop) {
-      const isShopAvailable = availableShops.some(shop => shop.slug === selectedShop);
-      if (!isShopAvailable) {
-        setSelectedShop("");
+    if (selectedCategory) {
+      // Reset subcategory if it doesn't belong to the new category
+      if (selectedSubcategory && !selectedSubcategory.toLowerCase().startsWith(selectedCategory.toLowerCase() + '_')) {
+        setSelectedSubcategory("");
       }
+      
+      // Reset shop selection if it's not available in the current category
+      if (selectedShop) {
+        const isShopAvailable = availableShops.some(shop => shop.slug === selectedShop);
+        if (!isShopAvailable) {
+          setSelectedShop("");
+        }
+      }
+    } else {
+      // Reset subcategory when no category is selected
+      setSelectedSubcategory("");
     }
-  }, [selectedCategory, selectedShop, availableShops]);
+  }, [selectedCategory, selectedSubcategory, selectedShop, availableShops]);
 
   const getCategoryColor = (category) => {
     switch (category?.toLowerCase()) {
@@ -200,6 +237,22 @@ export default function PublicProduct() {
                   </option>
                 ))}
               </select>
+
+              {/* Subcategory Filter - only show when category is selected */}
+              {selectedCategory && availableSubcategories.length > 0 && (
+                <select
+                  value={selectedSubcategory}
+                  onChange={(e) => setSelectedSubcategory(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:border-transparent text-sm"
+                >
+                  <option value="">All {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Subcategories</option>
+                  {availableSubcategories.map(subcat => (
+                    <option key={subcat} value={subcat}>
+                      {subcat.replace(selectedCategory.toLowerCase() + '_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </option>
+                  ))}
+                </select>
+              )}
 
               {/* Shop Filter */}
               <select
