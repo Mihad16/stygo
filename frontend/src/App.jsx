@@ -14,7 +14,7 @@ import CreateShop from "./pages/CreateShop";
 import ProfileSeller from "./pages/ProfileSeller";
 import AddProduct from "./pages/AddProduct";
 import MyProducts from "./pages/MyProducts";
-import Info from "./pages/info.jsx";
+import Info from "./pages/Info.jsx";
 import PublicShopHome from "./pages/PublicShopHome";
 import FavoriteShops from "./pages/FavoritesPage";
 import AboutSelling from "./pages/AboutSelling.JSX";
@@ -27,6 +27,7 @@ import ProductDetail from "./pages/ProductDetail.jsx";
 import OurStory from "./pages/OurStory.jsx";
 import Suggestions from "./pages/Suggestions.jsx";
 import BestSellers from "./pages/BestSellers.jsx";
+import PublicProduct from "./pages/PublicProduct.jsx";
 
 
 // Layouts
@@ -67,6 +68,7 @@ export default function App() {
           <Route path="/new-arrivals" element={<NewArrivalsPage />} />
           <Route path="/best-sellers" element={<BestSellers />} />
           <Route path="/product/:productId" element={<ProductDetail />} />
+          <Route path="/products" element={<PublicProduct />} />
            <Route path="/our-story" element={<OurStory />} />
            <Route path="/suggestions" element={<Suggestions />} />
         </Route>
