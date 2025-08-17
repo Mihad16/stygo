@@ -136,7 +136,7 @@ export default function TrendingShop() {
                     shop.products.map((product) => (
                       <Link 
                         key={product.id} 
-                        to={`/product/${product.slug}`}
+                        to={`/product/${product.id}`}
                         className="group"
                       >
                         <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden">

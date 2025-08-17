@@ -59,7 +59,7 @@ export default function TrendingThisWeek() {
           {products.map((product) => (
             <Link 
               key={product.id} 
-              to={`/product/${product.slug}`}
+              to={`/product/${product.id}`}
               className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 overflow-hidden"
             >
               <div className="relative aspect-square bg-gray-50 overflow-hidden">
