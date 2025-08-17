@@ -9,7 +9,7 @@ const PublicTopNav = () => {
 
   const menuItems = [
     { label: "Home", path: `/${shopSlug}`, icon: <Home size={18} className="mr-2" /> },
-    { label: "Products", path: `/${shopSlug}/product`, icon: <Box size={18} className="mr-2" /> },
+    { label: "Products", path: `/${shopSlug}/products`, icon: <Box size={18} className="mr-2" /> },
     { label: "About", path: `/${shopSlug}/about`, icon: <Info size={18} className="mr-2" /> },
   ];
 
