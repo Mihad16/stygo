@@ -49,14 +49,7 @@ export default function Home() {
 
         {/* Trending Products */}
         <section className="max-w-7xl mx-auto mt-16">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Trending This Week
-            </h2>
-            <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-              Discover what's popular right now
-            </p>
-          </div>
+        
           <Suspense fallback={
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {[...Array(12)].map((_, i) => (
@@ -74,14 +67,7 @@ export default function Home() {
 
         {/* Trending Shops */}
         <section className="max-w-7xl mx-auto mt-24">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Trending Shops
-            </h2>
-            <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-              Explore popular shops
-            </p>
-          </div>
+         
           <Suspense fallback={
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(3)].map((_, i) => (
