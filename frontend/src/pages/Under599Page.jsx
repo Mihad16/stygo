@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getProductsUnder599 } from "../services/product";
 import { useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiLoader, FiRefreshCw, FiAlertCircle, FiStar } from "react-icons/fi";
+import { FiArrowLeft, FiLoader, FiRefreshCw, FiAlertCircle } from "react-icons/fi";
 import { FaRupeeSign, FaShoppingBag } from "react-icons/fa";
 
 export default function Under599() {
@@ -10,6 +10,8 @@ export default function Under599() {
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const navigate = useNavigate();
+  const [sortOption, setSortOption] = useState("relevance"); // relevance | price-asc | price-desc | name-asc | name-desc
+  const [viewMode, setViewMode] = useState("grid"); // grid | list
 
   // SEO Metadata
   const pageTitle = "Best Products Under ₹599 | Affordable Shopping Deals";
@@ -33,14 +35,38 @@ export default function Under599() {
   useEffect(() => {
     fetchProducts();
     document.title = pageTitle;
+
     const metaDescription = document.querySelector('meta[name="description"]') || document.createElement('meta');
     metaDescription.name = 'description';
     metaDescription.content = pageDescription;
     document.head.appendChild(metaDescription);
   }, []);
 
-  const handleProductClick = (productId, productName) => {
-    navigate(`/products-under-599/${productName.toLowerCase().replace(/\s+/g, '-')}-${productId}`);
+  const displayedProducts = useMemo(() => {
+    const arr = Array.isArray(products) ? [...products] : [];
+    switch (sortOption) {
+      case "price-asc":
+        return arr.sort((a, b) => (a.price || 0) - (b.price || 0));
+      case "price-desc":
+        return arr.sort((a, b) => (b.price || 0) - (a.price || 0));
+      case "name-asc":
+        return arr.sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
+      case "name-desc":
+        return arr.sort((a, b) => String(b.name || "").localeCompare(String(a.name || "")));
+      default:
+        return arr; // relevance (server order)
+    }
+  }, [products, sortOption]);
+
+  const handleProductClick = (product) => {
+    const productId = product.id;
+    const slug = product.seller_slug || product.shopSlug;
+    if (slug) {
+      navigate(`/${slug}/product/${productId}`);
+    } else {
+      // Fallback to generic product route
+      navigate(`/product/${productId}`);
+    }
   };
 
   const handleRefresh = () => {
@@ -157,45 +183,189 @@ export default function Under599() {
         {/* Product Grid */}
         {!loading && !error && products.length > 0 && (
           <>
-            <div className="mb-6 flex justify-between items-center">
+            <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <h2 className="text-lg font-semibold">
                 Showing {products.length} {products.length === 1 ? "item" : "items"} under ₹599
               </h2>
-              <button
-                onClick={handleRefresh}
-                className="text-blue-600 hover:text-blue-700 flex items-center"
-              >
-                <FiRefreshCw className="mr-1.5" /> Refresh
-              </button>
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="text-sm text-gray-600" htmlFor="sortBy">Sort by</label>
+                <select
+                  id="sortBy"
+                  value={sortOption}
+                  onChange={(e) => setSortOption(e.target.value)}
+                  className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-white"
+                  aria-label="Sort products"
+                >
+                  <option value="relevance">Relevance</option>
+                  <option value="price-asc">Price: Low to High</option>
+                  <option value="price-desc">Price: High to Low</option>
+                  <option value="name-asc">Name: A to Z</option>
+                  <option value="name-desc">Name: Z to A</option>
+                </select>
+                <div className="h-5 w-px bg-gray-200" aria-hidden="true" />
+                <div className="inline-flex rounded-md shadow-sm" role="group" aria-label="Toggle view mode">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("grid")}
+                    className={`px-3 py-1.5 text-sm border border-gray-300 rounded-l-md ${viewMode === "grid" ? "bg-gray-100" : "bg-white"}`}
+                    aria-pressed={viewMode === "grid"}
+                  >
+                    Grid
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("list")}
+                    className={`px-3 py-1.5 text-sm border border-gray-300 border-l-0 rounded-r-md ${viewMode === "list" ? "bg-gray-100" : "bg-white"}`}
+                    aria-pressed={viewMode === "list"}
+                  >
+                    List
+                  </button>
+                </div>
+                <button
+                  onClick={handleRefresh}
+                  className="text-blue-600 hover:text-blue-700 flex items-center text-sm"
+                >
+                  <FiRefreshCw className="mr-1.5" /> Refresh
+                </button>
+              </div>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
-              {products.map((product) => (
-                <div 
+            <div className={viewMode === "grid" ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6" : "space-y-4"}>
+              {displayedProducts.map((product) => (
+                <article
                   key={product.id}
-                  className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all flex flex-col cursor-pointer"
-                  onClick={() => handleProductClick(product.id, product.name)}
+                  className={viewMode === "grid" ? "bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all flex flex-col cursor-pointer" : "bg-white rounded-lg shadow-sm hover:shadow-md transition-all flex cursor-pointer"}
+                  onClick={() => handleProductClick(product)}
                 >
-                  <div className="relative pt-[100%] bg-gray-50">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="absolute top-0 left-0 w-full h-full object-contain p-4"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="p-3 border-t border-gray-100">
-                    <h3 className="text-sm font-medium text-gray-800 line-clamp-2">
-                      {product.name}
-                    </h3>
-                    <div className="mt-2 flex items-center">
-                      <FaRupeeSign className="text-green-600 text-sm" />
-                      <p className="text-base font-bold text-green-600 ml-1">
-                        {product.price.toLocaleString('en-IN')}
-                      </p>
+                  {viewMode === "grid" ? (
+                    <div className="relative pt-[100%] bg-gray-50">
+                      <img
+                        src={product.image_url || product.image}
+                        alt={product.name}
+                        className="absolute top-0 left-0 w-full h-full object-contain p-4"
+                        loading="lazy"
+                      />
                     </div>
-                  </div>
-                </div>
+                  ) : (
+                    <div className="flex w-full">
+                      <div className="w-32 flex-shrink-0 bg-gray-50 relative">
+                        <img
+                          src={product.image_url || product.image}
+                          alt={product.name}
+                          className="w-32 h-32 object-contain p-3"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="flex-1 border-l border-gray-100">
+                        <div className="p-3">
+                          <h3 className="text-sm font-medium text-gray-800 line-clamp-2">{product.name}</h3>
+                          {product.description && (
+                            <p className="mt-0.5 text-xs text-gray-500 line-clamp-2">{product.description}</p>
+                          )}
+                          {(product.seller_name || product.seller_logo_url || product.shopName || product.shopLogo) && (
+                            <div className="mt-1 flex items-center gap-2">
+                              {(product.seller_logo_url || product.shopLogo) && (
+                                <img
+                                  src={product.seller_logo_url || product.shopLogo}
+                                  alt={product.seller_name || product.shopName || "Shop"}
+                                  className="w-4 h-4 rounded-full"
+                                  loading="lazy"
+                                />
+                              )}
+                              {(product.seller_slug || product.shopSlug) ? (
+                                <a
+                                  href={`/${product.seller_slug || product.shopSlug}`}
+                                  className="text-xs text-gray-500 hover:text-gray-700 truncate"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {product.seller_name || product.shopName || product.seller_slug || product.shopSlug}
+                                </a>
+                              ) : (
+                                <span className="text-xs text-gray-500 truncate">{product.seller_name || product.shopName}</span>
+                              )}
+                              {(product.seller_location || product.shopLocation) && (
+                                <span className="text-[10px] text-gray-400">• {product.seller_location || product.shopLocation}</span>
+                              )}
+                            </div>
+                          )}
+                          <div className="mt-2 flex items-center gap-2">
+                            <div className="flex items-center">
+                              <FaRupeeSign className="text-green-600 text-sm" />
+                              <p className="text-base font-bold text-green-600 ml-1">
+                                {Number(product.price || 0).toLocaleString('en-IN')}
+                              </p>
+                            </div>
+                            {product.original_price && Number(product.original_price) > Number(product.price) && (
+                              <>
+                                <span className="text-xs text-gray-400 line-through">
+                                  ₹{Number(product.original_price).toLocaleString('en-IN')}
+                                </span>
+                                <span className="text-xs font-semibold text-green-600">
+                                  {Math.round(((Number(product.original_price) - Number(product.price)) / Number(product.original_price)) * 100)}% off
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {viewMode === "grid" && (
+                    <div className="p-3 border-t border-gray-100">
+                      <h3 className="text-sm font-medium text-gray-800 line-clamp-2">
+                        {product.name}
+                      </h3>
+                      {product.description && (
+                        <p className="mt-0.5 text-xs text-gray-500 line-clamp-2">{product.description}</p>
+                      )}
+                      {/* Shop info */}
+                      {(product.seller_name || product.seller_logo_url) && (
+                        <div className="mt-1 flex items-center gap-2">
+                          {(product.seller_logo_url || product.shopLogo) && (
+                            <img
+                              src={product.seller_logo_url || product.shopLogo}
+                              alt={product.seller_name || product.shopName || "Shop"}
+                              className="w-4 h-4 rounded-full"
+                              loading="lazy"
+                            />
+                          )}
+                          {(product.seller_slug || product.shopSlug) ? (
+                            <a
+                              href={`/${product.seller_slug || product.shopSlug}`}
+                              className="text-xs text-gray-500 hover:text-gray-700 truncate"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {product.seller_name || product.shopName || product.seller_slug || product.shopSlug}
+                            </a>
+                          ) : (
+                            <span className="text-xs text-gray-500 truncate">{product.seller_name || product.shopName}</span>
+                          )}
+                          {(product.seller_location || product.shopLocation) && (
+                            <span className="text-[10px] text-gray-400">• {product.seller_location || product.shopLocation}</span>
+                          )}
+                        </div>
+                      )}
+                      <div className="mt-2 flex items-center gap-2">
+                        <div className="flex items-center">
+                          <FaRupeeSign className="text-green-600 text-sm" />
+                          <p className="text-base font-bold text-green-600 ml-1">
+                            {Number(product.price || 0).toLocaleString('en-IN')}
+                          </p>
+                        </div>
+                        {product.original_price && Number(product.original_price) > Number(product.price) && (
+                          <>
+                            <span className="text-xs text-gray-400 line-through">
+                              ₹{Number(product.original_price).toLocaleString('en-IN')}
+                            </span>
+                            <span className="text-xs font-semibold text-green-600">
+                              {Math.round(((Number(product.original_price) - Number(product.price)) / Number(product.original_price)) * 100)}% off
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </article>
               ))}
             </div>
           </>
