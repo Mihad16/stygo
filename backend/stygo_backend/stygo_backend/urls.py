@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/sellers/', include('sellers.urls')),
     path("api/products/", include("products.urls")),
     path('api/', include('subscribers.urls')),
+    path('api/suggestions/', include('suggestions.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { submitSuggestion } from "../services/suggestions";
 
 export default function Suggestions() {
   const [name, setName] = useState("");
@@ -6,15 +7,35 @@ export default function Suggestions() {
   const [message, setMessage] = useState("");
   const [language, setLanguage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ name, email, message, language }); // For testing
-    setSubmitted(true);
-    setName("");
-    setEmail("");
-    setMessage("");
-    setLanguage("");
+    setError("");
+    setLoading(true);
+    try {
+      await submitSuggestion({
+        name: name.trim(),
+        email: email.trim(),
+        language: language.trim(),
+        message: message.trim(),
+        page_path: window.location?.pathname || "",
+      });
+      setSubmitted(true);
+      setName("");
+      setEmail("");
+      setMessage("");
+      setLanguage("");
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+          err?.response?.data?.detail ||
+          "Failed to send feedback. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -26,7 +47,7 @@ export default function Suggestions() {
 
       {submitted ? (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-          ✅ Thank you! We've received your feedback.
+          Thank you! We've received your feedback.
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4 bg-white shadow-md rounded-lg p-4 sm:space-y-6 sm:p-6">
@@ -40,8 +61,17 @@ export default function Suggestions() {
             />
           </div>
 
-        
-        
+          <div>
+            <label className="block text-sm font-medium mb-1 sm:mb-2">Email (optional)</label>
+            <input
+              type="email"
+              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:border-blue-300 sm:px-4"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium mb-1 sm:mb-2">What would you like to tell us?</label>
             <textarea
@@ -53,13 +83,22 @@ export default function Suggestions() {
             />
           </div>
 
-      
+         
+
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors sm:w-auto sm:px-6"
+            disabled={loading}
+            className={`w-full sm:w-auto px-6 text-white px-4 py-2 rounded-lg transition-colors ${
+              loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
-            Send Feedback
+            {loading ? "Sending..." : "Send Feedback"}
           </button>
         </form>
       )}

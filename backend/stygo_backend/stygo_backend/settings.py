@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'sellers',
     'products',
     'subscribers',
+    'suggestions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
