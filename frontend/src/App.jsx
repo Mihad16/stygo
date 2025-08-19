@@ -28,6 +28,8 @@ import OurStory from "./pages/OurStory.jsx";
 import Suggestions from "./pages/Suggestions.jsx";
 import BestSellers from "./pages/BestSellers.jsx";
 import PublicProduct from "./pages/PublicProduct.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import TermsOfService from "./pages/TermsOfService.jsx";
 
 
 // Layouts
@@ -71,6 +73,8 @@ export default function App() {
           <Route path="/products" element={<PublicProduct />} />
            <Route path="/our-story" element={<OurStory />} />
            <Route path="/suggestions" element={<Suggestions />} />
+           <Route path="/privacy" element={<PrivacyPolicy />} />
+           <Route path="/terms" element={<TermsOfService />} />
         </Route>
 
         {/* Public shop layout */}
