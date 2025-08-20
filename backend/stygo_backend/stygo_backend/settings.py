@@ -101,10 +101,15 @@ WSGI_APPLICATION = 'stygo_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',          # or your db name
+        'USER': 'postgres',
+        'PASSWORD': 'mihadql9605',
+        'HOST': 'localhost',
+        'PORT': '5433',              # <-- changed here
     }
 }
+
 
 
 # Password validation
