@@ -56,7 +56,7 @@ export default function TrendingShop() {
         <div>
           <h3 className="text-3xl font-bold text-gray-900 flex items-center">
             <TrendingUp className="w-6 h-6 mr-2 text-pink-500" />
-            Trending Shops
+           Shops
           </h3>
           <p className="mt-2 text-gray-600">Discover the most popular shops</p>
         </div>

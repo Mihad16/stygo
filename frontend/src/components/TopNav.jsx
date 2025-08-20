@@ -39,8 +39,8 @@ export default function TopNav() {
             Shops
           </NavButton>
           <NavButton 
-            active={location.pathname === "/about"} 
-            onClick={() => navigate("/about")}
+            active={location.pathname === "/our-story"} 
+            onClick={() => navigate("/our-story")}
           >
             About
           </NavButton>

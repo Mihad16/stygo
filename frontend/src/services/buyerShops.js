@@ -1,10 +1,10 @@
-import axios from "axios";
+import api from "./axios";
 
-const API_URL = "http://127.0.0.1:8000/api/sellers"; // Or your live base URL
+const API_URL = "/api/sellers"; // Uses baseURL from axios instance
 
 export const fetchBuyerShops = async () => {
   try {
-    const response = await axios.get(`${API_URL}/shops/`);
+    const response = await api.get(`${API_URL}/shops/`);
     return response.data;
   } catch (error) {
     console.error("Error fetching buyer shops:", error);

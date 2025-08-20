@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../services/axios";
 import "react-phone-input-2/lib/style.css";
 import PhoneInput from "react-phone-input-2";
 import { FiShoppingBag, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
@@ -40,8 +40,8 @@ export default function ProductUpdatesSubscription() {
       }
 
       // API call to backend
-      const response = await axios.post(
-        "http://localhost:8000/api/subscribe/",
+      const response = await api.post(
+        "/api/subscribe/",
         {
           phone_number: formData.phone_number,
           name: formData.name || null,

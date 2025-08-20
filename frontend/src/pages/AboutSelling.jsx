@@ -6,6 +6,15 @@ export default function AboutSelling() {
 
   return (
     <main className="min-h-screen bg-white">
+      {/* Back Button */}
+      <div className="max-w-4xl mx-auto px-4 pt-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-4 inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          ← Back
+        </button>
+      </div>
       {/* Hero Section */}
       <section className="bg-blue-50 py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">

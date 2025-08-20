@@ -1,5 +1,6 @@
 // Info.jsx
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import WhatsAppSubscribe from "../components/WhatsAppSubscribe";
 
 export default function Info() {
@@ -56,42 +57,19 @@ export default function Info() {
                 Stygo connects buyers and sellers in Kasaragod through a simple, chat‑first shopping flow. Browse, message, and buy — all via WhatsApp.
               </p>
               <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                <a href="/shops" className="inline-flex items-center justify-center rounded-xl bg-gray-900 px-5 py-3 text-white font-semibold hover:bg-gray-800">
+                <Link to="/shops" className="inline-flex items-center justify-center rounded-xl bg-gray-900 px-5 py-3 text-white font-semibold hover:bg-gray-800">
                   Explore Shops
-                </a>
-                <a href="/Become-a-patner" className="inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-gray-900 font-semibold ring-1 ring-gray-200 hover:bg-gray-50">
+                </Link>
+                <Link to="/Become-a-patner" className="inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-gray-900 font-semibold ring-1 ring-gray-200 hover:bg-gray-50">
                   Become a Seller
-                </a>
+                </Link>
               </div>
               <p className="mt-3 text-xs text-gray-500">
                 We don’t process payments or deliveries. You and the seller arrange everything directly.
               </p>
             </div>
             <div className="relative">
-              <div className="rounded-3xl bg-white shadow-xl ring-1 ring-gray-100 p-6">
-                <img
-                  src="/images/mihad.jpg"
-                  alt="Stygo Community"
-                  className="w-full h-64 object-cover rounded-2xl"
-                  onError={(e) => {
-                    e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='256' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='1.5'%3E%3Crect x='3' y='4' width='18' height='14' rx='2'/%3E%3Cpath d='M3 8h18'/%3E%3Ccircle cx='8' cy='11' r='2'/%3E%3Cpath d='M15 12h6'/%3E%3C/svg%3E";
-                  }}
-                />
-                <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-lg bg-gray-50 py-3">
-                    <p className="text-xl font-bold text-gray-900">0% Fee</p>
-                    <p className="text-xs text-gray-500">We don’t take cuts</p>
-                  </div>
-                  <div className="rounded-lg bg-gray-50 py-3">
-                    <p className="text-xl font-bold text-gray-900">WhatsApp</p>
-                    <p className="text-xs text-gray-500">Direct messaging</p>
-                  </div>
-                  <div className="rounded-lg bg-gray-50 py-3">
-                    <p className="text-xl font-bold text-gray-900">Local</p>
-                    <p className="text-xs text-gray-500">Community‑first</p>
-                  </div>
-                </div>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -187,9 +165,7 @@ export default function Info() {
                 Building simple tools that help local shops reach more customers. Stygo is designed to be practical, fast, and community‑focused.
               </p>
               <div className="mt-3 flex flex-wrap gap-2 justify-center md:justify-start">
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">React</span>
-                <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">Django</span>
-                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Product</span>
+             
               </div>
             </div>
           </div>
@@ -243,13 +219,13 @@ export default function Info() {
             <p className="mt-2 text-sm text-gray-200">
               Open your Stygo shop in minutes. Add products, get WhatsApp leads, and keep 100% of your sales.
             </p>
-            <a href="/Become-a-patner" className="mt-5 inline-flex rounded-xl bg-white px-5 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+            <Link to="/Become-a-patner" className="mt-5 inline-flex rounded-xl bg-white px-5 py-3 font-semibold text-gray-900 hover:bg-gray-100">
               Create a Store
-            </a>
+            </Link>
           </div>
         </div>
         <p className="mt-6 text-center text-xs text-gray-500">
-          Marketplace notice: Stygo provides discovery and messaging only. Read our <a className="underline" href="/privacy">Privacy Policy</a> and <a className="underline" href="/terms">Terms of Service</a>.
+          Marketplace notice: Stygo provides discovery and messaging only. Read our <Link className="underline" to="/privacy">Privacy Policy</Link> and <Link className="underline" to="/terms">Terms of Service</Link>.
         </p>
       </section>
     </main>

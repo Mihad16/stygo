@@ -33,14 +33,7 @@ export default function FeaturedCollections() {
       buttonText: "Explore New",
       link: "/new-arrivals",
     },
-    {
-      id: 3,
-      name: "Best Sellers",
-      description: "Customer favorites",
-      image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e",
-      buttonText: "Shop Popular",
-      link: "/best-sellers",
-    },
+
   ];
 
   const handleNavigate = (link) => navigate(link);

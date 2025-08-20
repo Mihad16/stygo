@@ -1,8 +1,16 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function PrivacyPolicy() {
+  const navigate = useNavigate();
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-6 inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+      >
+        ← Back
+      </button>
       <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
       <p className="text-gray-700 mb-4">
         We value your privacy. This policy explains what data we collect, how we use it, and your rights.

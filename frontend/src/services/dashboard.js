@@ -1,44 +1,28 @@
 // src/services/seller.js
-import axios from "axios";
+import api from "./axios";
 
-const API_BASE = "http://localhost:8000/api/sellers/";
+const API_BASE = "/api/sellers/";
 
 // ✅ Get seller dashboard
 export async function getDashboard() {
-  const token = localStorage.getItem("accessToken"); // ✅ corrected key
-
-  if (!token) {
-    throw new Error("No access token found");
-  }
-
-  const res = await axios.get(`${API_BASE}dashboard/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
+  const token = localStorage.getItem("accessToken");
+  if (!token) throw new Error("No access token found");
+  const res = await api.get(`${API_BASE}dashboard/`);
   return res.data;
 }
 
 export async function updateShop(shopData) {
   const token = localStorage.getItem("accessToken");
-
-  if (!token) {
-    throw new Error("No access token found");
-  }
+  if (!token) throw new Error("No access token found");
 
   const formData = new FormData();
   for (const key in shopData) {
     formData.append(key, shopData[key]);
   }
 
-  const res = await axios.put(`${API_BASE}shop/update/`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
+  const res = await api.put(`${API_BASE}shop/update/`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
-
   return res.data;
 }
 

@@ -1,7 +1,4 @@
-import axios from "axios";
-
-// 🔗 Backend base URL
-const baseURL = "http://localhost:8000/api/auth"; // change if needed
+import api from "./axios";
 
 // ✅ Helper to save auth tokens
 const saveAuthTokens = (access, refresh, user_id, phone) => {
@@ -20,13 +17,13 @@ const saveAuthTokens = (access, refresh, user_id, phone) => {
 
 // ✅ 1. Send OTP to phone
 export const sendOTP = async (phone) => {
-  const res = await axios.post(`${baseURL}/send-otp/`, { phone });
+  const res = await api.post(`/api/auth/send-otp/`, { phone });
   return res.data; // { message: "OTP sent" }
 };
 
 // ✅ 2. Verify OTP and login/register
 export const verifyOTP = async (phone, otp) => {
-  const res = await axios.post(`${baseURL}/verify/`, {
+  const res = await api.post(`/api/auth/verify/`, {
     phone,
     otp,
   });

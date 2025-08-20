@@ -1,24 +1,23 @@
-import axios from "axios";
+import api from "./axios";
 
 export const createShop = async (shopName, location, category, logo) => {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("User not authenticated. No token found.");
+  const access = localStorage.getItem("accessToken");
+  if (!access) throw new Error("User not authenticated. Please log in.");
 
   const formData = new FormData();
   formData.append("shop_name", shopName);
   formData.append("location", location);
   formData.append("category", category);
   if (logo) {
-    formData.append("logo", logo); // ✅ Add logo if provided
+    formData.append("logo", logo);
   }
 
-  const response = await axios.post(
-    "http://localhost:8000/api/sellers/create-shop/",
+  const response = await api.post(
+    "/api/sellers/create-shop/",
     formData,
     {
       headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data", // ✅ Required for file uploads
+        "Content-Type": "multipart/form-data",
       },
     }
   );

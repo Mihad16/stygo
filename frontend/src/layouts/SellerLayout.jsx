@@ -1,12 +1,15 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import SellerBottomNav from "../components/SellerBottomNav";
 
 export default function SellerLayout() {
+  const location = useLocation();
+  const showBottomNav = location.pathname !== "/create-shop";
+
   return (
-    <div className="pb-14"> {/* Padding bottom to prevent content overlap */}
+    <div className={showBottomNav ? "pb-14" : "pb-0"}> {/* Avoid overlap only when nav is visible */}
       <Outlet />
-      <SellerBottomNav />
+      {showBottomNav && <SellerBottomNav />}
     </div>
   );
 }

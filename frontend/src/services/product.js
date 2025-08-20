@@ -15,6 +15,12 @@ export const getMyProducts = async () => {
   return res.data;
 };
 
+// ✅ Get all products (public)
+export const getAllProducts = async () => {
+  const res = await axios.get("/api/products/all/");
+  return res.data;
+};
+
 // ✅ Get products from specific shop
 
 export const getProductsByShop = async (sellerSlug) => {

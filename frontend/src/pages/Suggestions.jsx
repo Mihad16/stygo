@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { submitSuggestion } from "../services/suggestions";
 
 export default function Suggestions() {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -40,6 +42,12 @@ export default function Suggestions() {
 
   return (
     <div className="w-full px-4 py-6 sm:max-w-4xl sm:mx-auto sm:py-10">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-6 inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+      >
+        ← Back
+      </button>
       <h1 className="text-2xl font-bold mb-4 sm:text-3xl sm:mb-6">Share Your Thoughts</h1>
       <p className="text-gray-700 mb-6 sm:mb-8">
         Found a mistake? Have an idea? Let us know below.
@@ -94,7 +102,7 @@ export default function Suggestions() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full sm:w-auto px-6 text-white px-4 py-2 rounded-lg transition-colors ${
+            className={`w-full sm:w-auto px-6 text-white py-2 rounded-lg transition-colors ${
               loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
