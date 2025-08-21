@@ -30,7 +30,6 @@ export default function PublicProductDetail() {
         }
         setShop(matchedShop);
       } catch (error) {
-        console.error("Error fetching product or shop details:", error);
         setError(error.message || "Failed to load product details. Please try again later.");
       } finally {
         setLoading(false);

@@ -14,8 +14,7 @@ export default function ProductDetail() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Debug: route params
-    try { console.log("[ProductDetail] Route params:", { productId, shopSlug }); } catch {}
+    // Debug logs removed
     async function fetchData() {
       try {
         setIsLoading(true);
@@ -28,11 +27,10 @@ export default function ProductDetail() {
         // 1️⃣ Get product details
         const productData = await getProductById(productId);
         setProduct(productData);
-        try { console.log("[ProductDetail] Fetched product:", productData); } catch {}
+        
 
         // 2️⃣ Get shop details (prioritize route slug, then product seller slug, then id, then shop name)
         const shops = await fetchBuyerShops();
-        try { console.log("[ProductDetail] Shops list:", shops); } catch {}
         let matchedShop = null;
         // a) route param slug
         if (shopSlug) {
@@ -45,7 +43,6 @@ export default function ProductDetail() {
           productData.shop_slug ||
           productData.shop?.slug ||
           null;
-        try { console.log('[ProductDetail] Candidate sellerSlug:', sellerSlug); } catch {}
         if (!matchedShop && sellerSlug) {
           matchedShop = shops.find((s) => s.slug === sellerSlug) || null;
         }
@@ -56,7 +53,6 @@ export default function ProductDetail() {
         const sellerProfileId = productData.seller_profile_id || productData.sellerProfileId || null;
         const sellerIdFallback = productData.seller_id || productData.sellerId || null;
         const idToMatch = sellerId || sellerProfileId || sellerIdFallback || null;
-        try { console.log('[ProductDetail] Candidate sellerId:', sellerId, 'profileId:', sellerProfileId, 'fallback:', sellerIdFallback); } catch {}
         if (!matchedShop && idToMatch) {
           matchedShop = shops.find((s) => String(s.id) === String(idToMatch)) || null;
         }
@@ -69,11 +65,9 @@ export default function ProductDetail() {
           productData.seller_name,
           productData.sellerName,
         ].filter(Boolean);
-        try { console.log('[ProductDetail] Candidate shop names:', candidateNames); } catch {}
         if (!matchedShop && candidateNames.length) {
           matchedShop = shops.find((s) => candidateNames.some((n) => (s.shop_name || s.name) === n)) || null;
         }
-        try { console.log("[ProductDetail] Matched shop:", matchedShop); } catch {}
         if (matchedShop) {
           setShop(matchedShop);
         } else {
@@ -81,17 +75,15 @@ export default function ProductDetail() {
           try {
             for (const s of shops) {
               if (!s?.slug) continue;
-              try { console.log('[ProductDetail] Probing shop by slug:', s.slug); } catch {}
               const prods = await getProductsByShop(s.slug);
               const owns = Array.isArray(prods) && prods.some((p) => String(p.id) === String(productData.id));
               if (owns) {
                 matchedShop = s;
-                try { console.log('[ProductDetail] Ownership found via products list. Shop:', s); } catch {}
                 break;
               }
             }
           } catch (probeErr) {
-            try { console.warn('[ProductDetail] Shop probe failed:', probeErr); } catch {}
+            // Swallow probe errors silently
           }
           if (matchedShop) {
             setShop(matchedShop);
@@ -104,7 +96,6 @@ export default function ProductDetail() {
             logo: productData.seller?.logo || null,
             location: productData.seller?.location || productData.location || null,
           };
-          try { console.log('[ProductDetail] Using fallback display shop:', fallbackDisplay); } catch {}
           // Only set if at least a name/slug/phone exists
           if (fallbackDisplay.shop_name || fallbackDisplay.slug || fallbackDisplay.phone_number) {
             setShop(fallbackDisplay);
@@ -112,7 +103,7 @@ export default function ProductDetail() {
           }
         }
       } catch (error) {
-        console.error("Error fetching product or shop details:", error);
+        // Error logs removed
         setError(error.message || "Failed to load product details. Please try again later.");
       } finally {
         setIsLoading(false);
@@ -122,10 +113,7 @@ export default function ProductDetail() {
     fetchData();
   }, [productId]);
 
-  // Debug: log when product/shop state updates
-  useEffect(() => {
-    try { console.log("[ProductDetail] State update:", { product, shop }); } catch {}
-  }, [product, shop]);
+  // Debug logs removed
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
