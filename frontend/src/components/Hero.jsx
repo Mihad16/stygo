@@ -26,7 +26,7 @@ export default function Hero() {
             onClick={() => navigate("/Become-a-patner")}
             className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100"
           >
-            Become Seller
+            Create your store
           </button>
         </div>
       </div>

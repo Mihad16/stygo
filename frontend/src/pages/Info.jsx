@@ -61,7 +61,7 @@ export default function Info() {
                   Explore Shops
                 </Link>
                 <Link to="/Become-a-patner" className="inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-gray-900 font-semibold ring-1 ring-gray-200 hover:bg-gray-50">
-                  Become a Seller
+                  Create your store
                 </Link>
               </div>
               <p className="mt-3 text-xs text-gray-500">

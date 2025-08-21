@@ -28,7 +28,7 @@ export default function AboutSelling() {
             onClick={() => navigate("/login")}
             className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Become a Seller
+            Create your store
           </button>
         </div>
       </section>
