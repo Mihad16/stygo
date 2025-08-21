@@ -17,10 +17,16 @@ export default function TopNav() {
           className="flex items-center"
         >
           <img
-            src="images/my_logo.png"
+            src="/images/my_logo.png"
             alt="Stygo"
             onClick={() => navigate("/")}
             className="h-10 w-auto cursor-pointer"
+            onError={(e) => {
+              if (e.currentTarget.dataset.fallback !== "1") {
+                e.currentTarget.dataset.fallback = "1";
+                e.currentTarget.src = "/images/mylogo.jpeg";
+              }
+            }}
           />
         </motion.div>
 

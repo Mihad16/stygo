@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Phone, MessageCircle, ShoppingBag, MapPin, Info, Star, ChevronRight, Heart } from "lucide-react";
-import { getProductById } from "../services/product";
+import { getProductById, getProductsByShop } from "../services/product";
 import { fetchBuyerShops } from "../services/buyerShops";
 
 export default function ProductDetail() {
-  const { productId } = useParams();
+  const { productId, shopSlug } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [shop, setShop] = useState(null);
@@ -14,6 +14,8 @@ export default function ProductDetail() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Debug: route params
+    try { console.log("[ProductDetail] Route params:", { productId, shopSlug }); } catch {}
     async function fetchData() {
       try {
         setIsLoading(true);
@@ -26,12 +28,88 @@ export default function ProductDetail() {
         // 1️⃣ Get product details
         const productData = await getProductById(productId);
         setProduct(productData);
+        try { console.log("[ProductDetail] Fetched product:", productData); } catch {}
 
-        // 2️⃣ Get shop details
+        // 2️⃣ Get shop details (prioritize route slug, then product seller slug, then id, then shop name)
         const shops = await fetchBuyerShops();
-        const matchedShop = shops.find((s) => s.id === productData.seller?.id);
+        try { console.log("[ProductDetail] Shops list:", shops); } catch {}
+        let matchedShop = null;
+        // a) route param slug
+        if (shopSlug) {
+          matchedShop = shops.find((s) => s.slug === shopSlug) || null;
+        }
+        // b) seller slug from product (consider multiple possible fields)
+        const sellerSlug =
+          productData.seller?.slug ||
+          productData.seller_slug ||
+          productData.shop_slug ||
+          productData.shop?.slug ||
+          null;
+        try { console.log('[ProductDetail] Candidate sellerSlug:', sellerSlug); } catch {}
+        if (!matchedShop && sellerSlug) {
+          matchedShop = shops.find((s) => s.slug === sellerSlug) || null;
+        }
+        // c) match by seller id (object or numeric)
+        const sellerId = (productData.seller && typeof productData.seller === 'object')
+          ? productData.seller.id
+          : (typeof productData.seller === 'number' ? productData.seller : null);
+        const sellerProfileId = productData.seller_profile_id || productData.sellerProfileId || null;
+        const sellerIdFallback = productData.seller_id || productData.sellerId || null;
+        const idToMatch = sellerId || sellerProfileId || sellerIdFallback || null;
+        try { console.log('[ProductDetail] Candidate sellerId:', sellerId, 'profileId:', sellerProfileId, 'fallback:', sellerIdFallback); } catch {}
+        if (!matchedShop && idToMatch) {
+          matchedShop = shops.find((s) => String(s.id) === String(idToMatch)) || null;
+        }
+        // d) match by shop name from product data
+        const candidateNames = [
+          productData.seller?.shop_name,
+          productData.seller?.name,
+          productData.shop_name,
+          productData.shopName,
+          productData.seller_name,
+          productData.sellerName,
+        ].filter(Boolean);
+        try { console.log('[ProductDetail] Candidate shop names:', candidateNames); } catch {}
+        if (!matchedShop && candidateNames.length) {
+          matchedShop = shops.find((s) => candidateNames.some((n) => (s.shop_name || s.name) === n)) || null;
+        }
+        try { console.log("[ProductDetail] Matched shop:", matchedShop); } catch {}
         if (matchedShop) {
           setShop(matchedShop);
+        } else {
+          // e) Fallback: probe shops by fetching their products to find ownership
+          try {
+            for (const s of shops) {
+              if (!s?.slug) continue;
+              try { console.log('[ProductDetail] Probing shop by slug:', s.slug); } catch {}
+              const prods = await getProductsByShop(s.slug);
+              const owns = Array.isArray(prods) && prods.some((p) => String(p.id) === String(productData.id));
+              if (owns) {
+                matchedShop = s;
+                try { console.log('[ProductDetail] Ownership found via products list. Shop:', s); } catch {}
+                break;
+              }
+            }
+          } catch (probeErr) {
+            try { console.warn('[ProductDetail] Shop probe failed:', probeErr); } catch {}
+          }
+          if (matchedShop) {
+            setShop(matchedShop);
+          } else {
+          // Build a minimal display shop from product fields so UI can render something
+          const fallbackDisplay = {
+            shop_name: candidateNames[0] || null,
+            slug: sellerSlug || null,
+            phone_number: productData.seller?.phone_number || productData.phone_number || null,
+            logo: productData.seller?.logo || null,
+            location: productData.seller?.location || productData.location || null,
+          };
+          try { console.log('[ProductDetail] Using fallback display shop:', fallbackDisplay); } catch {}
+          // Only set if at least a name/slug/phone exists
+          if (fallbackDisplay.shop_name || fallbackDisplay.slug || fallbackDisplay.phone_number) {
+            setShop(fallbackDisplay);
+          }
+          }
         }
       } catch (error) {
         console.error("Error fetching product or shop details:", error);
@@ -43,6 +121,11 @@ export default function ProductDetail() {
 
     fetchData();
   }, [productId]);
+
+  // Debug: log when product/shop state updates
+  useEffect(() => {
+    try { console.log("[ProductDetail] State update:", { product, shop }); } catch {}
+  }, [product, shop]);
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
@@ -114,9 +197,28 @@ export default function ProductDetail() {
     ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
     : 0;
 
+  // Build a display shop object from fetched shop or product.seller
+  const displayShop = shop || product?.seller || null;
+  // Fallbacks for common field name variations across APIs
+  const displayShopName =
+    displayShop?.shop_name ||
+    displayShop?.name ||
+    displayShop?.display_name ||
+    displayShop?.seller_name ||
+    displayShop?.username ||
+    product?.shop_name ||
+    product?.shopName ||
+    product?.seller_name ||
+    product?.sellerName ||
+    null;
+  const displayShopSlug = displayShop?.slug || product?.seller_slug || null;
+  const displayShopPhone = displayShop?.phone_number || displayShop?.phone || displayShop?.contact_number || null;
+  const displayShopLogo = displayShop?.logo || displayShop?.image || displayShop?.avatar || "https://via.placeholder.com/100?text=Shop";
+  const displayShopLocation = displayShop?.location || displayShop?.address || displayShop?.city || null;
+
   // WhatsApp link generator
-  const whatsappLink = shop?.phone_number
-    ? `https://wa.me/${shop.phone_number.replace("+", "")}?text=${encodeURIComponent(
+  const whatsappLink = displayShopPhone
+    ? `https://wa.me/${displayShopPhone.replace("+", "")}?text=${encodeURIComponent(
         `Hi! I'm interested in your product:\n\n` +
         `✨ *${product?.name || "Product"}*\n` +
         `💰 Price: ₹${product?.price || ""}\n` +
@@ -182,7 +284,7 @@ export default function ProductDetail() {
                   </div>
                   
                   {/* Shop info */}
-                  <p className="mt-2 text-lg text-gray-600">{product.seller?.shop_name || "Shop"}</p>
+                  <p className="mt-2 text-lg text-gray-600">{displayShopName || "Shop"}</p>
                   
                   {/* Size and category */}
                   <div className="mt-3 flex flex-wrap gap-3">
@@ -211,6 +313,9 @@ export default function ProductDetail() {
                     ) : (
                       <span className="text-3xl font-bold text-gray-900">₹{product.price}</span>
                     )}
+                    {typeof product.quantity !== 'undefined' && product.quantity !== null && (
+                      <p className="mt-2 text-sm text-gray-600">In stock: <span className="font-medium">{product.quantity}</span></p>
+                    )}
                   </div>
 
                   {/* Description */}
@@ -228,24 +333,24 @@ export default function ProductDetail() {
                 </div>
 
                 {/* Shop Info */}
-                {shop && (
+                {(displayShop || displayShopName) && (
                   <div className="mt-8 pt-6 border-t border-gray-200">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">Sold by</h3>
                     <div 
                       className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition"
-                      onClick={() => navigate(`/${shop.slug}`)}
+                      onClick={() => displayShopSlug && navigate(`/${displayShopSlug}`)}
                     >
                       <img
-                        src={shop.logo || "https://via.placeholder.com/100?text=Shop"}
-                        alt={shop.shop_name}
+                        src={displayShopLogo || "https://via.placeholder.com/100?text=Shop"}
+                        alt={displayShopName || "Shop"}
                         className="w-14 h-14 rounded-full object-cover border border-gray-200"
                       />
                       <div className="flex-1 min-w-0">
-                        <h2 className="text-lg font-semibold text-gray-900 truncate">{shop.shop_name}</h2>
-                        {shop.location && (
+                        <h2 className="text-lg font-semibold text-gray-900 truncate">{displayShopName || "Seller"}</h2>
+                        {displayShopLocation && (
                           <p className="text-sm text-gray-600 flex items-center mt-1 truncate">
                             <MapPin className="w-4 h-4 mr-1 flex-shrink-0" /> 
-                            <span className="truncate">{shop.location}</span>
+                            <span className="truncate">{displayShopLocation}</span>
                           </p>
                         )}
                       </div>
@@ -254,9 +359,9 @@ export default function ProductDetail() {
                     
                     {/* Contact buttons */}
                     <div className="mt-4 grid grid-cols-2 gap-3">
-                      {shop.phone_number && (
+                      {displayShopPhone && (
                         <a
-                          href={`tel:${shop.phone_number}`}
+                          href={`tel:${displayShopPhone}`}
                           className="flex items-center justify-center bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition"
                         >
                           <Phone className="w-5 h-5 mr-2" />
