@@ -26,9 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-#=s4ilj7n48u0r64rz9#d212c_br#zv(#gbmecg%6+mqj#5sj(')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+# Default to True locally; set DEBUG=False via environment in Render.
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = ['stygo.in', 'www.stygo.in', 'stygo.onrender.com']
+if DEBUG:
+    ALLOWED_HOSTS += ['localhost', '127.0.0.1']
 render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if render_host:
     ALLOWED_HOSTS.append(render_host)
@@ -111,9 +114,10 @@ DATABASES = {
 }
 
 # Prefer DATABASE_URL if provided (Render Postgres)
+SSL_REQUIRE = not DEBUG
 DATABASES["default"] = dj_database_url.config(
     conn_max_age=600,
-    ssl_require=True,
+    ssl_require=SSL_REQUIRE,
     default=os.environ.get(
         "DATABASE_URL",
         f"postgres://{DATABASES['default']['USER']}:{DATABASES['default']['PASSWORD']}@{DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}/{DATABASES['default']['NAME']}"
@@ -181,6 +185,11 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.stygo.in",
     "https://stygo.onrender.com",
 ]
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS += [
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
 backend_origin = os.environ.get("BACKEND_URL")
 if backend_origin:
     CSRF_TRUSTED_ORIGINS.append(backend_origin)
