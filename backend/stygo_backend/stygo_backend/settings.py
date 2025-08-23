@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#=s4ilj7n48u0r64rz9#d212c_br#zv(#gbmecg%6+mqj#5sj('
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-#=s4ilj7n48u0r64rz9#d212c_br#zv(#gbmecg%6+mqj#5sj(')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = ['stygo.in', 'www.stygo.in', 'stygo.onrender.com']
+render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if render_host:
+    ALLOWED_HOSTS.append(render_host)
 
 
 # Application definition
@@ -54,24 +59,21 @@ REST_FRAMEWORK = {
     ]
 }
 
-
-from datetime import timedelta
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
-
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'stygo_backend.urls'
@@ -97,8 +99,6 @@ WSGI_APPLICATION = 'stygo_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-import os
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -110,7 +110,15 @@ DATABASES = {
     }
 }
 
-
+# Prefer DATABASE_URL if provided (Render Postgres)
+DATABASES["default"] = dj_database_url.config(
+    conn_max_age=600,
+    ssl_require=True,
+    default=os.environ.get(
+        "DATABASE_URL",
+        f"postgres://{DATABASES['default']['USER']}:{DATABASES['default']['PASSWORD']}@{DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}/{DATABASES['default']['NAME']}"
+    ),
+)
 
 
 # Password validation
@@ -150,10 +158,9 @@ USE_TZ = True
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
-
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -163,10 +170,19 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # React dev server
     "http://127.0.0.1:5173",
 ]
+frontend_origin = os.environ.get("FRONTEND_URL")
+if frontend_origin:
+    CORS_ALLOWED_ORIGINS.append(frontend_origin)
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://stygo.in",
+    "https://www.stygo.in",
+    "https://stygo.onrender.com",
 ]
+backend_origin = os.environ.get("BACKEND_URL")
+if backend_origin:
+    CSRF_TRUSTED_ORIGINS.append(backend_origin)
 
 CORS_ALLOW_CREDENTIALS = True
