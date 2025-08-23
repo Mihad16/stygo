@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -113,17 +114,18 @@ DATABASES = {
     }
 }
 
-
-# Prefer DATABASE_URL if provided (Render Postgres)
+# Prefer DATABASE_URL if provided (e.g., Render/Neon/Supabase). In production, require it.
 SSL_REQUIRE = not DEBUG
-DATABASES["default"] = dj_database_url.config(
+db_from_env = dj_database_url.config(
     conn_max_age=600,
     ssl_require=SSL_REQUIRE,
-    default=os.environ.get(
-        "DATABASE_URL",
-        f"postgres://{DATABASES['default']['USER']}:{DATABASES['default']['PASSWORD']}@{DATABASES['default']['HOST']}:{DATABASES['default']['PORT']}/{DATABASES['default']['NAME']}"
-    ),
+    default=None,
 )
+if db_from_env:
+    DATABASES["default"] = db_from_env
+elif not DEBUG:
+    # In production, a managed Postgres URL must be set
+    raise ImproperlyConfigured("DATABASE_URL is required in production")
 
 
 # Password validation
