@@ -109,13 +109,15 @@ def update_product(request, product_id):
     if product.seller.user != user:
         return Response({'error': 'Not authorized to update this product'}, status=403)
 
-    serializer = ProductSerializer(product, data=request.data, partial=True)  # ✅ partial=True for PATCH
+    serializer = ProductSerializer(product, data=request.data, partial=True, context={"request": request})  # ensure image_url builds absolute URL
+
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=400)
 
 
+# Get products under 599
 @api_view(['GET'])
 def products_under_599(request):
     products = Product.objects.filter(price__lte=599).order_by('-created_at')

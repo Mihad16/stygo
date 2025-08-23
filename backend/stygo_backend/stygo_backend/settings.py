@@ -169,6 +169,8 @@ USE_TZ = True
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 CLOUDINARY_STORAGE = {
+    # Ensure these environment variables are set in your runtime environment
+    # e.g., CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
     "CLOUD_NAME": os.environ.get("djiqpdx9q"),
     "API_KEY": os.environ.get("668655531126598"),
     "API_SECRET": os.environ.get("**********"),
