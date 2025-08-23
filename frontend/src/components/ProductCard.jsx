@@ -91,7 +91,7 @@ export default function ProductCard() {
               {/* Product image */}
               <div className="relative mb-3">
                 <img
-                  src={product.image || "/placeholder.png"}
+                  src={product.image_url || product.image || "/placeholder.png"}
                   alt={product.name}
                   className="w-full h-40 object-cover rounded-lg aspect-square"
                   loading="lazy"
