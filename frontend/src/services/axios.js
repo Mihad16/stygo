@@ -1,8 +1,10 @@
 import axios from "axios";
 
 // Determine API base URL
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://api.stygo.in";
+const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const API_BASE_URL = isLocal
+  ? "http://127.0.0.1:8000"
+  : import.meta.env.VITE_API_BASE_URL || "https://api.stygo.in";
 
 const api = axios.create({
   baseURL: API_BASE_URL,

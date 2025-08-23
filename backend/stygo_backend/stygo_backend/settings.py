@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-#=s4ilj7n48u0r64rz9#d
 # Default to True locally; set DEBUG=False via environment in Render.
 DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['stygo.in', 'www.stygo.in', 'stygo.onrender.com']
+ALLOWED_HOSTS = ['stygo.in', 'www.stygo.in', 'stygo.onrender.com', 'api.stygo.in', '.stygo.in']
 if DEBUG:
     ALLOWED_HOSTS += ['localhost', '127.0.0.1']
 render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -174,16 +174,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
     "https://stygo.in",
     "https://www.stygo.in",
+    "https://api.stygo.in",
 ]
 frontend_origin = os.environ.get("FRONTEND_URL")
 if frontend_origin:
     CORS_ALLOWED_ORIGINS.append(frontend_origin)
 
+if DEBUG:
+    CORS_ALLOWED_ORIGINS += [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://stygo.in",
     "https://www.stygo.in",
     "https://stygo.onrender.com",
+    "https://api.stygo.in",
 ]
 
 if DEBUG:
