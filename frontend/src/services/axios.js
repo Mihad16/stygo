@@ -1,7 +1,20 @@
 import axios from "axios";
 
+// Determine API base URL
+// Priority: VITE_API_BASE_URL > hostname-based fallback (stygo.in) > localhost
+const inferProdBase = () => {
+  try {
+    const host = window?.location?.hostname || "";
+    if (host.endsWith("stygo.in")) return "https://api.stygo.in";
+  } catch (_) {}
+  return null;
+};
+
+const API_BASE_URL =
+  import.meta?.env?.VITE_API_BASE_URL || inferProdBase() || "http://127.0.0.1:8000";
+
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000",
+  baseURL: API_BASE_URL,
 });
 
 // ✅ Attach token to every request
@@ -30,7 +43,7 @@ api.interceptors.response.use(
         const refresh = localStorage.getItem("refreshToken");
 
         // Try to get a new access token
-        const res = await axios.post("http://127.0.0.1:8000/api/token/refresh/", {
+        const res = await axios.post(`${API_BASE_URL}/api/token/refresh/`, {
           refresh,
         });
 

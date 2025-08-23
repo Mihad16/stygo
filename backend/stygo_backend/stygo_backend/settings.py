@@ -105,13 +105,14 @@ WSGI_APPLICATION = 'stygo_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'postgres'),        # default postgres if env not set
+        'NAME': os.environ.get('DB_NAME', 'postgres'),
         'USER': os.environ.get('DB_USER', 'postgres'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'mihadql9605'),
         'HOST': os.environ.get('DB_HOST', 'localhost'),
         'PORT': os.environ.get('DB_PORT', '5433'),
     }
 }
+
 
 # Prefer DATABASE_URL if provided (Render Postgres)
 SSL_REQUIRE = not DEBUG
@@ -171,20 +172,20 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # React dev server
-    "http://127.0.0.1:5173",
+    "https://stygo.in",
+    "https://www.stygo.in",
 ]
 frontend_origin = os.environ.get("FRONTEND_URL")
 if frontend_origin:
     CORS_ALLOWED_ORIGINS.append(frontend_origin)
 
+
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
     "https://stygo.in",
     "https://www.stygo.in",
     "https://stygo.onrender.com",
 ]
+
 if DEBUG:
     CSRF_TRUSTED_ORIGINS += [
         "http://localhost:8000",
