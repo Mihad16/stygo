@@ -17,7 +17,7 @@ import MyProducts from "./pages/MyProducts";
 import Info from "./pages/Info.jsx";
 import PublicShopHome from "./pages/PublicShopHome";
 import FavoriteShops from "./pages/FavoritesPage";
-import AboutSelling from "./pages/AboutSelling.JSX";
+import AboutSelling from "./pages/AboutSelling.jsx";
 import PublicShopProducts from "./pages/PublicShopProducts";
 import SellerAbout from "./pages/SellerAbout";
 import PublicProductDetail from "./pages/PublicProductDetail";
