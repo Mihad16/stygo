@@ -1,16 +1,18 @@
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Product
 from .serializers import ProductSerializer
 from sellers.models import SellerProfile
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import ProductSerializer
 from rest_framework.generics import get_object_or_404
 
 # ✅ Create a product
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
 def create_product(request):
     user = request.user
 
@@ -23,11 +25,10 @@ def create_product(request):
     if Product.objects.filter(seller=shop).count() >= 10:
         return Response({'error': 'Product limit reached (max 10 products)'}, status=400)
 
-    data = request.data.copy()
-    data['seller'] = shop.id
-
-    serializer = ProductSerializer(data=data, context={"request": request})
+    # Use request.data directly to preserve uploaded files (e.g., image)
+    serializer = ProductSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
+        # Inject seller explicitly; no need to modify incoming data
         serializer.save(seller=shop)
         return Response(serializer.data)
     else:
