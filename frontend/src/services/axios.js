@@ -2,9 +2,11 @@ import axios from "axios";
 
 // Determine API base URL
 const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const envUrl = import.meta.env.VITE_API_BASE_URL;
+const isValidEnvUrl = typeof envUrl === "string" && /^https?:\/\//i.test(envUrl);
 const API_BASE_URL = isLocal
   ? "http://127.0.0.1:8000"
-  : import.meta.env.VITE_API_BASE_URL || "https://api.stygo.in";
+  : (isValidEnvUrl ? envUrl : "https://api.stygo.in");
 
 const api = axios.create({
   baseURL: API_BASE_URL,

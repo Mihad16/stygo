@@ -203,3 +203,6 @@ if backend_origin:
     CSRF_TRUSTED_ORIGINS.append(backend_origin)
 
 CORS_ALLOW_CREDENTIALS = True
+
+# Honor X-Forwarded-Proto so Django knows original scheme behind proxies (e.g., Render)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
