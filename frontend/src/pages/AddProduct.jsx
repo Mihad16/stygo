@@ -98,7 +98,7 @@ export default function AddProduct() {
           setSize(data.size);
           setCategory(data.category);
           setDescription(data.description);
-          setPreviewImage(data.image);
+          setPreviewImage(data.image_url || data.image);
         } catch (error) {
           console.error("Failed to load product for editing:", error);
         }

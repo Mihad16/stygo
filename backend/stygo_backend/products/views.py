@@ -5,7 +5,7 @@ from .models import Product
 from .serializers import ProductSerializer
 from sellers.models import SellerProfile
 from rest_framework.generics import RetrieveAPIView
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .serializers import ProductSerializer
 from rest_framework.generics import get_object_or_404
 
@@ -103,6 +103,7 @@ def delete_product(request, product_id):
 
 @api_view(['PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
 def update_product(request, product_id):
     user = request.user
     product = get_object_or_404(Product, id=product_id)

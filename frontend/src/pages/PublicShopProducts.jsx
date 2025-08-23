@@ -231,9 +231,9 @@ export default function PublicShopProducts() {
                 <div className={`relative bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden ${
                   viewMode === "list" ? "w-48 h-32" : "h-64"
                 }`}>
-                  {product.image ? (
+                  {(product.image_url || product.image) ? (
                     <img
-                      src={product.image}
+                      src={product.image_url || product.image}
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       loading="lazy"

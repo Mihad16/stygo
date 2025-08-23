@@ -236,9 +236,9 @@ export default function PublicShopHome() {
                   aria-label={`View ${product.name}`}
                 >
                   <div className="relative h-64 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-                    {product.image ? (
+                    {(product.image_url || product.image) ? (
                       <img
-                        src={product.image}
+                        src={product.image_url || product.image}
                         alt={product.name}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         loading="lazy"

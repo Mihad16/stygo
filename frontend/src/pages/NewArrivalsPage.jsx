@@ -138,7 +138,7 @@ const ProductCard = ({ product, onClick }) => {
           </div>
         )}
         <img
-          src={product.image}
+          src={product.image_url || product.image}
           alt={product.name}
           className={`absolute top-0 left-0 w-full h-full object-contain p-4 transition-opacity duration-200 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           loading="lazy"
@@ -149,9 +149,9 @@ const ProductCard = ({ product, onClick }) => {
         <h3 className="text-sm font-medium text-gray-800 mb-1 line-clamp-2">
           {product.name}
         </h3>
-            <p className="mt-1 text-xs sm:text-sm text-gray-600 line-clamp-2 min-h-[40px]">
-                    {product.description || "No description available"}
-                  </p>
+        <p className="mt-1 text-xs sm:text-sm text-gray-600 line-clamp-2 min-h-[40px]">
+          {product.description || "No description available"}
+        </p>
         <div className="mt-auto">
           <div className="flex items-center">
             <FaRupeeSign className="text-green-600 text-sm" />
