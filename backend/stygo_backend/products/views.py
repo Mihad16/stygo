@@ -43,7 +43,17 @@ def create_product(request):
     serializer = ProductSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
         # Inject seller explicitly; no need to modify incoming data
-        instance = serializer.save(seller=shop)
+        try:
+            instance = serializer.save(seller=shop)
+        except Exception as e:
+            # Log and surface the error to help diagnose (e.g., Cloudinary misconfig)
+            import traceback
+            print("Error saving product:", str(e))
+            traceback.print_exc()
+            return Response({
+                'error': 'Failed to save product (storage error).',
+                'detail': str(e),
+            }, status=500)
 
         # Post-save diagnostics: which storage handled the file and what URL was generated
         try:
