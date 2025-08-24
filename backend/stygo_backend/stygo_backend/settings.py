@@ -191,7 +191,7 @@ if CLOUDINARY_URL:
 
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 print(">>> USING STORAGE:", DEFAULT_FILE_STORAGE)
-print(image.url)
+
 try:
     print("Cloudinary cloud:", cloudinary.config().cloud_name)
 except Exception:
