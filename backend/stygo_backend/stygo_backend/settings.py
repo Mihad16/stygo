@@ -183,16 +183,28 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-
-
 CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL")
 if CLOUDINARY_URL:
     cloudinary.config(cloudinary_url=CLOUDINARY_URL)
 
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-print(">>> USING STORAGE:", DEFAULT_FILE_STORAGE)
+# Django 5: configure storages via STORAGES setting
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
+# Optional: serve legacy local media in DEBUG (not used by Cloudinary)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# Diagnostics
 try:
+    from django.core.files.storage import default_storage
+    print(">>> USING STORAGE (resolved):", type(default_storage).__name__)
     print("Cloudinary cloud:", cloudinary.config().cloud_name)
 except Exception:
     pass
