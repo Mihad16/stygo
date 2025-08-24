@@ -6,6 +6,7 @@ import {
   getProductById,
 } from "../services/product";
 import { getDashboard } from "../services/dashboard";
+import Toast from "../components/Toast";
 
 export default function AddProduct() {
   const [name, setName] = useState("");
@@ -175,9 +176,12 @@ export default function AddProduct() {
         {editId ? "Edit Product" : "Add New Product"}
       </h1>
 
-      {errorMsg && (
-        <div className="mb-4 p-3 rounded bg-red-50 text-red-700 border border-red-200 text-sm">{errorMsg}</div>
-      )}
+      <Toast
+        open={!!errorMsg}
+        message={errorMsg}
+        type="error"
+        onClose={() => setErrorMsg("")}
+      />
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
