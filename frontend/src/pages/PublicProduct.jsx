@@ -385,14 +385,12 @@ export default function PublicProduct() {
                   onClick={() => handleProductClick(product)}
                 >
                   <div className={`relative bg-gray-100 overflow-hidden ${viewMode === "grid" ? "pt-[100%]" : "w-24 h-24 flex-shrink-0"}`}>
-                    { (product.image_url || product.image) && (
-                      <img
-                        src={product.image_url || product.image}
-                        alt={product.name}
-                        className={`object-cover transition-transform duration-300 group-hover:scale-105 ${viewMode === "grid" ? "absolute top-0 left-0 w-full h-full" : "w-full h-full"}`}
-                        loading="lazy"
-                      />
-                    )}
+                    <img
+                      src={product.image_url || "/placeholder.png"}
+                      alt={product.name}
+                      className={`object-cover transition-transform duration-300 group-hover:scale-105 ${viewMode === "grid" ? "absolute top-0 left-0 w-full h-full" : "w-full h-full"}`}
+                      loading="lazy"
+                    />
                   </div>
                   <div className={`p-3 ${viewMode === "list" ? "flex-1" : ""}`}>
                     <h3 className="font-medium text-gray-900 truncate">{product.name}</h3>

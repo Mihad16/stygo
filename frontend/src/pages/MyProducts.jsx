@@ -112,7 +112,7 @@ export default function MyProduct() {
               {/* Product Image */}
               <div className="relative aspect-square">
                 <img
-                  src={product.image_url || product.image || "/placeholder-product.jpg"}
+                  src={product.image_url || "/placeholder-product.jpg"}
                   alt={product.name}
                   className="absolute inset-0 w-full h-full object-cover"
                   onError={(e) => {

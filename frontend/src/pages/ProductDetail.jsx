@@ -177,8 +177,8 @@ export default function ProductDetail() {
     );
   }
 
-  // Handle product images - use image field from database
-  const productImage = product?.image_url || product?.image || "https://via.placeholder.com/500?text=No+Image";
+  // Handle product image - use Cloudinary URL only
+  const productImage = product?.image_url || "https://via.placeholder.com/500?text=No+Image";
   
   // Calculate discount percentage if original price exists
   const discountPercentage = product?.original_price && product?.price

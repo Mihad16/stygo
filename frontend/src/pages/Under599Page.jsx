@@ -91,7 +91,7 @@ export default function Under599() {
               "item": {
                 "@type": "Product",
                 "name": product.name,
-                "image": product.image,
+                "image": product.image_url || "/placeholder.png",
                 "offers": {
                   "@type": "Offer",
                   "price": product.price,
@@ -240,7 +240,7 @@ export default function Under599() {
                   {viewMode === "grid" ? (
                     <div className="relative pt-[100%] bg-gray-50">
                       <img
-                        src={product.image_url || product.image}
+                        src={product.image_url || "/placeholder.png"}
                         alt={product.name}
                         className="absolute top-0 left-0 w-full h-full object-contain p-4"
                         loading="lazy"
@@ -250,7 +250,7 @@ export default function Under599() {
                     <div className="flex w-full">
                       <div className="w-32 flex-shrink-0 bg-gray-50 relative">
                         <img
-                          src={product.image_url || product.image}
+                          src={product.image_url || "/placeholder.png"}
                           alt={product.name}
                           className="w-32 h-32 object-contain p-3"
                           loading="lazy"

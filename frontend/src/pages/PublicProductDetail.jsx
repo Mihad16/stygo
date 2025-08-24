@@ -38,12 +38,10 @@ export default function PublicProductDetail() {
     fetchData();
   }, [productId, shopSlug]);
 
-  // Handle product images if multiple exist
-  const productImages = product?.images?.length > 0 
-    ? product.images 
-    : product?.image 
-      ? [product.image] 
-      : ["https://via.placeholder.com/500?text=No+Image"];
+  // Handle product image(s): use Cloudinary URL only
+  const productImages = product?.image_url
+    ? [product.image_url]
+    : ["https://via.placeholder.com/500?text=No+Image"];
 
   // WhatsApp link generator
  const whatsappLink = shop?.phone_number
