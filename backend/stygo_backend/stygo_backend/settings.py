@@ -118,11 +118,15 @@ DATABASES = {
 
 # Prefer DATABASE_URL if provided (e.g., Render/Neon/Supabase). In production, require it.
 SSL_REQUIRE = not DEBUG
-db_from_env = dj_database_url.config(
-    conn_max_age=600,
-    ssl_require=SSL_REQUIRE,
-    default=None,
-)
+try:
+    db_from_env = dj_database_url.config(
+        conn_max_age=600,
+        ssl_require=SSL_REQUIRE,
+        default=None,
+    )
+except dj_database_url.UnknownSchemeError:
+    # Handle malformed DATABASE_URL like '://'
+    db_from_env = None
 if db_from_env:
     DATABASES["default"] = db_from_env
 elif not DEBUG:
@@ -168,15 +172,11 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
-    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
-}
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 print(">>> USING STORAGE:", DEFAULT_FILE_STORAGE)
 CORS_ALLOWED_ORIGINS = [
