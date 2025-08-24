@@ -138,7 +138,7 @@ const ProductCard = ({ product, onClick }) => {
           </div>
         )}
         <img
-          src={product.image_url || product.image}
+          src={product.image_url || "/placeholder.png"}
           alt={product.name}
           className={`absolute top-0 left-0 w-full h-full object-contain p-4 transition-opacity duration-200 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           loading="lazy"

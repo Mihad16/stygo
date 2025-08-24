@@ -231,18 +231,12 @@ export default function PublicShopProducts() {
                 <div className={`relative bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden ${
                   viewMode === "list" ? "w-48 h-32" : "h-64"
                 }`}>
-                  {(product.image_url || product.image) ? (
-                    <img
-                      src={product.image_url || product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <FiShoppingBag className="w-16 h-16 text-gray-300" />
-                    </div>
-                  )}
+                  <img
+                    src={product.image_url || "/placeholder.png"}
+                    alt={product.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   {product.category && (
                     <div className="absolute top-3 left-3">

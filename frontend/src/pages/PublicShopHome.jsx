@@ -236,18 +236,12 @@ export default function PublicShopHome() {
                   aria-label={`View ${product.name}`}
                 >
                   <div className="relative h-64 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-                    {(product.image_url || product.image) ? (
-                      <img
-                        src={product.image_url || product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <FiShoppingBag className="w-16 h-16 text-gray-300" />
-                      </div>
-                    )}
+                    <img
+                      src={product.image_url || "/placeholder.png"}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     {product.category && (
                       <div className="absolute top-4 left-4">
