@@ -28,13 +28,7 @@ def create_product(request):
     if Product.objects.filter(seller=shop).count() >= 10:
         return Response({'error': 'Product limit reached (max 10 products)'}, status=400)
 
-    # Debug logs to verify file upload and Cloudinary config in prod
-    try:
-        print("FILES:", list(request.FILES.keys()))
-        print("Cloudinary cloud:", cloudinary.config().cloud_name)
-    except Exception as _e:
-        # avoid breaking the request if logging fails
-        pass
+    # (debug logging removed)
 
     # If no image file was received, fail fast with a helpful message
     if 'image' not in request.FILES:
@@ -48,9 +42,6 @@ def create_product(request):
             instance = serializer.save(seller=shop)
         except AuthorizationRequired as e:
             # Cloudinary credentials are wrong/missing – treat as client/config error, not server crash
-            import traceback
-            print("Cloudinary auth error while saving product:", str(e))
-            traceback.print_exc()
             return Response({
                 'error': 'Cloudinary authorization failed. Please verify CLOUDINARY_URL on the server.',
                 'code': 'cloudinary_auth',
@@ -58,9 +49,6 @@ def create_product(request):
             }, status=400)
         except CloudinaryError as e:
             # Other Cloudinary-side errors (e.g., invalid file)
-            import traceback
-            print("Cloudinary upload error while saving product:", str(e))
-            traceback.print_exc()
             return Response({
                 'error': 'Image upload failed.',
                 'code': 'cloudinary_error',
@@ -68,22 +56,12 @@ def create_product(request):
             }, status=422)
         except Exception as e:
             # Unknown server-side error
-            import traceback
-            print("Error saving product:", str(e))
-            traceback.print_exc()
             return Response({
                 'error': 'Failed to save product (server error).',
                 'detail': str(e),
             }, status=500)
 
-        # Post-save diagnostics: which storage handled the file and what URL was generated
-        try:
-            storage_name = type(instance.image.storage).__name__ if getattr(instance.image, 'storage', None) else None
-            image_url = getattr(instance.image, 'url', None)
-            print("Saved image storage:", storage_name)
-            print("Saved image URL:", image_url)
-        except Exception:
-            pass
+        # (post-save diagnostics removed)
 
         return Response(serializer.data)
     else:
