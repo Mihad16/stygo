@@ -8,6 +8,8 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .serializers import ProductSerializer
 from rest_framework.generics import get_object_or_404
+from rest_framework import status
+import cloudinary
 
 # ✅ Create a product
 @api_view(['POST'])
@@ -24,6 +26,14 @@ def create_product(request):
     # ✅ Limit: one shop can only have 9 products
     if Product.objects.filter(seller=shop).count() >= 10:
         return Response({'error': 'Product limit reached (max 10 products)'}, status=400)
+
+    # Debug logs to verify file upload and Cloudinary config in prod
+    try:
+        print("FILES:", list(request.FILES.keys()))
+        print("Cloudinary cloud:", cloudinary.config().cloud_name)
+    except Exception as _e:
+        # avoid breaking the request if logging fails
+        pass
 
     # Use request.data directly to preserve uploaded files (e.g., image)
     serializer = ProductSerializer(data=request.data, context={"request": request})

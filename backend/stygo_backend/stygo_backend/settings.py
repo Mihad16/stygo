@@ -191,6 +191,10 @@ if CLOUDINARY_URL:
 
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 print(">>> USING STORAGE:", DEFAULT_FILE_STORAGE)
+try:
+    print("Cloudinary cloud:", cloudinary.config().cloud_name)
+except Exception:
+    pass
 CORS_ALLOWED_ORIGINS = [
     "https://stygo.in",
     "https://www.stygo.in",
