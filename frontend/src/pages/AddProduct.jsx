@@ -17,6 +17,7 @@ export default function AddProduct() {
   const [image, setImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [shopCategory, setShopCategory] = useState("");
   const [availableSubcategories, setAvailableSubcategories] = useState([]);
 
@@ -116,6 +117,14 @@ export default function AddProduct() {
  const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
+  setErrorMsg("");
+
+  // Image is required for creating a new product (model ImageField required)
+  if (!editId && !image) {
+    setLoading(false);
+    setErrorMsg("Please select a product image.");
+    return;
+  }
 
   const formData = new FormData();
   formData.append("name", name);
@@ -139,6 +148,20 @@ export default function AddProduct() {
     }
     navigate("/my-products");
   } catch (err) {
+    // Try to extract validation errors from backend
+    let msg = "Failed to save product.";
+    const data = err?.response?.data;
+    if (data) {
+      if (typeof data === "string") msg = data;
+      else if (data.detail) msg = data.detail;
+      else if (data.error) msg = data.error;
+      else {
+        // Collect field errors
+        const parts = Object.entries(data).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`);
+        if (parts.length) msg = parts.join(" | ");
+      }
+    }
+    setErrorMsg(msg);
     console.error("Error saving product:", err);
   } finally {
     setLoading(false);
@@ -152,6 +175,9 @@ export default function AddProduct() {
         {editId ? "Edit Product" : "Add New Product"}
       </h1>
 
+      {errorMsg && (
+        <div className="mb-4 p-3 rounded bg-red-50 text-red-700 border border-red-200 text-sm">{errorMsg}</div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
