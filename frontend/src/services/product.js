@@ -3,9 +3,7 @@ import axios from "./axios";
 
 // ✅ Add Product
 export const addProduct = async (formData) => {
-  const res = await axios.post("/api/products/create/", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const res = await axios.post("/api/products/create/", formData);
   return res.data;
 };
 
@@ -49,9 +47,7 @@ export const deleteProduct = async (productId) => {
 
 // ✅ Update product
 export const updateProduct = async (productId, formData) => {
-  const res = await axios.patch(`/api/products/${productId}/update/`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const res = await axios.patch(`/api/products/${productId}/update/`, formData);
   return res.data;
 };
 
