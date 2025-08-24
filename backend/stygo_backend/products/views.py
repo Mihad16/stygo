@@ -10,6 +10,7 @@ from .serializers import ProductSerializer
 from rest_framework.generics import get_object_or_404
 from rest_framework import status
 import cloudinary
+from cloudinary.exceptions import AuthorizationRequired, Error as CloudinaryError
 
 # ✅ Create a product
 @api_view(['POST'])
@@ -45,13 +46,33 @@ def create_product(request):
         # Inject seller explicitly; no need to modify incoming data
         try:
             instance = serializer.save(seller=shop)
+        except AuthorizationRequired as e:
+            # Cloudinary credentials are wrong/missing – treat as client/config error, not server crash
+            import traceback
+            print("Cloudinary auth error while saving product:", str(e))
+            traceback.print_exc()
+            return Response({
+                'error': 'Cloudinary authorization failed. Please verify CLOUDINARY_URL on the server.',
+                'code': 'cloudinary_auth',
+                'detail': str(e),
+            }, status=400)
+        except CloudinaryError as e:
+            # Other Cloudinary-side errors (e.g., invalid file)
+            import traceback
+            print("Cloudinary upload error while saving product:", str(e))
+            traceback.print_exc()
+            return Response({
+                'error': 'Image upload failed.',
+                'code': 'cloudinary_error',
+                'detail': str(e),
+            }, status=422)
         except Exception as e:
-            # Log and surface the error to help diagnose (e.g., Cloudinary misconfig)
+            # Unknown server-side error
             import traceback
             print("Error saving product:", str(e))
             traceback.print_exc()
             return Response({
-                'error': 'Failed to save product (storage error).',
+                'error': 'Failed to save product (server error).',
                 'detail': str(e),
             }, status=500)
 
