@@ -35,11 +35,25 @@ def create_product(request):
         # avoid breaking the request if logging fails
         pass
 
+    # If no image file was received, fail fast with a helpful message
+    if 'image' not in request.FILES:
+        return Response({'error': 'No image file received. Please reselect the image and try again.'}, status=400)
+
     # Use request.data directly to preserve uploaded files (e.g., image)
     serializer = ProductSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
         # Inject seller explicitly; no need to modify incoming data
-        serializer.save(seller=shop)
+        instance = serializer.save(seller=shop)
+
+        # Post-save diagnostics: which storage handled the file and what URL was generated
+        try:
+            storage_name = type(instance.image.storage).__name__ if getattr(instance.image, 'storage', None) else None
+            image_url = getattr(instance.image, 'url', None)
+            print("Saved image storage:", storage_name)
+            print("Saved image URL:", image_url)
+        except Exception:
+            pass
+
         return Response(serializer.data)
     else:
         return Response(serializer.errors, status=400)
