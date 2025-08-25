@@ -212,6 +212,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://stygo.in",
     "https://www.stygo.in",
     "https://api.stygo.in",
+    "https://stygo.vercel.app",
 ]
 frontend_origin = os.environ.get("FRONTEND_URL")
 if frontend_origin:

@@ -6,7 +6,7 @@ const envUrl = import.meta.env.VITE_API_BASE_URL;
 const isValidEnvUrl = typeof envUrl === "string" && /^https?:\/\//i.test(envUrl);
 const API_BASE_URL = isLocal
   ? "http://127.0.0.1:8000"
-  : (isValidEnvUrl ? envUrl : "https://api.stygo.in");
+  : (isValidEnvUrl ? envUrl : "https://stygo.onrender.com");
 
 const api = axios.create({
   baseURL: API_BASE_URL,
