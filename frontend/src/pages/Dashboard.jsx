@@ -40,7 +40,7 @@ export default function Dashboard() {
   }, [navigate]);
 
   const handleCopyLink = () => {
-    const url = `http://localhost:5173/${shop?.slug}`;
+    const url = `/${shop?.slug}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
