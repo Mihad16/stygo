@@ -33,7 +33,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-#=s4ilj7n48u0r64rz9#d
 # Default to True locally; set DEBUG=False via environment in Render.
 DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = [ 'stygo.onrender.com', 'api.stygo.in', '.stygo.in']
+ALLOWED_HOSTS = [ 'stygo.vercel.app','stygo.onrender.com', 'api.stygo.in', '.stygo.in']
 if DEBUG:
     ALLOWED_HOSTS += ['localhost', '127.0.0.1']
 render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
