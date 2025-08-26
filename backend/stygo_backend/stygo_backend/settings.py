@@ -119,22 +119,29 @@ DATABASES = {
     }
 }
 
-# Prefer DATABASE_URL if provided (e.g., Render/Neon/Supabase). In production, require it.
-SSL_REQUIRE = not DEBUG
-try:
-    db_from_env = dj_database_url.config(
-        conn_max_age=600,
-        ssl_require=SSL_REQUIRE,
-        default=None,
-    )
-except dj_database_url.UnknownSchemeError:
-    # Handle malformed DATABASE_URL like '://'
-    db_from_env = None
-if db_from_env:
-    DATABASES["default"] = db_from_env
-elif not DEBUG:
-    # In production, a managed Postgres URL must be set
-    raise ImproperlyConfigured("DATABASE_URL is required in production")
+# Prefer DATABASE_URL only in production to avoid mixing prod/dev DBs.
+if not DEBUG:
+    SSL_REQUIRE = True
+    try:
+        db_from_env = dj_database_url.config(
+            conn_max_age=600,
+            ssl_require=SSL_REQUIRE,
+            default=None,
+        )
+    except dj_database_url.UnknownSchemeError:
+        # Handle malformed DATABASE_URL like '://'
+        db_from_env = None
+    if db_from_env:
+        DATABASES["default"] = db_from_env
+    else:
+        # In production, a managed Postgres URL must be set
+        raise ImproperlyConfigured("DATABASE_URL is required in production")
+
+# DB diagnostics
+print(
+    f">>> DB in use: ENGINE={DATABASES['default']['ENGINE']}, "
+    f"NAME={DATABASES['default'].get('NAME')}, HOST={DATABASES['default'].get('HOST')}, PORT={DATABASES['default'].get('PORT')}"
+)
 
 
 # Password validation
@@ -184,13 +191,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL")
-if CLOUDINARY_URL:
+USE_CLOUDINARY = bool(CLOUDINARY_URL)
+if USE_CLOUDINARY:
     cloudinary.config(cloudinary_url=CLOUDINARY_URL)
 
 # Django 5: configure storages via STORAGES setting
 STORAGES = {
     "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        "BACKEND": (
+            "cloudinary_storage.storage.MediaCloudinaryStorage"
+            if USE_CLOUDINARY
+            else "django.core.files.storage.FileSystemStorage"
+        ),
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
@@ -205,7 +217,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 try:
     from django.core.files.storage import default_storage
     print(">>> USING STORAGE (resolved):", type(default_storage).__name__)
-    print("Cloudinary cloud:", cloudinary.config().cloud_name)
+    if USE_CLOUDINARY:
+        print("Cloudinary cloud:", cloudinary.config().cloud_name)
+    else:
+        print(">>> Using local MEDIA_ROOT:", MEDIA_ROOT)
 except Exception:
     pass
 CORS_ALLOWED_ORIGINS = [

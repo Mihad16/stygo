@@ -1,12 +1,12 @@
 import axios from "axios";
 
 // Determine API base URL
-const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+// Priority: explicit env > dev default localhost > production default
 const envUrl = import.meta.env.VITE_API_BASE_URL;
 const isValidEnvUrl = typeof envUrl === "string" && /^https?:\/\//i.test(envUrl);
-const API_BASE_URL = isLocal
-  ? "http://127.0.0.1:8000"
-  : (isValidEnvUrl ? envUrl : "https://stygo.onrender.com");
+const API_BASE_URL = isValidEnvUrl
+  ? envUrl
+  : (import.meta.env.DEV ? "http://127.0.0.1:8000" : "https://stygo.onrender.com");
 
 const api = axios.create({
   baseURL: API_BASE_URL,
