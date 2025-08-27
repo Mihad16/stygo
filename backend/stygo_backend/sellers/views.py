@@ -77,18 +77,34 @@ def update_shop(request):
     try:
         profile = SellerProfile.objects.get(user=user)
     except SellerProfile.DoesNotExist:
-        return Response({'error': 'Shop not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'Shop not found'}, status=404)
 
     data = request.data
-    profile.shop_name = data.get('shop_name', profile.shop_name)
-    profile.slug = data.get('slug', profile.slug)
-    profile.location = data.get('location', profile.location)
-    profile.category = data.get('category', profile.category)
+    serializer = SellerProfileSerializer(profile, data=data, partial=True, context={'request': request})
+    
+    if serializer.is_valid():
+        # Handle logo update if provided
+        if 'logo' in request.FILES:
+            profile.logo = request.FILES['logo']
+        serializer.save()
+        return Response(serializer.data)
+    
+    return Response(serializer.errors, status=400)
 
-    # Handle logo upload
-    if 'logo' in request.FILES:
-        profile.logo = request.FILES['logo']
 
-    profile.save()
-    serializer = SellerProfileSerializer(profile, context={'request': request})
-    return Response(serializer.data)
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_shop(request):
+    user = request.user
+    try:
+        profile = SellerProfile.objects.get(user=user)
+        
+        # Delete the shop and related data
+        # Note: This will cascade delete related products due to on_delete=CASCADE
+        user.delete()  
+        
+        return Response({'status': 'Shop and all related data deleted successfully'}, status=200)
+    except SellerProfile.DoesNotExist:
+        return Response({'error': 'Shop not found'}, status=404)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)

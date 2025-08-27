@@ -26,3 +26,12 @@ export async function updateShop(shopData) {
   return res.data;
 }
 
+// Delete seller's shop
+export async function deleteShop() {
+  const token = localStorage.getItem("accessToken");
+  if (!token) throw new Error("No access token found");
+  
+  const res = await api.delete(`${API_BASE}shop/delete/`);
+  return res.data;
+}
+
