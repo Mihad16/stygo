@@ -14,7 +14,11 @@ export default function PublicProduct() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("newest");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  // Get category from URL params if exists
+  const urlParams = new URLSearchParams(window.location.search);
+  const categoryFromUrl = urlParams.get('category') || '';
+
+  const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl);
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const [selectedShop, setSelectedShop] = useState("");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });

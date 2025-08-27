@@ -3,6 +3,7 @@ import Hero from "../components/Hero";
 import TrendingThisWeek from "../components/TrendingThisWeek";
 import TrendingShop from "../components/TrendingShop";
 import FeaturedCollections from "../components/FeaturedCollections";
+import CategorySection from "../components/CategorySection";
 import Footer from "../components/Footer";
 
 // Lazy load components for better performance
@@ -46,6 +47,9 @@ export default function Home() {
         <section className="max-w-7xl mx-auto">
           <Hero />
         </section>
+
+        {/* Category Section */}
+        <CategorySection />
 
         {/* Trending Products */}
         <section className="max-w-7xl mx-auto mt-16">
