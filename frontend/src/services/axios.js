@@ -28,21 +28,44 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    
+    // Don't retry refresh token for login/signup requests
+    if (originalRequest.url.includes('/api/auth/login/')) {
+      return Promise.reject(error);
+    }
+
+    // Only attempt refresh on 401 and not already retrying
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+      
       try {
         const refresh = localStorage.getItem("refreshToken");
-        const res = await axios.post(`${API_BASE_URL}/api/token/refresh/`, { refresh });
-        const newAccessToken = res.data.access;
-        localStorage.setItem("accessToken", newAccessToken);
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        if (!refresh) {
+          throw new Error('No refresh token available');
+        }
+        
+        const response = await axios.post(`${API_BASE_URL}/api/token/refresh/`, { refresh });
+        const { access } = response.data;
+        
+        localStorage.setItem("accessToken", access);
+        originalRequest.headers.Authorization = `Bearer ${access}`;
         return api(originalRequest);
       } catch (err) {
+        // If refresh fails, clear auth and redirect to login
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        window.location.href = "/login";
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("phone");
+        localStorage.removeItem("has_shop");
+        
+        // Only redirect if we're not already on the login page
+        if (!window.location.pathname.includes('/login')) {
+          window.location.href = "/login";
+        }
+        return Promise.reject(err);
       }
     }
+    
     return Promise.reject(error);
   }
 );

@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import OTPVerify from "./pages/OTPVerify";
+import PasswordReset from "./pages/PasswordReset";
 import Shops from "./pages/Shops";
 import Dashboard from "./pages/Dashboard";
 import CreateShop from "./pages/CreateShop";
@@ -51,7 +51,7 @@ export default function App() {
         {/* No layout pages */}
         <Route path="/Become-a-patner" element={<AboutSelling />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/verify" element={<OTPVerify />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
 
         {/* Public layout with loader */}
         <Route element={<MainLayout />}>
