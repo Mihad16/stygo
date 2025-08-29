@@ -23,7 +23,7 @@ export default function Hero() {
             Browse Products
           </button>
           <button
-            onClick={() => navigate("/create-shop")}
+            onClick={() => navigate("/Become-a-patner")}
             className="px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300"
           >
             Create Your Shop

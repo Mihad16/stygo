@@ -1,5 +1,5 @@
 // Info.jsx
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import WhatsAppSubscribe from "../components/WhatsAppSubscribe";
 
@@ -39,6 +39,8 @@ export default function Info() {
       document.head.removeChild(script);
     };
   }, []);
+
+  const [activeTab, setActiveTab] = useState("how-it-works");
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100">
@@ -128,6 +130,18 @@ export default function Info() {
           </div>
         </div>
       </section>
+
+      {/* Pricing and Subscription Plans Section */}
+      <div className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Start selling for free. Upgrade when you need more features.
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Trust badges */}
       <section className="mx-auto max-w-7xl px-6 py-12">

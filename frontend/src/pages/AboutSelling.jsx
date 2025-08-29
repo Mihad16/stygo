@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import SubscriptionPlans from "../components/SubscriptionPlans"; // Add import
 
 export default function AboutSelling() {
   const navigate = useNavigate();
@@ -193,6 +194,19 @@ export default function AboutSelling() {
           </div>
         </div>
       </section>
+
+      {/* Pricing and Subscription Plans Section */}
+      <div className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Start selling for free. Upgrade when you need more features.
+            </p>
+          </div>
+          <SubscriptionPlans />
+        </div>
+      </div>
 
       {/* CTA Section */}
       <section className="bg-blue-600 text-white py-16">

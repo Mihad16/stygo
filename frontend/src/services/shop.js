@@ -1,6 +1,6 @@
 import api from "./axios";
 
-export const createShop = async (shopName, location, category, logo) => {
+export const createShop = async (shopName, location, category, logo, plan) => {
   const access = localStorage.getItem("accessToken");
   if (!access) throw new Error("User not authenticated. Please log in.");
 
@@ -8,6 +8,7 @@ export const createShop = async (shopName, location, category, logo) => {
   formData.append("shop_name", shopName);
   formData.append("location", location);
   formData.append("category", category);
+  formData.append("plan", plan);
   if (logo) {
     formData.append("logo", logo);
   }
