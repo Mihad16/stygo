@@ -13,7 +13,7 @@ class SellerProfileInline(admin.StackedInline):
 # Define a new User admin
 class CustomUserAdmin(UserAdmin):
     inlines = (SellerProfileInline,)
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
+    list_display = ('username', 'email', 'is_staff')
     list_select_related = ('seller', )
 
     def get_inline_instances(self, request, obj=None):
