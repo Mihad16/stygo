@@ -91,7 +91,7 @@ export default function Login() {
       if (hasShop) {
         navigate('/dashboard');
       } else {
-        navigate('/Become-a-patner');
+        navigate('/create-shop');
       }
     } catch (err) {
       // Use the error message from our enhanced error handling in auth service
