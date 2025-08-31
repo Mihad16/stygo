@@ -3,8 +3,25 @@ import axios from "./axios";
 
 // ✅ Add Product
 export const addProduct = async (formData) => {
-  const res = await axios.post("/api/products/create/", formData);
-  return res.data;
+  // Log form data for debugging
+  console.log('FormData contents:');
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ': ', pair[1]);
+  }
+
+  const config = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  };
+  
+  try {
+    const res = await axios.post("/api/products/create/", formData, config);
+    return res.data;
+  } catch (error) {
+    console.error('Error in addProduct:', error.response?.data || error.message);
+    throw error;
+  }
 };
 
 // ✅ Get My Products (seller dashboard)
@@ -47,7 +64,12 @@ export const deleteProduct = async (productId) => {
 
 // ✅ Update product
 export const updateProduct = async (productId, formData) => {
-  const res = await axios.patch(`/api/products/${productId}/update/`, formData);
+  const config = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  };
+  const res = await axios.patch(`/api/products/${productId}/update/`, formData, config);
   return res.data;
 };
 

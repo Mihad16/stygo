@@ -30,42 +30,56 @@ def create_product(request):
 
     # (debug logging removed)
 
-    # If no image file was received, fail fast with a helpful message
-    if 'image' not in request.FILES:
-        return Response({'error': 'No image file received. Please reselect the image and try again.'}, status=400)
-
-    # Use request.data directly to preserve uploaded files (e.g., image)
-    serializer = ProductSerializer(data=request.data, context={"request": request})
-    if serializer.is_valid():
-        # Inject seller explicitly; no need to modify incoming data
-        try:
-            instance = serializer.save(seller=shop)
-        except AuthorizationRequired as e:
-            # Cloudinary credentials are wrong/missing – treat as client/config error, not server crash
-            return Response({
-                'error': 'Cloudinary authorization failed. Please verify CLOUDINARY_URL on the server.',
-                'code': 'cloudinary_auth',
-                'detail': str(e),
-            }, status=400)
-        except CloudinaryError as e:
-            # Other Cloudinary-side errors (e.g., invalid file)
-            return Response({
-                'error': 'Image upload failed.',
-                'code': 'cloudinary_error',
-                'detail': str(e),
-            }, status=422)
-        except Exception as e:
-            # Unknown server-side error
-            return Response({
-                'error': 'Failed to save product (server error).',
-                'detail': str(e),
-            }, status=500)
-
-        # (post-save diagnostics removed)
-
-        return Response(serializer.data)
-    else:
+    # Convert FILES to list of images for the serializer
+    data = request.data.copy()
+    
+    # Handle image uploads if any
+    if 'image' in request.FILES or 'image_files' in request.FILES:
+        if 'image_files' not in request.FILES:
+            # If using single image upload for backward compatibility
+            data.setlist('image_files', [request.FILES['image']])
+        else:
+            # If using multiple image upload
+            data.setlist('image_files', request.FILES.getlist('image_files'))
+    # If no images, that's fine now as we've made the image field optional
+    
+    # Log the incoming data for debugging
+    print("Incoming data:", data)
+    print("Files received:", request.FILES)
+    
+    # Use the processed data with the serializer
+    serializer = ProductSerializer(data=data, context={"request": request})
+    
+    # Log validation errors if any
+    if not serializer.is_valid():
+        print("Serializer errors:", serializer.errors)
         return Response(serializer.errors, status=400)
+    
+    # If valid, proceed with saving
+    try:
+        instance = serializer.save(seller=shop)
+        # (post-save diagnostics removed)
+        return Response(serializer.data)
+    except AuthorizationRequired as e:
+        # Cloudinary credentials are wrong/missing – treat as client/config error, not server crash
+        return Response({
+            'error': 'Cloudinary authorization failed. Please verify CLOUDINARY_URL on the server.',
+            'code': 'cloudinary_auth',
+            'detail': str(e),
+        }, status=400)
+    except CloudinaryError as e:
+        # Other Cloudinary-side errors (e.g., invalid file)
+        return Response({
+            'error': 'Image upload failed.',
+            'code': 'cloudinary_error',
+            'detail': str(e),
+        }, status=422)
+    except Exception as e:
+        # Unknown server-side error
+        return Response({
+            'error': 'Failed to save product (server error).',
+            'detail': str(e),
+        }, status=500)
 
 # ✅ List products of logged-in seller
 @api_view(['GET'])
@@ -144,7 +158,17 @@ def update_product(request, product_id):
     if product.seller.user != user:
         return Response({'error': 'Not authorized to update this product'}, status=403)
 
-    serializer = ProductSerializer(product, data=request.data, partial=True, context={"request": request})  # ensure image_url builds absolute URL
+    # Process image files if any
+    data = request.data.copy()
+    if 'image_files' in request.FILES:
+        data.setlist('image_files', request.FILES.getlist('image_files'))
+    
+    serializer = ProductSerializer(
+        product, 
+        data=data, 
+        partial=True, 
+        context={"request": request}
+    )
 
     if serializer.is_valid():
         serializer.save()

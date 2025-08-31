@@ -15,8 +15,8 @@ export default function AddProduct() {
   const [size, setSize] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null);
+  const [images, setImages] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [shopCategory, setShopCategory] = useState("");
@@ -110,60 +110,114 @@ export default function AddProduct() {
   }, [editId]);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
-    setPreviewImage(URL.createObjectURL(file));
+    const files = Array.from(e.target.files).slice(0, 3 - images.length); // Max 3 images
+    
+    if (files.length === 0) return;
+    
+    const newImages = [...images, ...files];
+    setImages(newImages);
+    
+    // Create preview URLs for all images
+    const newPreviewUrls = files.map(file => URL.createObjectURL(file));
+    setPreviewImages([...previewImages, ...newPreviewUrls]);
+  };
+  
+  const removeImage = (index) => {
+    const newImages = [...images];
+    const newPreviews = [...previewImages];
+    
+    // Revoke the object URL to avoid memory leaks
+    URL.revokeObjectURL(newPreviews[index]);
+    
+    newImages.splice(index, 1);
+    newPreviews.splice(index, 1);
+    
+    setImages(newImages);
+    setPreviewImages(newPreviews);
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setErrorMsg("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg("");
 
-  // Image is required for creating a new product (model ImageField required)
-  if (!editId && !image) {
-    setLoading(false);
-    setErrorMsg("Please select a product image.");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("name", name);
-  formData.append(
-    "original_price",
-    originalPrice || price // fallback if empty
-  );
-  formData.append("price", price);
-  formData.append("size", size);
-  formData.append("category", category);
-  formData.append("description", description);
-  if (image) {
-    formData.append("image", image);
-  }
-
-  try {
-    if (editId) {
-      await updateProduct(editId, formData);
-    } else {
-      await addProduct(formData);
-    }
-    navigate("/my-products");
-  } catch (err) {
-    // Try to extract validation errors from backend
-    let msg = "Failed to save product.";
-    const data = err?.response?.data;
-    if (data) {
-      if (typeof data === "string") msg = data;
-      else if (data.detail) msg = data.detail;
-      else if (data.error) msg = data.error;
-      else {
-        // Collect field errors
-        const parts = Object.entries(data).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`);
-        if (parts.length) msg = parts.join(" | ");
+    try {
+      // Basic validation
+      if (!name || !price || !size) {
+        throw new Error("Please fill in all required fields (name, price, size).");
       }
+
+      // At least one image is required for creating a new product
+      if (!editId && images.length === 0) {
+        throw new Error("Please upload at least one product image.");
+      }
+
+      const formData = new FormData();
+      
+      // Required fields
+      formData.append("name", name);
+      formData.append("price", price.toString());
+      formData.append("size", size);
+      
+      // Optional fields
+      if (originalPrice) {
+        formData.append("original_price", originalPrice.toString());
+      }
+      if (category) {
+        formData.append("category", category);
+      }
+      if (description) {
+        formData.append("description", description);
+      }
+      
+      // Append all images
+      images.forEach((image) => {
+        formData.append("image_files", image);
+      });
+      
+      console.log('FormData contents:');
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ', pair[1]);
+      }
+
+      if (editId) {
+        await updateProduct(editId, formData);
+      } else {
+        await addProduct(formData);
+      }
+      navigate("/my-products");
+    } catch (err) {
+      // Enhanced error logging
+      console.error("Full error object:", err);
+      console.error("Error response data:", err?.response?.data);
+      
+      let msg = "Failed to save product. ";
+      const data = err?.response?.data;
+    
+    if (data) {
+      if (typeof data === "string") {
+        msg += data;
+      } else if (data.detail) {
+        msg += data.detail;
+      } else if (data.error) {
+        msg += data.error;
+      } else if (typeof data === 'object') {
+        // Handle field-specific errors
+        const fieldErrors = Object.entries(data).map(([field, errors]) => {
+          return `${field}: ${Array.isArray(errors) ? errors.join(", ") : errors}`;
+        });
+        
+        if (fieldErrors.length > 0) {
+          msg += fieldErrors.join(" | ");
+        } else {
+          msg += JSON.stringify(data);
+        }
+      }
+    } else if (err.message) {
+      msg += err.message;
     }
+    
     setErrorMsg(msg);
-    console.error("Error saving product:", err);
   } finally {
     setLoading(false);
   }
@@ -282,26 +336,54 @@ export default function AddProduct() {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            Product Image
+            Product Images (Max 3)
           </label>
-          <div className="flex items-center space-x-4">
-            <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md border border-gray-300 text-sm font-medium text-gray-700 transition-colors">
-              Choose File
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-              />
-            </label>
-            {previewImage && (
-              <img
-                src={previewImage}
-                alt="Preview"
-                className="w-20 h-20 object-cover rounded-md border border-gray-200"
-              />
+          <div className="mt-1 flex flex-wrap gap-4">
+            {previewImages.length < 3 && (
+              <div className="flex items-center">
+                <label className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50">
+                  Add Images
+                  <input
+                    type="file"
+                    className="sr-only"
+                    onChange={handleImageChange}
+                    accept="image/*"
+                    multiple
+                    disabled={previewImages.length >= 3}
+                  />
+                </label>
+                <span className="ml-2 text-sm text-gray-500">
+                  {images.length} of 3 selected
+                </span>
+              </div>
             )}
+            
+            {/* Preview Images */}
+            <div className="flex flex-wrap gap-4 mt-2">
+              {previewImages.map((preview, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={preview}
+                    alt={`Preview ${index + 1}`}
+                    className="h-32 w-32 object-cover rounded border border-gray-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Remove image"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
+          <p className="mt-1 text-xs text-gray-500">
+            Upload up to 3 images. First image will be used as the main product image.
+          </p>  
         </div>
 
         <div className="pt-4">

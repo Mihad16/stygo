@@ -1,5 +1,6 @@
 from django.db import models
-from sellers.models import SellerProfile  # assuming seller has a FK user
+from sellers.models import SellerProfile
+from django.utils import timezone
 
 class Product(models.Model):
     # Subcategory choices based on main categories
@@ -61,3 +62,19 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to="products/images/")
+    created_at = models.DateTimeField(default=timezone.now)
+    is_primary = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Image for {self.product.name}"
+    
+    def save(self, *args, **kwargs):
+        # If this is the first image for the product, set it as primary
+        if not self.pk and not self.product.images.exists():
+            self.is_primary = True
+        super().save(*args, **kwargs)
