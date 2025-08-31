@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createShop } from "../services/shop";
-import SubscriptionPlans from "../components/SubscriptionPlans";
 
 const categories = [
   { value: "men", label: "Men" },
@@ -141,10 +140,7 @@ export default function CreateShop() {
             <p className="text-xs text-gray-500 mt-2">PNG or JPG up to 2MB is recommended.</p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-4">Choose Your Plan</label>
-            <SubscriptionPlans selectedPlan={plan} onSelect={setPlan} />
-          </div>
+          
 
           <div className="fixed inset-x-0 bottom-0 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-t border-gray-200 py-4 z-50">
             <div className="max-w-2xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
