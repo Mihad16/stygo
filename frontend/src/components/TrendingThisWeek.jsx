@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TrendingUp, ArrowRight, Clock } from "lucide-react";
+import { Clock, ArrowRight, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { latest_products } from "../services/product";
 
@@ -8,11 +8,11 @@ export default function TrendingThisWeek() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchTrendingProducts() {
+    async function fetchLatestProducts() {
       try {
         const productData = await latest_products();
-        // Take the latest 12 products for trending
-        setProducts(productData.slice(0, 12));
+        // Get the 6 most recent products
+        setProducts(productData.slice(0, 6));
       } catch (error) {
         console.error("Failed to fetch trending products:", error);
       } finally {
@@ -20,7 +20,7 @@ export default function TrendingThisWeek() {
       }
     }
 
-    fetchTrendingProducts();
+    fetchLatestProducts();
   }, []);
 
   return (
@@ -28,12 +28,12 @@ export default function TrendingThisWeek() {
       <div className="flex justify-between items-end mb-8">
         <div>
           <h3 className="text-3xl font-bold text-gray-900 flex items-center">
-            <TrendingUp className="w-6 h-6 mr-2 text-pink-500" />
-            Trending This Week
+            <Zap className="w-6 h-6 mr-2 text-pink-500" />
+            New Arrivals
           </h3>
           <p className="mt-2 text-gray-600 flex items-center">
             <Clock className="w-4 h-4 mr-1" />
-            Latest products everyone is loving
+            Freshly added to our collection
           </p>
         </div>
         <Link 

@@ -74,16 +74,22 @@ export default function TrendingShop() {
             <div key={i} className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 animate-pulse">
               <div className="flex items-center space-x-4 mb-6">
                 <div className="w-16 h-16 rounded-full bg-gray-200"></div>
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                  <div className="flex items-center space-x-4">
+                    <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                  </div>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {[...Array(3)].map((_, j) => (
-                  <div key={j} className="bg-gray-100 h-20 rounded"></div>
+                  <div key={j} className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200"></div>
+                  </div>
                 ))}
               </div>
+              <div className="mt-4 h-4 bg-gray-200 rounded w-1/3 mx-auto"></div>
             </div>
           ))}
         </div>
@@ -114,15 +120,16 @@ export default function TrendingShop() {
                   <h3 className="font-semibold text-lg text-gray-900 mb-1 group-hover:text-pink-600 transition-colors">
                     {shop.shop_name}
                   </h3>
-                  <div className="flex items-center space-x-3">
-                    <div className="flex items-center">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
-                      <span className="text-sm text-gray-600">Trending</span>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center bg-amber-50 px-2 py-0.5 rounded-full">
+                      <Star className="w-4 h-4 text-amber-500 fill-current mr-1" />
+                      <span className="text-xs font-medium text-amber-700">4.8</span>
+                      <span className="text-xs text-amber-600 ml-1">(24)</span>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center bg-blue-50 px-2 py-0.5 rounded-full">
                       <Package className="w-4 h-4 text-blue-500 mr-1" />
-                      <span className="text-sm text-gray-600">
-                        {shop.totalProducts} {shop.totalProducts === 1 ? 'Product' : 'Products'}
+                      <span className="text-xs font-medium text-blue-700">
+                        {shop.totalProducts} {shop.totalProducts === 1 ? 'Item' : 'Items'}
                       </span>
                     </div>
                   </div>
@@ -131,34 +138,47 @@ export default function TrendingShop() {
 
               {/* Shop Products */}
               <div className="p-6">
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-2">
                   {shop.products && shop.products.length > 0 ? (
                     shop.products.map((product) => (
-                      <Link 
-                        key={product.id} 
-                        to={`/product/${product.id}`}
-                        className="group"
-                      >
-                        <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden">
-                          <img
-                            src={product.image_url || "/placeholder.png"}
-                            alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = "/placeholder.png";
-                            }}
-                          />
-                        </div>
-                        <div className="mt-2">
-                          <p className="text-xs font-medium text-gray-900 truncate">{product.name}</p>
-                          <p className="text-xs text-gray-600">₹{product.price?.toLocaleString() || '0'}</p>
-                        </div>
-                      </Link>
+                      <div key={product.id} className="group relative">
+                        <Link 
+                          to={`/product/${product.id}`}
+                          className="block"
+                        >
+                          <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden">
+                            <img
+                              src={product.image_url || "/placeholder.png"}
+                              alt={product.name}
+                              className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/placeholder.png";
+                              }}
+                            />
+                            {/* Hover Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2">
+                              <div className="w-full">
+                                <p className="text-xs font-medium text-white truncate">{product.name}</p>
+                                <p className="text-xs font-bold text-white">₹{product.price?.toLocaleString() || '0'}</p>
+                              </div>
+                            </div>
+                            {/* Rating Badge */}
+                            {product.rating && (
+                              <div className="absolute top-1 left-1 bg-white/90 px-1.5 py-0.5 rounded-full flex items-center">
+                                <Star className="w-3 h-3 text-amber-500 fill-current mr-0.5" />
+                                <span className="text-xs font-medium text-gray-900">{product.rating}</span>
+                              </div>
+                            )}
+                          </div>
+                        </Link>
+                      </div>
                     ))
                   ) : (
-                    <div className="col-span-3 text-center py-4 text-sm text-gray-500">
-                      No products available
+                    <div className="col-span-3 py-6 text-center rounded-lg border-2 border-dashed border-gray-200">
+                      <Package className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                      <p className="text-sm text-gray-500">No products available</p>
+                      <p className="text-xs text-gray-400 mt-1">Check back later for updates</p>
                     </div>
                   )}
                 </div>
@@ -168,9 +188,10 @@ export default function TrendingShop() {
                   <div className="mt-4 text-center">
                     <Link 
                       to={`/${shop.slug}`}
-                      className="text-sm text-pink-600 hover:text-pink-700 font-medium"
+                      className="inline-flex items-center text-sm font-medium text-pink-600 hover:text-pink-700 group transition-colors"
                     >
-                      View all {shop.totalProducts} products →
+                      View all products
+                      <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
                   </div>
                 )}
