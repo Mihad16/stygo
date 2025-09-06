@@ -3,7 +3,6 @@ import Hero from "../components/Hero";
 import TrendingThisWeek from "../components/TrendingThisWeek";
 import TrendingShop from "../components/TrendingShop";
 import FeaturedCollections from "../components/FeaturedCollections";
-import CategorySection from "../components/CategorySection";
 import Footer from "../components/Footer";
 
 // Lazy load components for better performance
@@ -48,8 +47,33 @@ export default function Home() {
           <Hero />
         </section>
 
-        {/* Category Section */}
-        <CategorySection />
+         {/* Trending Shops */}
+        <section className="max-w-7xl mx-auto mt-24">
+         
+         <Suspense fallback={
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+             {[...Array(3)].map((_, i) => (
+               <div key={i} className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 animate-pulse">
+                 <div className="flex items-center space-x-4 mb-6">
+                   <div className="w-16 h-16 rounded-full bg-gray-200"></div>
+                   <div className="flex-1">
+                     <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                     <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                   </div>
+                 </div>
+                 <div className="grid grid-cols-3 gap-3">
+                   {[...Array(3)].map((_, j) => (
+                     <div key={j} className="bg-gray-100 h-20 rounded"></div>
+                   ))}
+                 </div>
+               </div>
+             ))}
+           </div>
+         }>
+           <LazyTrendingShop />
+         </Suspense>
+       </section>
+     
 
         {/* Trending Products */}
         <section className="max-w-7xl mx-auto mt-16">
@@ -69,32 +93,7 @@ export default function Home() {
           </Suspense>
         </section>
 
-        {/* Trending Shops */}
-        <section className="max-w-7xl mx-auto mt-24">
-         
-          <Suspense fallback={
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 animate-pulse">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-16 h-16 rounded-full bg-gray-200"></div>
-                    <div className="flex-1">
-                      <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[...Array(3)].map((_, j) => (
-                      <div key={j} className="bg-gray-100 h-20 rounded"></div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          }>
-            <LazyTrendingShop />
-          </Suspense>
-        </section>
+        
 
         {/* Featured Collections */}
         <section className="max-w-7xl mx-auto mt-24 py-12 rounded-xl">
