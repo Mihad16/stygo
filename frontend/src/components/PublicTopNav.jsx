@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Menu, X, ChevronLeft, Home, Box, Info } from "lucide-react";
+import { Menu, X, ChevronLeft, Home, Box, Info, LogIn, UserPlus } from "lucide-react";
 
 const PublicTopNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,13 +44,31 @@ const PublicTopNav = () => {
               <button
                 key={item.label}
                 onClick={() => handleNavigation(item.path)}
-                className="flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors"
                 aria-label={`Navigate to ${item.label}`}
               >
                 {item.icon}
                 {item.label}
               </button>
             ))}
+            <div className="flex items-center space-x-3 ml-4">
+              <button
+                onClick={() => navigate("/login")}
+                className="flex items-center px-3 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
+                aria-label="Login"
+              >
+                <LogIn size={16} className="mr-1" />
+                Login
+              </button>
+              <button
+                onClick={() => navigate("/signup")}
+                className="flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+                aria-label="Sign up"
+              >
+                <UserPlus size={16} className="mr-1" />
+                Sign Up
+              </button>
+            </div>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -83,6 +101,30 @@ const PublicTopNav = () => {
               {item.label}
             </button>
           ))}
+          <div className="border-t border-gray-200 mt-2 pt-2">
+            <button
+              onClick={() => {
+                navigate("/login");
+                setIsMenuOpen(false);
+              }}
+              className="flex items-center w-full px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50 rounded-md"
+              aria-label="Login"
+            >
+              <LogIn size={18} className="mr-3" />
+              Login
+            </button>
+            <button
+              onClick={() => {
+                navigate("/signup");
+                setIsMenuOpen(false);
+              }}
+              className="flex items-center w-full px-3 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md mt-2"
+              aria-label="Sign up"
+            >
+              <UserPlus size={18} className="mr-3" />
+              Sign Up
+            </button>
+          </div>
         </div>
       </div>
     </header>

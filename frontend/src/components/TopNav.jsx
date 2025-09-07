@@ -1,11 +1,42 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ShoppingBag } from "lucide-react";
-import { motion } from "framer-motion";
+import { ShoppingBag, LogIn, UserPlus, User, ShoppingCart, Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { isAuthenticated, getCurrentUser } from "../services/auth";
 
 export default function TopNav() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const authStatus = isAuthenticated();
+      setIsLoggedIn(authStatus);
+      
+      if (authStatus) {
+        try {
+          const userData = await getCurrentUser();
+          setUser(userData);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setMobileMenuOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm w-full px-4 py-3">
@@ -30,8 +61,17 @@ export default function TopNav() {
           />
         </motion.div>
 
+        {/* Mobile Menu Button */}
+        <button 
+          onClick={toggleMobileMenu}
+          className="md:hidden p-2 text-gray-600 hover:text-green-600 focus:outline-none"
+          aria-label="Toggle menu"
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
         {/* Navigation Links */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-6">
           <NavButton 
             active={location.pathname === "/"} 
             onClick={() => navigate("/")}
@@ -45,41 +85,146 @@ export default function TopNav() {
             Shops
           </NavButton>
           <NavButton 
-            active={location.pathname === "/our-story"} 
-            onClick={() => navigate("/our-story")}
+            active={location.pathname === "/info"} 
+            onClick={() => navigate("/info")}
           >
-            About
+               Info
           </NavButton>
         </nav>
 
         {/* Right Side Actions */}
         <div className="flex items-center space-x-4 md:space-x-6">
-          {/* Cart Icon */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate("/cart")}
-            className="hidden md:block relative p-2 text-gray-600 hover:text-green-600 transition-colors"
-          >
-            <ShoppingBag className="w-5 h-5" />
-          </motion.button>
+          {/* Auth Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            {isLoggedIn ? (
+              // User is logged in - show dashboard and profile
+              <>
+                {user?.has_shop && (
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => navigate("/dashboard")}
+                    className="flex items-center px-3 py-1.5 text-sm font-medium text-green-600 border border-green-600 rounded-md hover:bg-green-50 transition-colors"
+                  >
+                    <ShoppingCart size={16} className="mr-1.5" />
+                    My Dashboard
+                  </motion.button>
+                )}
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate("/dashboard")}
+                  className="flex items-center px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors"
+                >
+                  <User size={16} className="mr-1.5" />
+                  My Account
+                </motion.button>
+              </>
+            ) : (
+              // User is not logged in - show login/signup
+              <>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate("/login")}
+                  className="flex items-center px-3 py-1.5 text-sm font-medium text-green-600 border border-green-600 rounded-md hover:bg-green-50 transition-colors"
+                >
+                  <LogIn size={16} className="mr-1.5" />
+                  Login
+                </motion.button>
+       
+              </>
+            )}
 
-          {/* Always show Become a Seller button */}
-      
+            {/* Cart Icon - Show for all users */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/cart")}
+              className="relative p-2 text-gray-600 hover:text-green-600 transition-colors"
+            >
+              <ShoppingBag className="w-5 h-5" />
+            </motion.button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden bg-white border-t border-gray-200 overflow-hidden"
+          >
+            <div className="px-4 py-3 space-y-2">
+              <NavButton 
+                active={location.pathname === "/info"} 
+                onClick={() => handleNavigation("/info")}
+                className="block w-full text-left"
+              >
+                Info
+              </NavButton>
+
+              <div className="border-t border-gray-200 my-3 pt-3">
+                {isLoggedIn ? (
+                  <>
+                    {user?.has_shop && (
+                      <button
+                        onClick={() => handleNavigation("/dashboard")}
+                        className="w-full flex items-center px-3 py-2 text-sm font-medium text-green-600 hover:bg-green-50 rounded-md mb-2"
+                      >
+                        <ShoppingCart size={16} className="mr-2" />
+                        Seller Dashboard
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleNavigation("/dashboard")}
+                      className="w-full flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md"
+                    >
+                      <User size={16} className="mr-2" />
+                      My Account
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleNavigation("/login")}
+                      className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-green-600 border border-green-600 rounded-md hover:bg-green-50 mb-2"
+                    >
+                      <LogIn size={16} className="mr-2" />
+                      Login
+                    </button>
+                    
+                  </>
+                )}
+              </div>
+
+              <button
+                onClick={() => handleNavigation("/cart")}
+                className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md mt-2"
+              >
+                <ShoppingBag size={16} className="mr-2" />
+                View Cart
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
 
 // Reusable NavButton component
-function NavButton({ children, active, onClick }) {
+function NavButton({ children, active, onClick, className = '' }) {
   return (
     <button
       onClick={onClick}
       className={`relative px-1 py-2 text-sm font-medium transition-colors ${
         active ? "text-green-600 font-semibold" : "text-gray-600 hover:text-gray-900"
-      }`}
+      } ${className}`}
     >
       {children}
       {active && (
