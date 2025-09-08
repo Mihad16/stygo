@@ -37,7 +37,7 @@ export default function TrendingShop() {
         // Sort shops by creation date (newest first) and take top 5
         const sortedShops = shopsWithProducts
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, 5);
+          .slice(0, 6);
         
         setShops(sortedShops);
       } catch (error) {

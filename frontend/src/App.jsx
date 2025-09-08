@@ -21,7 +21,6 @@ import AboutSelling from "./pages/AboutSelling.jsx";
 import PublicShopProducts from "./pages/PublicShopProducts";
 import SellerAbout from "./pages/SellerAbout";
 import PublicProductDetail from "./pages/PublicProductDetail";
-import Under599Page from "./pages/Under599Page.jsx";
 import NewArrivalsPage from "./pages/NewArrivalsPage.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
 import OurStory from "./pages/OurStory.jsx";
@@ -66,7 +65,7 @@ export default function App() {
           <Route path="/info" element={<Info/>} />
           <Route path="/shops" element={<Shops />} />
           <Route path="/favorites" element={<FavoriteShops />} />
-          <Route path="/Under599Page" element={<Under599Page />} />
+        
           <Route path="/new-arrivals" element={<NewArrivalsPage />} />
           <Route path="/best-sellers" element={<BestSellers />} />
           <Route path="/product/:productId" element={<ProductDetail />} />
