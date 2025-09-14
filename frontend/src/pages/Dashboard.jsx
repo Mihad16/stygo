@@ -62,12 +62,12 @@ export default function Dashboard() {
             <span>
               Your shop link:{" "}
               <a
-                href={`http://localhost:5173/${shop?.slug}`}
+                href={`${window.location.origin}/${shop?.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline font-medium"
               >
-                stygo.in/{shop?.slug}
+                {window.location.hostname === 'localhost' ? 'stygo.in' : window.location.hostname}/{shop?.slug}
               </a>
             </span>
             <button
