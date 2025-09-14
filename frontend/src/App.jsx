@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 // Pages
@@ -45,7 +45,20 @@ export default function App() {
  
 
   return (
-    <Router>
+    <>
+      <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <Router>
       <Routes>
         {/* No layout pages */}
         <Route path="/Become-a-patner" element={<AboutSelling />} />
@@ -102,5 +115,6 @@ export default function App() {
         </Route>
       </Routes>
     </Router>
+    </>
   );
 }

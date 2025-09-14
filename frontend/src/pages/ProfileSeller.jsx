@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getDashboard, updateShop, deleteShop } from "../services/dashboard";
-import { LogOut, Edit, Store, MapPin, Phone, Tag, Link as LinkIcon, Trash2 } from "lucide-react";
+import { LogOut, Edit, Store, MapPin, Phone, Tag, Link as LinkIcon, Trash2, Instagram } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -192,6 +192,15 @@ export default function Profile() {
                   isEditing={isEditing}
                   onChange={(val) => setProfile({ ...profile, location: val })}
                 />
+
+                <EditableField
+                  icon={<Instagram size={18} />}
+                  label="Instagram"
+                  value={profile.instagram || ''}
+                  isEditing={isEditing}
+                  onChange={(val) => setProfile({ ...profile, instagram: val.replace(/[^a-zA-Z0-9_.]/, '') })}
+                  placeholder="username"
+                />
               </div>
 
               {/* Right Column */}
@@ -291,7 +300,7 @@ export default function Profile() {
 }
 
 // Editable Field Component
-const EditableField = ({ icon, label, value, isEditing, onChange, prefix }) => {
+const EditableField = ({ icon, label, value, isEditing, onChange, prefix, placeholder }) => {
   return (
     <div className="flex items-start space-x-4">
       <div className="p-2 bg-gray-100 rounded-full text-gray-600 mt-1">
@@ -306,6 +315,7 @@ const EditableField = ({ icon, label, value, isEditing, onChange, prefix }) => {
               type="text"
               value={value || ''}
               onChange={(e) => onChange(e.target.value)}
+              placeholder={placeholder}
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
             />
           </div>

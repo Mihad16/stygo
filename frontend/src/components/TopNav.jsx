@@ -96,46 +96,17 @@ export default function TopNav() {
         <div className="flex items-center space-x-4 md:space-x-6">
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {isLoggedIn ? (
-              // User is logged in - show dashboard and profile
-              <>
-                {user?.has_shop && (
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => navigate("/dashboard")}
-                    className="flex items-center px-3 py-1.5 text-sm font-medium text-green-600 border border-green-600 rounded-md hover:bg-green-50 transition-colors"
-                  >
-                    <ShoppingCart size={16} className="mr-1.5" />
-                    My Dashboard
-                  </motion.button>
-                )}
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => navigate("/dashboard")}
-                  className="flex items-center px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors"
-                >
-                  <User size={16} className="mr-1.5" />
-                  My Account
-                </motion.button>
-              </>
-            ) : (
-              // User is not logged in - show login/signup
-              <>
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => navigate("/login")}
-                  className="flex items-center px-3 py-1.5 text-sm font-medium text-green-600 border border-green-600 rounded-md hover:bg-green-50 transition-colors"
-                >
-                  <LogIn size={16} className="mr-1.5" />
-                  Login
-                </motion.button>
-       
-              </>
+            {isLoggedIn && user?.has_shop && (
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate("/dashboard")}
+                className="flex items-center px-3 py-1.5 text-sm font-medium text-green-600 border border-green-600 rounded-md hover:bg-green-50 transition-colors"
+              >
+                <ShoppingCart size={16} className="mr-1.5" />
+                My Dashboard
+              </motion.button>
             )}
-
             {/* Cart Icon - Show for all users */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -160,55 +131,24 @@ export default function TopNav() {
             className="md:hidden bg-white border-t border-gray-200 overflow-hidden"
           >
             <div className="px-4 py-3 space-y-2">
-              <NavButton 
-                active={location.pathname === "/info"} 
-                onClick={() => handleNavigation("/info")}
-                className="block w-full text-left"
-              >
-                Info
-              </NavButton>
-
               <div className="border-t border-gray-200 my-3 pt-3">
-                {isLoggedIn ? (
-                  <>
-                    {user?.has_shop && (
-                      <button
-                        onClick={() => handleNavigation("/dashboard")}
-                        className="w-full flex items-center px-3 py-2 text-sm font-medium text-green-600 hover:bg-green-50 rounded-md mb-2"
-                      >
-                        <ShoppingCart size={16} className="mr-2" />
-                        Seller Dashboard
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleNavigation("/dashboard")}
-                      className="w-full flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md"
-                    >
-                      <User size={16} className="mr-2" />
-                      My Account
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => handleNavigation("/login")}
-                      className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-green-600 border border-green-600 rounded-md hover:bg-green-50 mb-2"
-                    >
-                      <LogIn size={16} className="mr-2" />
-                      Login
-                    </button>
-                    
-                  </>
+                {isLoggedIn && user?.has_shop && (
+                  <button
+                    onClick={() => handleNavigation("/dashboard")}
+                    className="w-full flex items-center px-3 py-2 text-sm font-medium text-green-600 hover:bg-green-50 rounded-md mb-2"
+                  >
+                    <ShoppingCart size={16} className="mr-2" />
+                    Seller Dashboard
+                  </button>
                 )}
+                <button
+                  onClick={() => handleNavigation("/cart")}
+                  className="w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+                >
+                  <ShoppingBag size={16} className="mr-2" />
+                  Cart
+                </button>
               </div>
-
-              <button
-                onClick={() => handleNavigation("/cart")}
-                className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-md mt-2"
-              >
-                <ShoppingBag size={16} className="mr-2" />
-                View Cart
-              </button>
             </div>
           </motion.div>
         )}

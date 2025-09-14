@@ -2,8 +2,8 @@ import React, { Suspense, lazy } from "react";
 import Hero from "../components/Hero";
 import TrendingThisWeek from "../components/TrendingThisWeek";
 import TrendingShop from "../components/TrendingShop";
-import Footer from "../components/Footer";
 import Under599Products from "../components/Under599Products";
+import WhatsAppSubscribe from "../components/WhatsAppSubscribe";
 
 // Lazy load components for better performance
 const LazyTrendingThisWeek = lazy(() => import("../components/TrendingThisWeek"));
@@ -111,13 +111,19 @@ export default function Home() {
           </Suspense>
         </section>
 
-        
-
-        {/* Featured Collections */}
-      
+        {/* WhatsApp Subscription Section */}
+        <section className="max-w-7xl mx-auto my-16">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 md:p-12">
+            <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">Get Product Updates on WhatsApp</h2>
+            <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+              Stay in the loop with our latest products and exclusive offers. We'll send you updates directly to your WhatsApp.
+            </p>
+            <div className="max-w-md mx-auto">
+              <WhatsAppSubscribe />
+            </div>
+          </div>
+        </section>
       </main>
-
-      <Footer />
     </div>
   );
 }

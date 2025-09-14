@@ -1,19 +1,39 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { requestPasswordReset, confirmPasswordReset } from "../services/auth";
+import { toast } from 'react-toastify';
 
 export default function PasswordReset() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   
-  const [phone, setPhone] = useState("");
-  const [token, setToken] = useState("");
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [step, setStep] = useState(searchParams.get("step") || "request");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [resendTimer, setResendTimer] = useState(30);
+  const [canResend, setCanResend] = useState(false);
+
+  // Handle resend OTP
+  const startResendTimer = () => {
+    setResendTimer(30);
+    setCanResend(false);
+    
+    const timer = setInterval(() => {
+      setResendTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   const handleRequestReset = async (e) => {
     e.preventDefault();
@@ -21,40 +41,80 @@ export default function PasswordReset() {
     setMessage("");
     setLoading(true);
 
-    if (!phone) {
-      setError("Phone number is required");
+    if (!email) {
+      setError("Email address is required");
       setLoading(false);
       return;
     }
 
-    if (!/^\d{10}$/.test(phone)) {
-      setError("Enter a valid 10-digit Indian number");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email address");
       setLoading(false);
       return;
     }
 
     try {
-      await requestPasswordReset(phone);
-      setStep("confirm");
-      setMessage("A 6-digit reset token has been sent to your phone.");
+      await requestPasswordReset(email);
+      setStep("otp");
+      startResendTimer();
+      setMessage(`A 6-digit OTP has been sent to ${email}. Please check your inbox.`);
+      toast.success('OTP sent successfully!');
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to send reset token. Please try again.");
+      const errorMsg = err.response?.data?.error || "Failed to send OTP. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleConfirmReset = async (e) => {
+  const handleResendOTP = async () => {
+    if (!canResend) return;
+    
+    try {
+      await requestPasswordReset(email);
+      startResendTimer();
+      setCanResend(false);
+      setMessage(`A new OTP has been sent to ${email}`);
+      toast.success('New OTP sent successfully!');
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || "Failed to resend OTP. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+    }
+  };
+
+  const handleOTPVerification = async (e) => {
     e.preventDefault();
     setError("");
     setMessage("");
     setLoading(true);
 
-    if (!token) {
-      setError("Reset token is required");
+    if (!otp || otp.length !== 6) {
+      setError("Please enter a valid 6-digit OTP");
       setLoading(false);
       return;
     }
+
+    try {
+      // Verify OTP first
+      await confirmPasswordReset(email, otp, newPassword);
+      setStep("reset");
+      setMessage("OTP verified. Please enter your new password.");
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || "Invalid OTP. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordReset = async (e) => {
+    e.preventDefault();
+    setError("");
+    setMessage("");
+    setLoading(true);
 
     if (!newPassword) {
       setError("New password is required");
@@ -75,13 +135,16 @@ export default function PasswordReset() {
     }
 
     try {
-      await confirmPasswordReset(phone, token, newPassword);
+      await confirmPasswordReset(email, otp, newPassword);
       setMessage("Password has been reset successfully. Redirecting to login...");
+      toast.success('Password reset successful!');
       setTimeout(() => {
         navigate("/login");
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to reset password. Please try again.");
+      const errorMsg = err.response?.data?.error || "Failed to reset password. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -92,7 +155,7 @@ export default function PasswordReset() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {step === "request" ? "Reset Password" : "Enter Reset Token"}
+            {step === "request" ? "Reset Password" : step === "otp" ? "Enter OTP" : "Enter New Password"}
           </h2>
         </div>
 
@@ -144,22 +207,23 @@ export default function PasswordReset() {
           </div>
         )}
 
-        {step === "request" ? (
+        {step === "request" && (
           <form className="mt-8 space-y-6" onSubmit={handleRequestReset}>
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="phone" className="sr-only">
-                  Phone Number
+                <label htmlFor="email" className="sr-only">
+                  Email Address
                 </label>
                 <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
+                  id="email"
+                  name="email"
+                  type="email"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Phone Number"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Enter your registered email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -172,30 +236,68 @@ export default function PasswordReset() {
                   loading ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
-                {loading ? "Sending..." : "Send Reset Token"}
+                {loading ? "Sending OTP..." : "Send OTP"}
               </button>
             </div>
           </form>
-        ) : (
-          <form className="mt-8 space-y-6" onSubmit={handleConfirmReset}>
-            <div className="rounded-md shadow-sm space-y-4">
-              <div>
-                <label htmlFor="token" className="sr-only">
-                  Reset Token
+        )}
+
+        {step === "otp" && (
+          <form className="mt-8 space-y-6" onSubmit={handleOTPVerification}>
+            <div className="rounded-md shadow-sm -space-y-px">
+              <div className="mb-4">
+                <label htmlFor="otp" className="block text-sm font-medium text-gray-700 mb-2">
+                  Enter 6-digit OTP sent to {email}
                 </label>
                 <input
-                  id="token"
-                  name="token"
+                  id="otp"
+                  name="otp"
                   type="text"
+                  inputMode="numeric"
+                  pattern="\d{6}"
+                  maxLength={6}
                   required
-                  className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Enter 6-digit token"
-                  value={token}
-                  onChange={(e) => setToken(e.target.value)}
+                  className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Enter 6-digit OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  disabled={loading}
                 />
+                <div className="mt-2 text-sm text-gray-600">
+                  {canResend ? (
+                    <button
+                      type="button"
+                      onClick={handleResendOTP}
+                      className="text-indigo-600 hover:text-indigo-500 font-medium"
+                    >
+                      Resend OTP
+                    </button>
+                  ) : (
+                    <span>Resend OTP in {resendTimer} seconds</span>
+                  )}
+                </div>
               </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                disabled={loading || otp.length !== 6}
+                className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+                  loading || otp.length !== 6 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                {loading ? "Verifying..." : "Verify OTP"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {step === "reset" && (
+          <form className="mt-8 space-y-6" onSubmit={handlePasswordReset}>
+            <div className="rounded-md shadow-sm space-y-4">
               <div>
-                <label htmlFor="newPassword" className="sr-only">
+                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
                   New Password
                 </label>
                 <input
@@ -203,15 +305,16 @@ export default function PasswordReset() {
                   name="newPassword"
                   type="password"
                   required
-                  className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="New Password (min 4 characters)"
+                  className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Enter new password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
+                  disabled={loading}
                 />
               </div>
               <div>
-                <label htmlFor="confirmPassword" className="sr-only">
-                  Confirm Password
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  Confirm New Password
                 </label>
                 <input
                   id="confirmPassword"
@@ -219,34 +322,23 @@ export default function PasswordReset() {
                   type="password"
                   required
                   className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Confirm New Password"
+                  placeholder="Confirm new password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={loading}
                 />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
-                <button
-                  type="button"
-                  onClick={() => setStep("request")}
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
-                  Back to Request Token
-                </button>
               </div>
             </div>
 
             <div>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !newPassword || newPassword !== confirmPassword}
                 className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                  loading ? "opacity-50 cursor-not-allowed" : ""
+                  loading || !newPassword || newPassword !== confirmPassword ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
-                {loading ? "Resetting..." : "Reset Password"}
+                {loading ? "Updating..." : "Update Password"}
               </button>
             </div>
           </form>

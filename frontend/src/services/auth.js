@@ -106,15 +106,24 @@ const signup = async (phone, password, email) => {
 };
 
 // Password Reset
-const requestPasswordReset = async (phone) => {
-  const response = await api.post('/api/auth/password-reset-request/', { phone });
+const requestPasswordReset = async (email) => {
+  const response = await api.post('/api/auth/password-reset-request/', { email });
   return response.data;
 };
 
-const confirmPasswordReset = async (phone, token, newPassword) => {
+const verifyOTP = async (email, otp) => {
+  const response = await api.post('/api/auth/verify-otp/', { email, otp });
+  return response.data;
+};
+
+const confirmPasswordReset = async (email, otp, newPassword) => {
+  // First verify the OTP
+  await verifyOTP(email, otp);
+  
+  // If OTP verification succeeds, proceed with password reset
   const response = await api.post('/api/auth/password-reset-confirm/', {
-    phone,
-    token,
+    email,
+    otp,
     new_password: newPassword
   });
   return response.data;

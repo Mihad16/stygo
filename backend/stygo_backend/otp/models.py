@@ -6,12 +6,13 @@ import random
 User = get_user_model()
 
 class OTP(models.Model):
-    phone = models.CharField(max_length=15)
+    email = models.EmailField()
     code = models.CharField(max_length=6)
     created_at = models.DateTimeField(default=timezone.now)
+    is_used = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.phone} - {self.code}"
+        return f"{self.email} - {self.code}"
 
     @staticmethod
     def generate_code():
