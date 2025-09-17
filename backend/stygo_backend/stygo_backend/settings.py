@@ -265,9 +265,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'your-email@gmail.com')  # Your Gmail address
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'your-app-password')  # Your App Password
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@stygo.in')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'stygo34@gmail.com')  # Your Gmail address
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'stygo111666')
+
+
+
+ # Your App Password
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'stygo34@gmail.com')
 
 # For development only - prints emails to console
 if DEBUG and False:  # Set to False to send real emails even in development

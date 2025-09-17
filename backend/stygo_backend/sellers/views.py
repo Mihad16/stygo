@@ -12,7 +12,7 @@ from .serializers import SellerProfileSerializer
 def create_shop(request):
     user = request.user
 
-    if hasattr(user, 'sellerprofile'):
+    if hasattr(user, 'seller'):
         return Response({'error': 'Shop already exists'}, status=400)
 
     data = request.data
