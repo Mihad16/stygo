@@ -6,6 +6,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
 from django.core.mail import send_mail
 from rest_framework_simplejwt.tokens import RefreshToken
+from sellers.models import SellerProfile
 from .models import OTP, PasswordResetToken
 from .serializers import (
     EmailPasswordSerializer,
